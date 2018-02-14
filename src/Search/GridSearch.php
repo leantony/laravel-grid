@@ -32,10 +32,10 @@ trait GridSearch
     /**
      * Check if provided user input can be used
      *
-     * @param string $userInput
+     * @param string|null $userInput
      * @return bool
      */
-    public function canUseProvidedUserInput(string $userInput)
+    public function canUseProvidedUserInput($userInput)
     {
         // skip empty requests
         if ($userInput === null || empty(trim($userInput))) {

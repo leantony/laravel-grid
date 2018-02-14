@@ -199,6 +199,5 @@
                 }
             });
         })(jQuery);
-
     </script>
 @endpush
