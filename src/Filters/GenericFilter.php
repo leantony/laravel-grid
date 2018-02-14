@@ -23,6 +23,13 @@ class GenericFilter implements Htmlable
     protected $id;
 
     /**
+     * If the filter is enabled
+     *
+     * @var bool
+     */
+    protected $enabled = true;
+
+    /**
      * The title of the html element
      *
      * @var string
@@ -111,6 +118,7 @@ class GenericFilter implements Htmlable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function __toString()
     {
@@ -121,6 +129,7 @@ class GenericFilter implements Htmlable
      * Get content as a string of HTML.
      *
      * @return string
+     * @throws \Exception
      */
     public function toHtml()
     {

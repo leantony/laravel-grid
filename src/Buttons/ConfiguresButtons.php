@@ -80,6 +80,7 @@ trait ConfiguresButtons
      * Set default buttons for the grid
      *
      * @return void
+     * @throws \Exception
      */
     public function setDefaultButtons()
     {
@@ -102,90 +103,117 @@ trait ConfiguresButtons
      * Add a create button to the grid
      *
      * @return GenericButton
+     * @throws \Exception
      */
     protected function addCreateButton(): GenericButton
     {
         return (new CreateButton([
             'gridId' => $this->id,
-            'link' => $this->getCreateRouteName(),
+            'type' => 'toolbar',
+            'name' => 'Create',
+            'icon' => 'fa-plus-circle',
+            'url' => $this->getCreateRouteName(),
             'title' => 'add new ' . $this->shortSingularGridName(),
             'beforeRender' => function () {
                 return in_array('create', $this->buttonsToGenerate);
             }
-        ]))->generate();
+        ]));
     }
 
     /**
      * Add a refresh button to the grid
      *
      * @return GenericButton
+     * @throws \Exception
      */
     protected function addRefreshButton(): GenericButton
     {
         return (new RefreshButton([
+            'name' => 'Refresh',
+            'dataAttributes' => [
+                'trigger-pjax' => true,
+                'pjax-target' => '#' . $this->id
+            ],
+            'icon' => 'fa-refresh',
             'gridId' => $this->id,
-            'link' => $this->getIndexRouteLink(),
+            'url' => $this->getIndexRouteLink(),
+            'type' => 'toolbar',
             'title' => 'refresh table for ' . strtolower($this->name),
             'beforeRender' => function () {
                 return in_array('refresh', $this->buttonsToGenerate);
             }
-        ]))->generate();
+        ]));
     }
 
     /**
      * Add an export button to the grid
      *
      * @return GenericButton
+     * @throws \Exception
      */
     protected function addExportButton(): GenericButton
     {
         return (new ExportButton([
+            'name' => 'Export',
+            'icon' => 'fa-download',
+            'class' => 'btn btn-default',
+            'title' => 'export data',
+            'renderCustom' => function ($v) {
+                return view('leantony::grid.buttons.export', $v)->render();
+            },
             'gridId' => $this->id,
+            'type' => 'toolbar',
             'exportRoute' => $this->getIndexRouteLink(),
             'beforeRender' => function () {
                 // only render the export button if `$allowsExporting` is set to true
                 return $this->allowsExporting || in_array('export', $this->buttonsToGenerate);
             }
-        ]))->generate();
+        ]));
     }
 
     /**
      * Add a view button to the grid
      *
      * @return GenericButton
+     * @throws \Exception
      */
     protected function addViewButton(): GenericButton
     {
         return (new ViewButton([
+            'name' => 'View',
+            'icon' => 'fa-eye',
             'gridId' => $this->id,
-            // dynamic routes can be added to any value and param on each iteration
-            // only useful for items rendered in a loop
-            // so that the route can be used in a callback that can be called on the view to
-            // render the rows dynamically
-            'dynamicRouteName' => $this->viewRouteName,
-            'urlRenderer' => function ($gridName, $item, $key) {
+            'type' => 'row',
+            'title' => 'view record',
+            'url' => function ($gridName, $item) {
                 return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
+            },
+            'beforeRender' => function ($gridName, $item) {
+                return in_array('view', $this->buttonsToGenerate);
             }
-        ]))->generate();
+        ]));
     }
 
     /**
      * Add a delete button to the grid
      *
      * @return GenericButton
+     * @throws \Exception
      */
     protected function addDeleteButton(): GenericButton
     {
         return (new DeleteButton([
             'gridId' => $this->id,
-            'dynamicRouteName' => $this->deleteRouteName,
-            'urlRenderer' => function ($gridName, $item, $key) {
-                return route($this->deleteRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
+            'name' => 'Delete',
+            'icon' => 'fa-trash',
+            'type' => 'row',
+            'url' => function ($gridName, $item) {
+                return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
             },
-            'beforeRender' => function () {
+            'beforeRender' => function ($gridName, $item) {
                 return in_array('delete', $this->buttonsToGenerate);
             }
-        ]))->generate();
+        ]));
     }
 
     /**
@@ -194,14 +222,15 @@ trait ConfiguresButtons
      * @param array $properties an array of key value pairs representing property names and values for the GenericButton instance
      * @param string|null $position where this button will be placed. Defaults to 'row'
      * @return GenericButton
+     * @throws \Exception
      */
     protected function makeCustomButton(array $properties, $position = null): GenericButton
     {
         $name = $properties['name'] ?? 'unknown';
         if ($position === 'toolbar') {
-            $this->addToolbarButton($name, new GenericButton($properties));
+            $this->addToolbarButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
         } else {
-            $this->addRowButton($name, new GenericButton($properties));
+            $this->addRowButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
         }
         return $this->buttons[$position ?? 'row'][$name];
     }
@@ -218,7 +247,7 @@ trait ConfiguresButtons
     {
         $this->buttons = array_merge_recursive($this->buttons, [
             'toolbar' => [
-                $button => $instance,
+                $button => $instance->setType('toolbar'),
             ]
         ]);
     }
@@ -235,7 +264,7 @@ trait ConfiguresButtons
     {
         $this->buttons = array_merge_recursive($this->buttons, [
             'rows' => [
-                $button => $instance,
+                $button => $instance->setType('row'),
             ]
         ]);
     }

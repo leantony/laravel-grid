@@ -1,6 +1,8 @@
 @foreach($columns as $row)
     @if(!$row->filter)
         <th></th>
+    @elseif(!$row->filter->enabled)
+        <th></th>
     @else
         <th>
             {!! $row->filter !!}

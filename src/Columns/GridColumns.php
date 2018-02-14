@@ -92,6 +92,7 @@ trait GridColumns
      * @param string $columnName
      * @param array $columnData
      * @return array
+     * @throws \Exception
      */
     public function fetchColumnFilter(string $columnName, array $columnData)
     {

@@ -25,14 +25,6 @@ class GenericButton implements Htmlable
     public $beforeRender = null;
 
     /**
-     * Specify if the button has a link that is set dynamically as opposed to a static link
-     * E.g button in a row, would ideally have this set to true
-     *
-     * @var bool
-     */
-    public $dynamicLink = false;
-
-    /**
      * Specify a custom way to render the button
      *
      * @var callable
@@ -42,16 +34,16 @@ class GenericButton implements Htmlable
     /**
      * The link of the button
      *
-     * @var string
+     * @var string|callable
      */
-    public $link = '#';
+    public $url = '#';
 
     /**
      * The buttons name
      *
      * @var string
      */
-    public $name = '';
+    public $name = 'Unknown';
 
     /**
      * The buttons ability to support pjax
@@ -89,25 +81,17 @@ class GenericButton implements Htmlable
     public $dataAttributes = [];
 
     /**
-     * A dynamic route name applied to row buttons
-     *
-     * @var string
-     */
-    protected $dynamicRouteName = null;
-
-    /**
-     * A callback to generate urls for dynamic buttons
-     *
-     * @var callable
-     */
-    protected $urlRenderer = null;
-
-    /**
      * The id of the grid in question. Will be used for PJAX
      *
      * @var string
      */
     protected $gridId;
+
+    /**
+     * Type of button. Can be one of either `row` or `toolbar`
+     * @var string
+     */
+    protected $type = 'row';
 
     /**
      * CreateButton constructor.
@@ -166,20 +150,20 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isDynamicLink(): bool
+    public function getType(): string
     {
-        return $this->dynamicLink;
+        return $this->type;
     }
 
     /**
-     * @param bool $dynamicLink
+     * @param string $type
      * @return GenericButton
      */
-    public function setDynamicLink(bool $dynamicLink): GenericButton
+    public function setType(string $type): GenericButton
     {
-        $this->dynamicLink = $dynamicLink;
+        $this->type = $type;
         return $this;
     }
 
@@ -204,16 +188,16 @@ class GenericButton implements Htmlable
     /**
      * @return string
      */
-    public function getLink(): string
+    public function getUrl(): string
     {
         return $this->link;
     }
 
     /**
-     * @param string $link
+     * @param string|callable $link
      * @return GenericButton
      */
-    public function setLink(string $link): GenericButton
+    public function setUrl(string $url): GenericButton
     {
         $this->link = $link;
         return $this;
@@ -373,24 +357,6 @@ class GenericButton implements Htmlable
     /**
      * @return string
      */
-    public function getDynamicRouteName(): string
-    {
-        return $this->dynamicRouteName;
-    }
-
-    /**
-     * @param string $dynamicRouteName
-     * @return GenericButton
-     */
-    public function setDynamicRouteName(string $dynamicRouteName): GenericButton
-    {
-        $this->dynamicRouteName = $dynamicRouteName;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function __toString()
     {
         return $this->toHtml();
@@ -411,15 +377,15 @@ class GenericButton implements Htmlable
      *
      * @return string
      */
-    public function render()
+    public function render(...$args)
     {
-        if (is_callable($this->beforeRender) && call_user_func($this->beforeRender)) {
-            if ($this->renderCustom && is_callable($this->renderCustom)) {
-                return call_user_func($this->renderCustom, $this->compactData(func_get_args()));
-            }
-            return view('leantony::grid.buttons.button', $this->compactData(func_get_args()))->render();
+        if ($this->renderCustom && is_callable($this->renderCustom)) {
+            return call_user_func($this->renderCustom, $this->compactData($args));
         }
-        return null;
+        if ($this->type === 'row') {
+            $args = array_collapse($args);
+        }
+        return view($this->getButtonView(), $this->compactData($args))->render();
     }
 
     /**
@@ -428,7 +394,7 @@ class GenericButton implements Htmlable
      * @param array $params
      * @return array
      */
-    protected function compactData($params = [])
+    protected function compactData($params)
     {
         foreach (array_merge($params, $this->getExtraParams()) as $key => $value) {
             $this->__set($key, $value);
@@ -447,23 +413,12 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @return callable
-     */
-    public function getUrlRenderer(): callable
-    {
-        return $this->urlRenderer;
-    }
-
-    /**
-     * The callback that would be used to render the url for a button with a dynamic url
-     * E.g those in a grid row
+     * Return the view name used to render the button
      *
-     * @param callable $url
-     * @return GenericButton
+     * @return string
      */
-    public function setUrlRenderer(callable $url): GenericButton
+    public function getButtonView(): string
     {
-        $this->urlRenderer = $url;
-        return $this;
+        return 'leantony::grid.buttons.button';
     }
 }

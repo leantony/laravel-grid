@@ -258,11 +258,11 @@ class GenerateGrid extends Command
 
         if ($this->dumpFile($p, $filename, $replaced)) {
 
-            $this->info("Dumped generated binding at " . $p);
+            $this->info("Wrote generated binding to " . $p);
 
         } else {
 
-            $this->info("skipped dumping binding at " . $p);
+            $this->info("skipped overwriting existing binding at " . $p);
         }
 
         return array($namespace, $replaced, $filename);
@@ -388,11 +388,11 @@ class GenerateGrid extends Command
 
         if ($this->dumpFile($path, $filename, $replaced)) {
 
-            $this->info("Dumped generated grid at " . $path);
+            $this->info("Wrote generated grid to " . $path);
 
         } else {
 
-            $this->info('Skipped dumping generated grid at ' . $path);
+            $this->info('Skipped overwriting existing grid at ' . $path);
         }
 
     }
@@ -436,7 +436,7 @@ class GenerateGrid extends Command
     protected function replaceRows($rows, $stub)
     {
         $value = str_replace(['{{ rows }}'], var_export54($rows, "\t\t") . ';', $stub);
-        $this->info("Replaced rows successfully...");
+        $this->info("Exported rows successfully...");
         return $value;
     }
 
@@ -458,7 +458,7 @@ class GenerateGrid extends Command
             $replacements['routeRoot'],
             $replacements['binding']
         ], $stub);
-        $this->info("Replaced other contents successfully...");
+        $this->info("Finished performing replacements to the stub files...");
         return $replaced;
     }
 }

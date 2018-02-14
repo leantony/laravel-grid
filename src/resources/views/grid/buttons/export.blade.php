@@ -1,4 +1,4 @@
-<a href="{{ $link }}" class="{{ $class }}" data-toggle="dropdown" title="{{ $title }}">
+<a href="{{ is_callable($url) ? $url() : $url }}" class="{{ $class }}" data-toggle="dropdown" title="{{ $title }}">
     <i class="fa {{ $icon }}"></i>&nbsp;{{ $name }}
 </a>
 <ul class="dropdown-menu" role="menu">
