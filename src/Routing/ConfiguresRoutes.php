@@ -47,12 +47,12 @@ trait ConfiguresRoutes
     protected $createRouteName = '#';
 
     /**
-     * Set the links to be used on the grid for the buttons and forms (filter and search)
+     * Set the links/routes to be used on the grid for the buttons and forms (filter and search)
      * Use route names for simplicity
      *
      * @return void
      */
-    abstract public function setLinks();
+    abstract public function setRoutes();
 
     /**
      * The search route to be used for the search form
