@@ -122,7 +122,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         // the grid ID
         $this->id = Str::singular(Str::camel($this->name)) . '-' . 'grid';
         // any links defined
-        $this->setLinks();
+        $this->setRoutes();
         // default buttons on the grid
         $this->setButtons();
         // configuration to the buttons already set including adding new ones

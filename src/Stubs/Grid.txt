@@ -42,11 +42,11 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     }
 
     /**
-     * Set the links. This are referenced using named routes, for the sake of simplicity
+     * Set the links/routes. This are referenced using named routes, for the sake of simplicity
      *
      * @return void
      */
-    public function setLinks()
+    public function setRoutes()
     {
         // searching, sorting and filtering
         $this->sortRouteName = '{{ routeRoot }}.index';
