@@ -61,13 +61,15 @@ trait GridSearch
         if (isset($search['query']) && is_callable($search['query'])) {
             call_user_func($search['query'], $this->query, $columnName, $userInput);
 
-        } else if (isset($filter['query']) && is_callable($search['query'])) {
-            // otherwise, use the filter, if defined
-            call_user_func($filter['query'], $this->query, $columnName, $userInput);
         } else {
-            $value = $operator == 'like' ? '%' . $userInput . '%' : $userInput;
+            if (isset($filter['query']) && is_callable($search['query'])) {
+                // otherwise, use the filter, if defined
+                call_user_func($filter['query'], $this->query, $columnName, $userInput);
+            } else {
+                $value = $operator == 'like' ? '%' . $userInput . '%' : $userInput;
 
-            $this->getQuery()->where($columnName, $operator, $value, $this->searchType);
+                $this->getQuery()->where($columnName, $operator, $value, $this->searchType);
+            }
         }
     }
 }

@@ -14,28 +14,46 @@ trait AddsColumnFilters
      * @param string $columnName the column to be filtered
      * @param array $columnData params to be used for filtering
      * @return GenericFilter
+     * @throws \Exception
      */
     public function pushFilter($columnName, $columnData): GenericFilter
     {
         $filterType = $columnData['type'] ?? 'text'; // default
         $filterClass = $columnData['class'] ?? null;
         $filterDataAttributes = $columnData['dataAttributes'] ?? [];
+        $filterEnabled = $columnData['enabled'] ?? true;
         $filterInstance = null;
         if (!$filterType instanceof GenericFilter) {
             switch ($filterType) {
                 case 'date':
-                    $filterInstance = $this->addDateFilter($columnName, $filterDataAttributes, $filterClass);
-                    break;
+                    {
+                        if ($filterEnabled) {
+                            $filterInstance = $this->addDateFilter($columnName, $filterDataAttributes, $filterClass);
+                        }
+                        break;
+                    }
                 case 'daterange':
-                    $filterInstance = $this->addTextFilter($columnName, $filterClass . ' date-range');
-                    break;
+                    {
+                        if ($filterEnabled) {
+                            $filterInstance = $this->addTextFilter($columnName, $filterClass . ' date-range');
+                        }
+                        break;
+                    }
                 case 'text':
-                    // use text for any other filter type. E.g a custom one you might need
-                    $filterInstance = $this->addTextFilter($columnName, $filterClass);
-                    break;
+                    {
+                        if ($filterEnabled) {
+                            // use text for any other filter type. E.g a custom one you might need
+                            $filterInstance = $this->addTextFilter($columnName, $filterClass);
+                        }
+                        break;
+                    }
                 case 'select':
-                    $filterInstance = $this->addSelectFilter($columnName, $columnData['data'] ?? []);
-                    break;
+                    {
+                        if ($filterEnabled) {
+                            $filterInstance = $this->addSelectFilter($columnName, $columnData['data'] ?? []);
+                        }
+                        break;
+                    }
                 default:
                     throw new InvalidArgumentException("Unknown filterType type " . $filterType . " for " . $columnName);
             }
@@ -48,9 +66,10 @@ trait AddsColumnFilters
      * Add a date picker filter. Uses https://github.com/uxsolutions/bootstrap-datepicker.git
      *
      * @param string $elementId the id of the html element
-     * @param string|null $elementClass the css class string that will be applied to the element
      * @param array $filterDataAttributes
+     * @param string|null $elementClass the css class string that will be applied to the element
      * @return GenericFilter
+     * @throws \Exception
      */
     protected function addDateFilter($elementId, array $filterDataAttributes, $elementClass = null): GenericFilter
     {
@@ -76,6 +95,7 @@ trait AddsColumnFilters
      * @param string $elementId id of the html element
      * @param string|null $elementClass the css class string that will be applied to the element
      * @return GenericFilter
+     * @throws \Exception
      */
     protected function addTextFilter($elementId, $elementClass = null): GenericFilter
     {
@@ -97,6 +117,7 @@ trait AddsColumnFilters
      * @param array|Collection $data the data to be displayed on the dropdown
      * @param string|null $elementClass the css class string that will be applied to the element
      * @return GenericFilter
+     * @throws \Exception
      */
     protected function addSelectFilter($elementId, $data, $elementClass = null): GenericFilter
     {

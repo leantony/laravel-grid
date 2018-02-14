@@ -102,6 +102,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      *
      * @param array $params
      * @return GridInterface
+     * @throws \Exception
      */
     public function create(array $params): GridInterface
     {
@@ -116,6 +117,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * Initialize grid variables
      *
      * @return void
+     * @throws \Exception
      */
     public function init()
     {
@@ -134,6 +136,14 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         // get filtered data
         $this->data = $this->getFilteredData();
     }
+
+    /**
+     * Set the columns to be displayed, along with their data
+     *
+     * @return void
+     * @throws \Exception
+     */
+    abstract public function setColumns();
 
     /**
      * Get the data
@@ -328,14 +338,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Returns a closure that will be executed to apply a class for each row on the grid
-     * The closure takes two arguments - `name` of grid, and `item` being iterated upon
-     *
-     * @return Closure
-     */
-    abstract public function getRowCssStyle(): Closure;
-
-    /**
      * If the grid rows can be clicked on as links
      *
      * @return bool
@@ -344,6 +346,14 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         return $this->linkableRows;
     }
+
+    /**
+     * Returns a closure that will be executed to apply a class for each row on the grid
+     * The closure takes two arguments - `name` of grid, and `item` being iterated upon
+     *
+     * @return Closure
+     */
+    abstract public function getRowCssStyle(): Closure;
 
     /**
      * Render the search form on the grid
@@ -401,6 +411,16 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Return the view used to display the search form
+     *
+     * @return string
+     */
+    public function getSearchView(): string
+    {
+        return 'leantony::grid.search';
     }
 
     /**
@@ -467,14 +487,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         return $this->columns;
     }
-
-    /**
-     * Set the columns to be displayed, along with their data
-     *
-     * @return void
-     * @throws \Exception
-     */
-    abstract public function setColumns();
 
     /**
      * The class of the grid table
@@ -566,16 +578,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function getProcessedColumns(): array
     {
         return $this->processColumns();
-    }
-
-    /**
-     * Return the view used to display the search form
-     *
-     * @return string
-     */
-    public function getSearchView(): string
-    {
-        return 'leantony::grid.search';
     }
 
     /**

@@ -92,7 +92,7 @@ class GenericFilter implements Htmlable
      */
     public function __get($name)
     {
-        if(property_exists($this, $name)) {
+        if (property_exists($this, $name)) {
             return $this->{$name};
         }
         throw new InvalidArgumentException("The property " . $name . " does not exist on " . get_called_class());
@@ -165,6 +165,16 @@ class GenericFilter implements Htmlable
     }
 
     /**
+     * Allow extra parameters to be added on this object
+     *
+     * @return array
+     */
+    public function getExtraParams()
+    {
+        return [];
+    }
+
+    /**
      * @return string
      */
     public function getFormId(): string
@@ -180,16 +190,6 @@ class GenericFilter implements Htmlable
     {
         $this->formId = $formId;
         return $this;
-    }
-
-    /**
-     * Allow extra parameters to be added on this object
-     *
-     * @return array
-     */
-    public function getExtraParams()
-    {
-        return [];
     }
 
     /**

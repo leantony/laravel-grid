@@ -6,8 +6,6 @@ use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Leantony\Grid\Buttons\GenericButton;
-use Leantony\Grid\Filters\GenericFilter;
 
 interface GridInterface
 {
@@ -25,7 +23,7 @@ interface GridInterface
      *
      * @return void
      */
-    public function setLinks();
+    public function setRoutes();
 
     /**
      * Filename for export
