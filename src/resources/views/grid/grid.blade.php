@@ -154,7 +154,11 @@
                                             <td>
                                                 <div class="pull-right">
                                                     @foreach($grid->getButtons('rows') as $button)
-                                                        {!! $button->render(call_user_func($button->getUrlRenderer(), $grid->transformName(), $item, $column->key)) !!}
+                                                        @if(call_user_func($button->beforeRender, $grid->transformName(), $item))
+                                                            {!! $button->render(['gridName' => $grid->transformName(), 'gridItem' => $item]) !!}
+                                                        @else
+                                                            @continue
+                                                        @endif
                                                     @endforeach
                                                 </div>
                                             </td>

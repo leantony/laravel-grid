@@ -17,7 +17,7 @@ The package is available on composer. Just run;
 ```bash
 composer install leantony/laravel-grid
 ```
-If you are using `laravel <5.5`, then ensure that you add the service provider manually to your `app.php` config file
+If you are using `laravel <5.5`, then ensure that you add the service provider `Leantony\Grid\Providers\ServiceProvider::class` manually to your `app.php` config file
 
 ## Usage
 A laravel command is available to make it easy to create grids. 
