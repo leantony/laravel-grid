@@ -1,4 +1,4 @@
-@foreach($rows as $row)
+@foreach($columns as $row)
     @if(!$row->filter)
         <th></th>
     @else

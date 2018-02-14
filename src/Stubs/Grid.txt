@@ -31,14 +31,14 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     protected $linkableRows = {{ linkable }};
 
     /**
-     * Set the rows to be displayed. Check `docs/rows.md` for more information
-     *
-     * @return void
-     * @throws \Exception if an error occurs during parsing of row data
-     */
-    public function setRows()
+    * Set the columns to be displayed. Check `docs/columns.md` for more information
+    *
+    * @return void
+    * @throws \Exception if an error occurs during parsing of row data
+    */
+    public function setColumns()
     {
-        $this->rows = {{ rows }}
+        $this->columns = {{ rows }}
     }
 
     /**
@@ -81,5 +81,18 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     public function configureButtons()
     {
         //
+    }
+
+    /**
+    * Returns a closure that will be executed to apply a class for each row on the grid
+    * The closure takes two arguments - `name` of grid, and `item` being iterated upon
+    *
+    * @return Closure
+    */
+    public function getRowCssStyle(): Closure
+    {
+        return function ($gridName, $item) {
+            return "";
+        };
     }
 }

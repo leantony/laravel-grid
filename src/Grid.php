@@ -2,7 +2,6 @@
 
 namespace Leantony\Grid;
 
-use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Htmlable;
@@ -15,17 +14,11 @@ use InvalidArgumentException;
 
 abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, GridFilterInterface
 {
-    use FiltersData,
-        AddsRowFilters,
+    use FiltersSearchesThenExportsData,
+        AddsColumnFilters,
         ConfiguresButtons,
-        ConfiguresRoutes;
-
-    /**
-     * The view that holds the loop data
-     *
-     * @var string
-     */
-    protected $rowsView;
+        ConfiguresRoutes,
+        GridColumns;
 
     /**
      * Specify if the grid allows exporting of records
@@ -63,13 +56,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $name = 'grid';
 
     /**
-     * The rows that appear on the table headers. Specified as $key => $value
-     *
-     * @var array
-     */
-    protected $rows = [];
-
-    /**
      * Display a warning message if there is no data
      *
      * @var bool
@@ -95,15 +81,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      *
      * @var array
      */
-    protected $processedRows = [];
-
-    /**
-     * The regxp pattern to be used to format the label names
-     * All symbols and invalid characters would be ignored and replaced with a space
-     *
-     * @var string
-     */
-    protected $labelNamePattern = "/[^a-z0-9 -]+/";
+    protected $processedColumns = [];
 
     /**
      * The toolbar size. 6 columns on the right and 6 on the left
@@ -118,13 +96,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * @var array
      */
     protected $buttons = [];
-
-    /**
-     * Rows to be used as search
-     *
-     * @var array
-     */
-    protected $searchableRows = [];
 
     /**
      * Create the grid
@@ -156,34 +127,12 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         $this->setButtons();
         // configuration to the buttons already set including adding new ones
         $this->configureButtons();
-        // user defined rows
-        $this->setRows();
+        // user defined columns
+        $this->setColumns();
         // data filters
         $this->executeFilters();
         // get filtered data
         $this->data = $this->getFilteredData();
-    }
-
-    /**
-     * Update the links, if necessary
-     *
-     * Provide an array, with key value pairs
-     * Key being the argument name and value being the route name
-     *
-     * @return $this
-     */
-    public function updateLinks()
-    {
-        $links = func_get_arg(0);
-
-        if (!empty($links)) {
-            foreach ($links as $k => $v) {
-                $name = $k . 'RouteName';
-
-                $this->{$name} = $v;
-            }
-        }
-        return $this;
     }
 
     /**
@@ -270,7 +219,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         $data = [
             'grid' => $this,
-            'rows' => $this->processRows()
+            'columns' => $this->processColumns()
         ];
         return array_merge($data, $this->getExtraParams($params));
     }
@@ -280,98 +229,57 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      *
      * @return array
      */
-    public function processRows()
+    public function processColumns()
     {
-        if (!empty($this->processedRows)) {
-            return $this->processedRows;
+        if (!empty($this->processedColumns)) {
+            return $this->processedColumns;
         }
-        $rows = [];
+        $columns = [];
         // process
-        foreach ($this->rows as $key => $value) {
-            // check if we need to render this row
-            if (isset($value['renderIf']) && is_callable($value['renderIf'])) {
-                $func = $value['renderIf'];
-                // when the callback returns false, then skip this row
-                if (!$func($key)) {
-                    continue;
-                }
+        foreach ($this->columns as $columnName => $columnData) {
+
+            // should render
+            if (!$this->canRenderColumn($columnName, $columnData)) {
+                continue;
             }
-            // css
-            if (isset($value['styles'])) {
-                $classAttributes = $value['styles'];
-                $headerClass = $classAttributes['header'] ?? '';
-                $rowClass = $classAttributes['row'] ?? 'col-md-2';
-            } else {
-                // by default, do not apply any styles on the <th> elements
-                $headerClass = '';
-                // by default, do not apply any styles on the values represented by each of the <th> elements
-                $rowClass = '';
-            }
-            // set labels if not provided
-            if (isset($value['label'])) {
-                $name = $value['label'];
-            } else {
-                $name = ucwords(preg_replace($this->labelNamePattern, ' ', $key));
-            }
-            // note that this is only used to build a placeholder for the search field, and nothing else
-            if (isset($value['searchable']) && $value['searchable'] === true) {
-                $this->searchableRows[] = Str::lower($name);
-            }
-            // data for the row
-            if (isset($value['data'])) {
-                // note that this can also be a callback
-                // as such it would be called on the grid view
-                $data = $value['data'];
-            } else {
-                // check for a presenter
-                if (isset($value['present'])) {
-                    if (is_callable($value['present'])) {
-                        // custom
-                        $data = function ($item, $row) use ($value) {
-                            return call_user_func($value['present'], $item, $row);
-                        };
-                    } else {
-                        // laracasts presenter. call the function on the model instance
-                        $data = function ($item, $row) use ($value) {
-                            return $item->present()->{$value['present']};
-                        };
-                    }
-                } else {
-                    // format any dates
-                    if (isset($value['date'])) {
-                        $data = function ($item, $row) use ($value) {
-                            return Carbon::parse($item->{$row})->format($value['dateFormat'] ?? 'Y-m-d');
-                        };
-                    } else {
-                        $data = function ($item, $row) {
-                            return $item->{$row};
-                        };
-                    }
-                }
-            }
-            $filter = null;
-            // add any filter
-            if (isset($value['filter'])) {
-                // a row can only have one filter
-                $filter = $this->pushFilter($value, $key);
-            }
-            // once we are done, push to rows array
-            array_push($rows, new Row([
-                'name' => $name,
-                'key' => $key,
+
+            // css styles
+            $styles = $this->fetchCssStyles($columnName, $columnData);
+
+            $columnClass = $styles['columnClass'];
+
+            $rowClass = $styles['rowClass'];
+
+            // label
+            $label = $this->fetchColumnLabel($columnName, $columnData)['label'];
+
+            // searchable columns
+            $searchable = $this->fetchSearchableColumns($columnName, $columnData)['searchable'];
+
+            // filter
+            $filter = $this->fetchColumnFilter($columnName, $columnData)['filter'];
+
+            // data
+            $data = $this->fetchColumnData($columnName, $columnData)['data'];
+
+            // once we are done, push to columns array
+            array_push($columns, new Column([
+                'name' => $label,
+                'key' => $columnName,
                 'data' => $data,
+                'searchable' => $searchable,
                 'rowClass' => $rowClass,
-                'headerClass' => $headerClass,
-                'sortable' => $value['sort'] ?? false,
+                'columnClass' => $columnClass,
+                'sortable' => $columnData['sort'] ?? true,
                 'filter' => $filter,
-                'raw' => $value['raw'] ?? false,
-                'export' => $value['export'] ?? true,
+                'raw' => $columnData['raw'] ?? false,
+                'export' => $columnData['export'] ?? true,
             ]));
         }
 
-        $this->processedRows = $rows;
+        $this->processedColumns = $columns;
 
-        return $this->processedRows;
+        return $this->processedColumns;
     }
 
     /**
@@ -420,6 +328,14 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
+     * Returns a closure that will be executed to apply a class for each row on the grid
+     * The closure takes two arguments - `name` of grid, and `item` being iterated upon
+     *
+     * @return Closure
+     */
+    abstract public function getRowCssStyle(): Closure;
+
+    /**
      * If the grid rows can be clicked on as links
      *
      * @return bool
@@ -427,16 +343,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function allowsLinkableRows()
     {
         return $this->linkableRows;
-    }
-
-    /**
-     * Specify if the default means of rendering the grid rows is to be skipped
-     *
-     * @return bool
-     */
-    public function skipsDefaultRowFormat()
-    {
-        return false;
     }
 
     /**
@@ -456,7 +362,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
             'placeholder' => $this->getSearchPlaceholder(),
         ];
 
-        return view('leantony::grid.search', array_merge($data, $params))->render();
+        return view($this->getSearchView(), array_merge($data, $params))->render();
     }
 
     /**
@@ -476,13 +382,13 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     private function getSearchPlaceholder()
     {
-        if (empty($this->searchableRows)) {
+        if (empty($this->searchableColumns)) {
             $placeholder = Str::plural(Str::slug($this->getName()));
 
             return sprintf('search %s ...', $placeholder);
         }
 
-        $placeholder = collect($this->searchableRows)->implode(',');
+        $placeholder = collect($this->searchableColumns)->implode(',');
 
         return sprintf('search %s by their %s ...', Str::lower($this->getName()), $placeholder);
     }
@@ -553,32 +459,22 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Return the rows to be displayed on the grid
+     * Return the columns to be displayed on the grid
      *
      * @return array
      */
-    public function getRows(): array
+    public function getColumns(): array
     {
-        return $this->rows;
+        return $this->columns;
     }
 
     /**
-     * Set the rows to be displayed
+     * Set the columns to be displayed, along with their data
      *
      * @return void
      * @throws \Exception
      */
-    abstract public function setRows();
-
-    /**
-     * The view that would render the rows
-     *
-     * @return string
-     */
-    public function getRowsView(): string
-    {
-        return $this->rowsView;
-    }
+    abstract public function setColumns();
 
     /**
      * The class of the grid table
@@ -600,6 +496,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         $buttons = $key ? $this->buttons[$key] : $this->buttons;
 
+        // apply the position here
         return collect($buttons)->sortBy(function ($v) {
             return $v->position;
         })->toArray();
@@ -626,22 +523,22 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         // this one has already passed through the filter
         $values = $this->getQuery()->take(static::$MAX_EXPORT_ROWS)->get();
 
-        $rows = collect($this->getRowsToExport())->reject(function ($v) {
-            // reject all rows that have been set as not exportable
+        $columns = collect($this->getColumnsToExport())->reject(function ($v) {
+            // reject all columns that have been set as not exportable
             return !$v->export;
         })->toArray();
 
         // map the results to the db query values
-        $data = $values->map(function ($v) use ($rows) {
+        $data = $values->map(function ($v) use ($columns) {
             $data = [];
-            foreach ($rows as $row) {
-                // render as per requested on each row
+            foreach ($columns as $column) {
+                // render as per requested on each column
                 // processRows() would have already taken care of processing the callbacks
                 // so here, we only pass the required arguments
-                if (is_callable($row->data)) {
-                    array_push($data, [$row->name => call_user_func($row->data, $v, $row->key)]);
+                if (is_callable($column->data)) {
+                    array_push($data, [$column->name => call_user_func($column->data, $v, $column->key)]);
                 } else {
-                    array_push($data, [$row->name => $v->{$row->key}]);
+                    array_push($data, [$column->name => $v->{$column->key}]);
                 }
             }
             // collapse the data by a single level
@@ -652,23 +549,33 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Gets the rows to be exported
+     * Gets the columns to be exported
      *
      * @return array
      */
-    public function getRowsToExport()
+    public function getColumnsToExport()
     {
-        return $this->getProcessedRows();
+        return $this->getProcessedColumns();
     }
 
     /**
-     * Get the processed rows
+     * Get the processed columns
      *
      * @return array
      */
-    public function getProcessedRows(): array
+    public function getProcessedColumns(): array
     {
-        return $this->processRows();
+        return $this->processColumns();
+    }
+
+    /**
+     * Return the view used to display the search form
+     *
+     * @return string
+     */
+    public function getSearchView(): string
+    {
+        return 'leantony::grid.search';
     }
 
     /**

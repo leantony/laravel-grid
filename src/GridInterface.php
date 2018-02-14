@@ -116,7 +116,7 @@ interface GridInterface
      *
      * @return array
      */
-    public function processRows();
+    public function processColumns();
 
     /**
      * Return the ID of the grid
@@ -159,15 +159,15 @@ interface GridInterface
      *
      * @return array
      */
-    public function getRows(): array;
+    public function getColumns(): array;
 
     /**
-     * Set the rows to be displayed
+     * Set the columns to be displayed
      *
      * @return void
      * @throws \Exception
      */
-    public function setRows();
+    public function setColumns();
 
     /**
      * The HTML class/classes of the grid table
@@ -199,16 +199,16 @@ interface GridInterface
     public function getExportData();
 
     /**
-     * Gets the rows to be exported
+     * Gets the columns to be exported
      *
      * @return array
      */
-    public function getRowsToExport();
+    public function getColumnsToExport();
 
     /**
      * Get the processed rows
      *
      * @return array
      */
-    public function getProcessedRows(): array;
+    public function getProcessedColumns(): array;
 }

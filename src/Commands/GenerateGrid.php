@@ -154,10 +154,14 @@ class GenerateGrid extends Command
                 // a pk
                 return [
                     $columnName => [
-                        'sort' => true,
-                        'filter' => 'text',
-                        'filterOperator' => '=',
-                        'styles' => ['row' => 'col-md-2']
+                        'label' => 'ID',
+                        'filter' => [
+                            'enabled' => true,
+                            'operator' => '='
+                        ],
+                        'styles' => [
+                            'column' => 'col-md-2',
+                        ]
                     ],
                 ];
             }
@@ -165,28 +169,33 @@ class GenerateGrid extends Command
                 // a join column
                 return [
                     $columnName => [
-                        'sort' => true,
-                        'filter' => 'select'
+                        'filter' => [
+                            'enabled' => true,
+                            'type' => 'select',
+                            'data' => [] // add a key value pair that will be rendered on a drop-down
+                        ],
                     ],
                 ];
             } else if (Str::endsWith($columnName, '_at')) {
                 // a date column
                 return [
                     $columnName => [
-                        'sort' => true,
+                        'sort' => false,
                         'date' => 'true',
-                        'filter' => 'date',
-                        'filterOperator' => '<='
+                        'filter' => [
+                            'enabled' => true,
+                            'type' => 'date',
+                            'operator' => '<='
+                        ],
                     ],
                 ];
             } else
                 // any other column
                 return [
                     $columnName => [
-                        'sort' => true,
-                        'filter' => 'text',
-                        'filterOperator' => 'like',
-                        'searchable' => true
+                        'search' => [
+                            'enabled' => true,
+                        ],
                     ],
                 ];
         });

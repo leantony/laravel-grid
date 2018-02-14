@@ -96,7 +96,7 @@ trait ExportsData
      *
      * @return array
      */
-    abstract public function getRowsToExport();
+    abstract public function getColumnsToExport();
 
     /**
      * Download export data
@@ -112,7 +112,7 @@ trait ExportsData
 //            dd($this->processedRows, $this->dataForExport->toArray());
             $pdf->loadHtml(view('leantony::grid.reports.pdf_report', [
                 'title' => 'Pdf Report',
-                'rows' => $this->getProcessedRows(),
+                'rows' => $this->getProcessedColumns(),
                 'data' => $this->dataForExport->toArray(),
             ])->render());
 

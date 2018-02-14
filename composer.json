@@ -38,7 +38,10 @@
       "Leantony\\Grid\\Providers\\": "src/providers",
       "Leantony\\Grid\\Commands\\": "src/commands",
       "Leantony\\Grid\\Buttons\\": "src/buttons",
-      "Leantony\\Grid\\Filters\\": "src/filters"
+      "Leantony\\Grid\\Columns\\": "src/columns",
+      "Leantony\\Grid\\Filters\\": "src/filters",
+      "Leantony\\Grid\\Routing\\": "src/routing",
+      "Leantony\\Grid\\Search\\": "src/search"
     }
   },
   "extra": {

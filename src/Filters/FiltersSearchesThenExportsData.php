@@ -9,9 +9,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-trait FiltersData
+trait FiltersSearchesThenExportsData
 {
-    use ExportsData;
+    use ExportsData,
+        GridSearch,
+        GridFilter;
 
     /**
      * Specify if data should be paginated
@@ -273,36 +275,21 @@ trait FiltersData
     public function searchRows()
     {
         if (!empty($this->request->query())) {
-            $rows = $this->getRows();
+            $columns = $this->getColumns();
 
-            foreach ($rows as $k => $v) {
+            foreach ($columns as $columnName => $columnData) {
                 // check searchable
-                $canSearch = isset($v['searchable']) && $v['searchable'] === true;
-                if (!$canSearch) {
+                if (!$this->canSearchColumn($columnName, $columnData)) {
+                    continue;
+                }
+                // check user input
+                if (!$this->canUseProvidedUserInput($this->request->get($this->searchParam))) {
                     continue;
                 }
                 // operator
-                $operator = $v['searchOperator'] ?? 'like';
+                $operator = $this->fetchSearchOperator($columnName, $columnData)['operator'];
 
-                $value = $this->request->get($this->searchParam);
-                // skip empty requests
-                if ($value === null || empty(trim($value))) {
-                    continue;
-                }
-
-                // try using a custom search function if defined
-                if (isset($v['searchCustom']) && is_callable($v['searchCustom'])) {
-                    call_user_func($v['searchCustom'], $this->query, $k, $value);
-
-                } else if (isset($v['filterCustom']) && is_callable($v['filterCustom'])) {
-                    // otherwise, use the filter, if defined
-                    call_user_func($v['filterCustom'], $this->query, $k, $value);
-                } else {
-                    if ($operator == 'like') {
-                        $value = '%' . $value . '%';
-                    }
-                    $this->query->where($k, $operator, $value, $this->searchType);
-                }
+                $this->doSearch($columnName, $columnData, $operator, $this->request->get($this->searchParam));
             }
         }
     }
@@ -315,46 +302,25 @@ trait FiltersData
     public function filterRows()
     {
         if (!empty($this->request->query())) {
-            $rows = $this->getRows();
-            $tableRows = $this->getTableColumns();
+            $columns = $this->getColumns();
+            $tableColumns = $this->getTableColumns();
 
-            foreach ($rows as $k => $v) {
+            foreach ($columns as $columnName => $columnData) {
                 // skip rows that are not to be filtered
-                if (!isset($v['filter'])) {
+                if (!$this->canFilter($columnName, $columnData)) {
                     continue;
-                } else {
-
-                    $operator = $v['filterOperator'] ?? '=';
-                    $row = $k;
-                    // value to be used during filtering
-                    $value = $this->request->get($row);
-                    // skip empty requests
-                    if ($value === null || empty(trim($value))) {
-                        continue;
-                    }
-                    // skip rows that are not allowed/not in table
-                    if (!in_array($row, $tableRows)) {
-                        continue;
-                    } else {
-                        // check for custom filter strategies and call them
-                        if (isset($v['filterCustom']) && is_callable($v['filterCustom'])) {
-                            call_user_func($v['filterCustom'], $this->query, $row, $value);
-                        } else {
-                            if ($operator == 'like') {
-                                $value = '%' . $value . '%';
-                            }
-                            if (isset($v['date']) && $v['date']) {
-                                // skip invalid dates
-                                if (!strtotime($value)) {
-                                    continue;
-                                }
-                                $this->query->whereDate($row, $operator, $value, $this->filterType);
-                            } else {
-                                $this->query->where($row, $operator, $value, $this->filterType);
-                            }
-                        }
-                    }
                 }
+                // user input check
+                if (!$this->canUseProvidedUserInput($this->request->get($columnName))) {
+                    continue;
+                }
+                // column check. Since the column data is coming from a user query
+                if (!$this->canUseProvidedColumn($columnName, $tableColumns)) {
+                    continue;
+                }
+                $operator = $this->extractFilterOperator($columnName, $columnData)['operator'];
+
+                $this->doFilter($columnName, $columnData, $operator, $this->request->get($columnName));
             }
         }
     }

@@ -1,9 +1,5 @@
 <?php
 
-if (!function_exists('grid')) {
-
-}
-
 if (!function_exists('add_query_param')) {
 
     /**
@@ -26,6 +22,8 @@ if (!function_exists('add_query_param')) {
 if (!function_exists('var_export54')) {
 
     /**
+     * Write an array to file, as is
+     *
      * https://stackoverflow.com/questions/24316347/how-to-format-var-export-to-php5-4-array-syntax
      *
      * @param $var
@@ -34,22 +32,20 @@ if (!function_exists('var_export54')) {
      */
     function var_export54($var, $indent = "")
     {
-        switch (gettype($var)) {
-            case "string":
-                return '"' . addcslashes($var, "\\\$\"\r\n\t\v\f") . '"';
-            case "array":
-                $indexed = array_keys($var) === range(0, count($var) - 1);
-                $r = [];
-                foreach ($var as $key => $value) {
-                    $r[] = "$indent    "
-                        . ($indexed ? "" : var_export54($key) . " => ")
-                        . var_export54($value, "$indent    ");
-                }
-                return "[\n" . implode(",\n", $r) . "\n" . $indent . "]";
-            case "boolean":
-                return $var ? "true" : "false";
-            default:
-                return var_export($var, true);
+        $data = $var;
+        $dump = var_export($data, true);
+
+        $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', '[', $dump); // Starts
+        $dump = preg_replace('#\n([ ]*)\),#', "\n$1],", $dump); // Ends
+        $dump = preg_replace('#=> \[\n\s+\],\n#', "=> [],\n", $dump); // Empties
+
+        if (gettype($data) == 'object') { // Deal with object states
+            $dump = str_replace('__set_state(array(', '__set_state([', $dump);
+            $dump = preg_replace('#\)\)$#', "])", $dump);
+        } else {
+            $dump = preg_replace('#\)$#', "]", $dump);
         }
+
+        return $dump;
     }
 }

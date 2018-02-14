@@ -2,10 +2,10 @@
 
 namespace Leantony\Grid;
 
-class Row
+class Column
 {
     /**
-     * Row constructor.
+     * Column constructor.
      * @param array $params
      */
     public function __construct(array $params)
