@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use Leantony\Grid\GridInterface;
+
+interface {{ name }} extends GridInterface
+{
+    //
+}

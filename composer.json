@@ -1,0 +1,51 @@
+{
+  "name": "leantony/laravel-grid",
+  "description": "A grid view for laravel, inspired by the yii2 grid widget",
+  "license": "MIT",
+  "keywords": [
+    "leantony",
+    "laravel-grid",
+    "pjax",
+    "grid"
+  ],
+  "homepage": "https://github.com/leantony/laravel-grid",
+  "authors": [
+    {
+      "name": "leantony",
+      "email": "chachaantony@gmail.com"
+    }
+  ],
+  "require": {
+    "illuminate/view": "~5.5",
+    "illuminate/support": "~5.5",
+    "illuminate/console": "~5.5",
+    "illuminate/contracts": "~5.5",
+    "illuminate/http": "~5.5",
+    "illuminate/database": "~5.5",
+    "illuminate/pagination": "~5.5"
+  },
+  "suggest": {
+    "avengers/bootforms": "For rapid bootstrap form generation",
+    "maatwebsite/excel": "For exporting grid data as excel/pdf",
+    "spatie/laravel-pjax": "For pjax support on the server side"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Leantony\\Grid\\": "src/",
+      "Leantony\\Grid\\Providers\\": "src/providers",
+      "Leantony\\Grid\\Commands\\": "src/commands",
+      "Leantony\\Grid\\Buttons\\": "src/buttons",
+      "Leantony\\Grid\\Filters\\": "src/filters"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Leantony\\Grid\\Providers\\ServiceProvider"
+      ]
+    }
+  }
+}

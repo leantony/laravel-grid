@@ -1,0 +1,85 @@
+<?php
+
+namespace {{ namespace }};
+
+use Closure;
+use Leantony\Grid\Grid;
+
+class {{ model }}Grid extends Grid implements {{ binding }}
+{
+    /**
+     * The name of the grid
+     *
+     * @var string
+     */
+    protected $name = '{{ tablename }}';
+
+    /**
+     * List of buttons to be generated on the grid
+     *
+     * @var array
+     */
+    protected $buttonsToGenerate = [
+        'create', 'view', 'delete', 'refresh', 'export'
+    ];
+
+    /**
+     * Specify if the rows on the table should be clicked to navigate to the record
+     *
+     * @var bool
+     */
+    protected $linkableRows = {{ linkable }};
+
+    /**
+     * Set the rows to be displayed. Check `docs/rows.md` for more information
+     *
+     * @return void
+     * @throws \Exception if an error occurs during parsing of row data
+     */
+    public function setRows()
+    {
+        $this->rows = {{ rows }}
+    }
+
+    /**
+     * Set the links. This are referenced using named routes, for the sake of simplicity
+     *
+     * @return void
+     */
+    public function setLinks()
+    {
+        // searching, sorting and filtering
+        $this->sortRouteName = '{{ routeRoot }}.index';
+        $this->searchRoute = '{{ routeRoot }}.index';
+
+        // crud support
+        $this->indexRouteName = '{{ routeRoot }}.index';
+        $this->createRouteName = '{{ routeRoot }}.create';
+        $this->viewRouteName = '{{ routeRoot }}.show';
+        $this->deleteRouteName = '{{ routeRoot }}.destroy';
+    }
+
+    /**
+    * Return a closure that is executed per row, to render a link that will be clicked on to execute an action
+    *
+    * @return Closure
+    */
+    public function getLinkableCallback(): Closure
+    {
+        $view = $this->viewRouteName;
+
+        return function ($gridName, $item) use ($view) {
+            return route($view, [$gridName => $item->id]);
+        };
+    }
+
+    /**
+    * Configure rendered buttons, or add your own
+    *
+    * @return void
+    */
+    public function configureButtons()
+    {
+        //
+    }
+}
