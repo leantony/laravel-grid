@@ -49,6 +49,9 @@
       "providers": [
         "Leantony\\Grid\\Providers\\ServiceProvider"
       ]
+    },
+    "branch-alias": {
+      "dev-master": "master"
     }
   }
 }
