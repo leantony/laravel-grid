@@ -4,19 +4,57 @@ var _grid = {};
 
     "use strict";
 
+    /**
+     * Initialization
+     *
+     * @param opts
+     */
     var grid = function (opts) {
         var defaults = {
+            /**
+             * The ID of the html element containing the grid
+             */
             id: '#grid-leantony',
+            /**
+             * The ID of the html element containing the filter form
+             */
             filterForm: undefined,
+            /**
+             * The ID of the html element containing the search form
+             */
             searchForm: undefined,
+            /**
+             * The CSS class of the columns that are sortable
+             */
             sortLinks: 'data-sort',
+            /**
+             * The selector of a date range filter
+             */
             dateRangeSelector: '.date-range',
+            /**
+             * Linkable columns
+             */
             linkables: {
+                /**
+                 * Selector
+                 */
                 element: '.linkable',
+                /**
+                 * The data- variable that has the url that will be navigated to
+                 */
                 url: 'url',
+                /**
+                 * Navigation timeout
+                 */
                 timeout: 100
             },
+            /**
+             * PJAX
+             */
             pjax: {
+                /**
+                 * Any extra pjax plugin options
+                 */
                 pjaxOptions: {}
             }
         };
@@ -167,7 +205,7 @@ var _grid = {};
         this.setupPjax(
             $this.opts.id,
             'a[data-trigger-pjax=1]',
-            function() {
+            function () {
                 $.pjax.reload({container: $this.opts.id})
             },
             $this.opts.pjax.pjaxOptions
@@ -189,7 +227,7 @@ var _grid = {};
         var form = $($this.opts.filterForm);
 
         if (form.length > 0) {
-            $(document).on('submit', $this.opts.filterForm, function(event) {
+            $(document).on('submit', $this.opts.filterForm, function (event) {
                 $.pjax.submit(event, $this.opts.id)
             });
         }
@@ -203,7 +241,7 @@ var _grid = {};
         var form = $($this.opts.searchForm);
 
         if (form.length > 0) {
-            $(document).on('submit', $this.opts.searchForm, function(event) {
+            $(document).on('submit', $this.opts.searchForm, function (event) {
                 $.pjax.submit(event, $this.opts.id)
             });
         }
