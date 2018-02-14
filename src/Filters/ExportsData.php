@@ -105,7 +105,7 @@ trait ExportsData
      */
     public function downloadExportedAs($type = 'xlsx')
     {
-        if($type === 'pdf') {
+        if ($type === 'pdf') {
             // requires https://github.com/barryvdh/laravel-snappy
             $pdf = app('snappy.pdf.wrapper');
 

@@ -202,24 +202,6 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @return mixed
-     */
-    public function getGridId()
-    {
-        return $this->gridId;
-    }
-
-    /**
-     * @param mixed $gridId
-     * @return GenericButton
-     */
-    public function setGridId($gridId)
-    {
-        $this->gridId = $gridId;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getLink(): string
@@ -345,13 +327,12 @@ class GenericButton implements Htmlable
         return $this;
     }
 
-
     /**
      * @return array
      */
     public function getDataAttributes(): array
     {
-        if($this->pjaxEnabled) {
+        if ($this->pjaxEnabled) {
             // set by default some attributes to control PJAX on the front end
             return array_merge($this->dataAttributes, [
                 'trigger-pjax' => true,
@@ -368,6 +349,24 @@ class GenericButton implements Htmlable
     public function setDataAttributes(array $dataAttributes): GenericButton
     {
         $this->dataAttributes = $dataAttributes;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGridId()
+    {
+        return $this->gridId;
+    }
+
+    /**
+     * @param mixed $gridId
+     * @return GenericButton
+     */
+    public function setGridId($gridId)
+    {
+        $this->gridId = $gridId;
         return $this;
     }
 

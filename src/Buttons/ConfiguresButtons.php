@@ -39,7 +39,11 @@ trait ConfiguresButtons
      * @var array
      */
     protected $buttonsToGenerate = [
-        'create', 'view', 'delete', 'refresh', 'export'
+        'create',
+        'view',
+        'delete',
+        'refresh',
+        'export'
     ];
 
     /**
@@ -146,24 +150,6 @@ trait ConfiguresButtons
     }
 
     /**
-     * Add a custom button to the grid
-     *
-     * @param array $properties an array of key value pairs representing property names and values for the GenericButton instance
-     * @param string|null $position where this button will be placed. Defaults to 'row'
-     * @return GenericButton
-     */
-    protected function makeCustomButton(array $properties, $position = null): GenericButton
-    {
-        $name = $properties['name'] ?? 'unknown';
-        if ($position === 'toolbar') {
-            $this->addToolbarButton($name, new GenericButton($properties));
-        } else {
-            $this->addRowButton($name, new GenericButton($properties));
-        }
-        return $this->buttons[$position ?? 'row'][$name];
-    }
-
-    /**
      * Add a view button to the grid
      *
      * @return GenericButton
@@ -200,6 +186,24 @@ trait ConfiguresButtons
                 return in_array('delete', $this->buttonsToGenerate);
             }
         ]))->generate();
+    }
+
+    /**
+     * Add a custom button to the grid
+     *
+     * @param array $properties an array of key value pairs representing property names and values for the GenericButton instance
+     * @param string|null $position where this button will be placed. Defaults to 'row'
+     * @return GenericButton
+     */
+    protected function makeCustomButton(array $properties, $position = null): GenericButton
+    {
+        $name = $properties['name'] ?? 'unknown';
+        if ($position === 'toolbar') {
+            $this->addToolbarButton($name, new GenericButton($properties));
+        } else {
+            $this->addRowButton($name, new GenericButton($properties));
+        }
+        return $this->buttons[$position ?? 'row'][$name];
     }
 
     /**
@@ -256,6 +260,18 @@ trait ConfiguresButtons
     }
 
     /**
+     * Check button availability and validity
+     *
+     * @param $button
+     */
+    private function ensureButtonInstanceValidity($button)
+    {
+        if ($button == null || !$button instanceof GenericButton) {
+            throw new InvalidArgumentException(sprintf("The button %s could not be found or is invalid.", $button));
+        }
+    }
+
+    /**
      * Edit an existing button on the grid rows
      *
      * @param string $button button name. Needs to be a button that exists among those that need to be generated
@@ -270,18 +286,6 @@ trait ConfiguresButtons
 
         foreach ($properties as $k => $v) {
             $instance->{$k} = $v;
-        }
-    }
-
-    /**
-     * Check button availability and validity
-     *
-     * @param $button
-     */
-    private function ensureButtonInstanceValidity($button)
-    {
-        if ($button == null || !$button instanceof GenericButton) {
-            throw new InvalidArgumentException(sprintf("The button %s could not be found or is invalid.", $button));
         }
     }
 

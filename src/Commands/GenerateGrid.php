@@ -14,9 +14,7 @@ class GenerateGrid extends Command
      *
      * @var string
      */
-    protected $signature = 'make:grid
-    {--model=}
-    ';
+    protected $signature = 'make:grid {--model=}';
 
     /**
      * The console command description.
@@ -84,11 +82,21 @@ class GenerateGrid extends Command
      * Execute the console command.
      *
      * @return mixed
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function handle()
     {
         $stub = $this->getStubContents();
-        list($model, $rows) = $this->generateRows($this->getModelOption());
+
+        $suppliedModel = $this->getModelOption();
+
+        if ($suppliedModel === null) {
+
+            $this->error("Please supply a model name.");
+            die(-1);
+        }
+
+        list($model, $rows) = $this->generateRows($suppliedModel);
 
         // binding
         list($namespace, $replaced, $filename) = $this->dumpBinding($model);
@@ -103,6 +111,7 @@ class GenerateGrid extends Command
      * Get stub contents
      *
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function getStubContents(): string
     {
@@ -121,6 +130,17 @@ class GenerateGrid extends Command
     }
 
     /**
+     * Get the model to be used
+     *
+     * @return array|string
+     */
+    protected function getModelOption()
+    {
+        $model = trim($this->option('model'));
+        return $model;
+    }
+
+    /**
      * Generate grid rows for this model
      *
      * @param $model
@@ -131,8 +151,11 @@ class GenerateGrid extends Command
         $columns = [];
 
         $model = app($model);
+
         if (!$model instanceof Model) {
+
             $this->error("Invalid model supplied.");
+
             return false;
         }
 
@@ -150,7 +173,7 @@ class GenerateGrid extends Command
             return in_array($v, $this->excludedColumns);
 
         })->map(function ($columnName) {
-            if($columnName === 'id') {
+            if ($columnName === 'id') {
                 // a pk
                 return [
                     $columnName => [
@@ -164,40 +187,48 @@ class GenerateGrid extends Command
                         ]
                     ],
                 ];
+            } else {
+                if (Str::endsWith($columnName, '_id')) {
+                    // a join column
+                    return [
+                        $columnName => [
+                            'filter' => [
+                                'enabled' => true,
+                                'type' => 'select',
+                                'data' => [] // add a key value pair that will be rendered on a drop-down
+                            ],
+                        ],
+                    ];
+                } else {
+                    if (Str::endsWith($columnName, '_at')) {
+                        // a date column
+                        return [
+                            $columnName => [
+                                'sort' => false,
+                                'date' => 'true',
+                                'filter' => [
+                                    'enabled' => true,
+                                    'type' => 'date',
+                                    'operator' => '<='
+                                ],
+                            ],
+                        ];
+                    } else // any other column
+                    {
+                        return [
+                            $columnName => [
+                                'search' => [
+                                    'enabled' => true,
+                                ],
+                                'filter' => [
+                                    'enabled' => false,
+                                    'operator' => '='
+                                ],
+                            ],
+                        ];
+                    }
+                }
             }
-            else if (Str::endsWith($columnName, '_id')) {
-                // a join column
-                return [
-                    $columnName => [
-                        'filter' => [
-                            'enabled' => true,
-                            'type' => 'select',
-                            'data' => [] // add a key value pair that will be rendered on a drop-down
-                        ],
-                    ],
-                ];
-            } else if (Str::endsWith($columnName, '_at')) {
-                // a date column
-                return [
-                    $columnName => [
-                        'sort' => false,
-                        'date' => 'true',
-                        'filter' => [
-                            'enabled' => true,
-                            'type' => 'date',
-                            'operator' => '<='
-                        ],
-                    ],
-                ];
-            } else
-                // any other column
-                return [
-                    $columnName => [
-                        'search' => [
-                            'enabled' => true,
-                        ],
-                    ],
-                ];
         });
 
         $this->info("Grid generated shall render " . $rows->count() . ' rows for model ' . class_basename($model));
@@ -206,27 +237,18 @@ class GenerateGrid extends Command
     }
 
     /**
-     * Get the model to be used
-     *
-     * @return array|string
-     */
-    protected function getModelOption()
-    {
-        $model = trim($this->option('model'));
-        return $model;
-    }
-
-    /**
      * Dump the binding class
      *
      * @param $model
      * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function dumpBinding($model): array
     {
         $st = __DIR__ . '/../Stubs/GridInterface.txt';
 
-        list($namespace, $interfaceName, $replaced) = $this->makeReplacementsForBinding($model, $this->generateDynamicNamespace(), $st);
+        list($namespace, $interfaceName, $replaced) = $this->makeReplacementsForBinding($model,
+            $this->generateDynamicNamespace(), $st);
 
         $this->binding = $interfaceName;
 
@@ -234,9 +256,14 @@ class GenerateGrid extends Command
 
         $p = $this->getPath($namespace);
 
-        $this->dumpFile($p, $filename, $replaced);
+        if ($this->dumpFile($p, $filename, $replaced)) {
 
-        $this->info("Dumped generated binding at " . $p);
+            $this->info("Dumped generated binding at " . $p);
+
+        } else {
+
+            $this->info("skipped dumping binding at " . $p);
+        }
 
         return array($namespace, $replaced, $filename);
     }
@@ -247,20 +274,22 @@ class GenerateGrid extends Command
      * @param $model
      * @param $stub
      * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function makeReplacementsForBinding($model, $namespace, $stub): array
     {
         $interfaceName = Str::studly($model->getTable()) . 'GridInterface';
 
         $replaced = str_replace(['{{ namespace }}', '{{ name }}'], [
-            $namespace, $interfaceName
+            $namespace,
+            $interfaceName
         ], $this->filesystem->get($stub));
 
         return array($namespace, $interfaceName, $replaced);
     }
 
     /**
-     * Generate dynamic namespace for the file, based on the module
+     * Generate dynamic namespace for the file
      *
      * @return string
      */
@@ -301,12 +330,30 @@ class GenerateGrid extends Command
      * @param $path
      * @param $filename
      * @param $contents
+     * @return boolean
      */
     protected function dumpFile($path, $filename, $contents)
     {
         $this->makeDirectory($path);
 
-        $this->filesystem->put($path . DIRECTORY_SEPARATOR . $filename, $contents);
+        $dumpPath = $path . DIRECTORY_SEPARATOR . $filename;
+
+        if ($this->filesystem->exists($dumpPath)) {
+
+            if (($this->confirm(sprintf('Overwrite file at %ss ? [yes|no]', $dumpPath), 'no'))) {
+
+                $this->filesystem->put($dumpPath, $contents);
+
+                return true;
+            }
+            return false;
+
+        } else {
+
+            $this->filesystem->put($dumpPath, $contents);
+
+            return true;
+        }
     }
 
     /**
@@ -339,9 +386,15 @@ class GenerateGrid extends Command
 
         $path = $this->getPath($namespace);
 
-        $this->dumpFile($path, $filename, $replaced);
+        if ($this->dumpFile($path, $filename, $replaced)) {
 
-        $this->info("Dumped generated grid at " . $path);
+            $this->info("Dumped generated grid at " . $path);
+
+        } else {
+
+            $this->info('Skipped dumping generated grid at ' . $path);
+        }
+
     }
 
     /**
@@ -398,8 +451,12 @@ class GenerateGrid extends Command
     {
 
         $replaced = str_replace(array_values(array_except($this->searches, 'rows')), [
-            $replacements['namespace'], $replacements['modelName'],
-            $replacements['tableName'], 'false', $replacements['routeRoot'], $replacements['binding']
+            $replacements['namespace'],
+            $replacements['modelName'],
+            $replacements['tableName'],
+            'false',
+            $replacements['routeRoot'],
+            $replacements['binding']
         ], $stub);
         $this->info("Replaced other contents successfully...");
         return $replaced;
