@@ -1,14 +1,14 @@
 @if ($paginator->hasPages())
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="pull-left">Showing {{ ($paginator->currentpage() -1 ) * $paginator->perpage() + 1 }}
                 to {{ $paginator->currentpage() * $paginator->perpage() }}
                 of {{ $paginator->total() }} entries.
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="pull-right">
-                <ul class="pagination">
+                <ul class="pagination" style="margin-top: 0">
                     @if ($paginator->onFirstPage())
                         <li class="disabled"><span>&laquo;</span></li>
                     @else

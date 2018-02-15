@@ -66,7 +66,12 @@ trait GridSearch
                 // otherwise, use the filter, if defined
                 call_user_func($filter['query'], $this->query, $columnName, $userInput);
             } else {
-                $value = $operator == 'like' ? '%' . $userInput . '%' : $userInput;
+
+                if($operator === strtolower('like')) {
+                    $value = 'like' ? '%' . $userInput . '%' : $userInput;
+                } else {
+                    $value = $userInput;
+                }
 
                 $this->getQuery()->where($columnName, $operator, $value, $this->searchType);
             }

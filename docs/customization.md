@@ -1,11 +1,7 @@
 # Customization
 Most of the grid's functionality is customizable, and for that which is not, am working on it. However, you should be able to;
-+ [Add/Remove existing buttons](add_remove_buttons.md)
-+ Prevent buttons from appearing on the grid
-+ Altering css styles for the rows, columns and buttons on the grid
++ [Customize existing buttons](customize_buttons.md)
 + Make row entries clickable (navigating to another page)
-+ Adding your own buttons
-+ Changing the position where your buttons appear
 + Enable/disable sort functionality per column
 + Add/Remove filters per column
 + Customize how each column on the grid is filtered

@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Writers\LaravelExcelWriter;
 trait ExportsData
 {
     /**
-     * Max export rows
+     * Max export rows. More = slower export process
      *
      * @var int
      */

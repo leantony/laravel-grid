@@ -25,7 +25,7 @@ trait GridFilter
      */
     public function canUseProvidedColumn(string $columnName, array $validColumns)
     {
-        return !in_array($columnName, $validColumns);
+        return in_array($columnName, $validColumns);
     }
 
     /**
@@ -58,10 +58,11 @@ trait GridFilter
         if (isset($filter['query']) && is_callable($filter['query'])) {
             call_user_func($filter['query'], $this->query, $columnName, $userInput);
         } else {
-            if ($operator == 'like') {
+
+            if($operator === strtolower('like')) {
                 $value = '%' . $userInput . '%';
             } else {
-                $value = $columnName;
+                $value = $userInput;
             }
             if (isset($data['date']) && $data['date'] === true) {
                 // skip invalid dates

@@ -1,6 +1,6 @@
 @if($type === 'toolbar')
 
-    @if(call_user_func($beforeRender) === true)
+    @if(call_user_func($renderIf) === true)
         <a href="{{ is_callable($url) ? $url() : $url }}" data-toggle="tooltip"
            data-title="{{ $title }}"
            class="{{ $class }}"
@@ -16,8 +16,8 @@
     @endif
 @else
 
-    @if(call_user_func($beforeRender, $gridName, $gridItem) === true)
-        <a href="{{ call_user_func($url, $gridName, $gridItem) }}" data-toggle="tooltip"
+    @if(call_user_func($renderIf, $gridName, $gridItem) === true)
+        <a href="{{ is_callable($url) ? call_user_func($url, $gridName, $gridItem) : $url }}" data-toggle="tooltip"
            data-title="{{ $title }}"
            class="{{ $class }}"
            @foreach($dataAttributes as $k => $v)

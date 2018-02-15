@@ -161,14 +161,19 @@ class GenerateGrid extends Command
 
         // primary key
         $model->getKeyName();
+
+        // cols
         $columns = array_merge($columns, [$model->getKeyName()]);
-        // fillable
+
+        // use only fillable cols
         $columns = array_merge($columns, $model->getFillable());
-        // timestamps
+
+        // timestamps. skip updated_at
         if ($model->timestamps) {
             $columns = array_merge($columns, [$model->getCreatedAtColumn()]);
         }
 
+        // skip column exclusions
         $rows = collect($columns)->reject(function ($v) {
             return in_array($v, $this->excludedColumns);
 
@@ -221,7 +226,7 @@ class GenerateGrid extends Command
                                     'enabled' => true,
                                 ],
                                 'filter' => [
-                                    'enabled' => false,
+                                    'enabled' => true,
                                     'operator' => '='
                                 ],
                             ],
@@ -449,7 +454,6 @@ class GenerateGrid extends Command
      */
     protected function replaceOtherContent(array $replacements, &$stub)
     {
-
         $replaced = str_replace(array_values(array_except($this->searches, 'rows')), [
             $replacements['namespace'],
             $replacements['modelName'],
@@ -458,7 +462,9 @@ class GenerateGrid extends Command
             $replacements['routeRoot'],
             $replacements['binding']
         ], $stub);
+
         $this->info("Finished performing replacements to the stub files...");
+
         return $replaced;
     }
 }
