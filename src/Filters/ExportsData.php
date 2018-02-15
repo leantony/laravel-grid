@@ -3,6 +3,7 @@
 namespace Leantony\Grid;
 
 use Excel;
+use PDF;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Classes\LaravelExcelWorksheet;
@@ -102,25 +103,47 @@ trait ExportsData
      * Download export data
      *
      * @param string $type
+     * @return mixed
+     * @throws \Throwable
+     * @throws \Maatwebsite\Excel\Exceptions\LaravelExcelException
      */
     public function downloadExportedAs($type = 'xlsx')
     {
         if ($type === 'pdf') {
-            // requires https://github.com/barryvdh/laravel-snappy
-            $pdf = app('snappy.pdf.wrapper');
-
-//            dd($this->processedRows, $this->dataForExport->toArray());
-            $pdf->loadHtml(view('leantony::grid.reports.pdf_report', [
-                'title' => 'Pdf Report',
-                'rows' => $this->getProcessedColumns(),
-                'data' => $this->dataForExport->toArray(),
-            ])->render());
-
-            return $pdf->inline();
+            return $this->exportPdf();
         } else {
-            // use excel export
-            $this->excelWriter->export($type);
+            // this handles any other types, so we pass the type in
+            $this->exportGeneral($type);
         }
+    }
+
+    /**
+     * Export to PDF
+     *
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function exportPdf()
+    {
+        // requires https://github.com/barryvdh/laravel-snappy
+        $pdf = PDF::loadView('leantony::reports.pdf_report', [
+            'title' => sprintf('%s report', $this->shortSingularGridName()),
+            'columns' => $this->getProcessedColumns(),
+            'data' => $this->dataForExport,
+        ]);
+
+        return $pdf->download($this->getFileNameForExport() . '.pdf');
+    }
+
+    /**
+     * Export to a general type
+     *
+     * @param $type
+     * @throws \Maatwebsite\Excel\Exceptions\LaravelExcelException
+     */
+    public function exportGeneral($type)
+    {
+        $this->excelWriter->export($type);
     }
 
     /**

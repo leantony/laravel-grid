@@ -221,6 +221,9 @@ trait FiltersSearchesThenExportsData
      * Export the data
      *
      * @return void
+     * @throws \Exception
+     * @throws \Maatwebsite\Excel\Exceptions\LaravelExcelException
+     * @throws \Throwable
      */
     public function export()
     {

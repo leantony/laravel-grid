@@ -3,40 +3,22 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        @foreach($rows as $row)
-            <th class="{{ $row->headerClass }}">
-                {{ $row->name }}
+        @foreach($columns as $column)
+            <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
+                {{ $column->name }}
             </th>
         @endforeach
     </tr>
     </thead>
     <tbody>
-    <tr>
-        @foreach($data as $item)
-            @foreach($rows as $row)
-                @if(is_callable($row->data))
-                    @if($row->raw)
-                        <td class="{{ $row->rowClass }}">
-                            {!! call_user_func($row->data, $item, $row->key) !!}
-                        </td>
-                    @else
-                        <td class="{{ $row->rowClass }}">
-                            {{ call_user_func($row->data , $item, $row->key) }}
-                        </td>
-                    @endif
-                @else
-                    @if($row->raw)
-                        <td class="{{ $row->rowClass }}">
-                            {!! $item->{$row->key} !!}
-                        </td>
-                    @else
-                        <td class="{{ $row->rowClass }}">
-                            {{ $item->{$row->key} }}
-                        </td>
-                    @endif
-                @endif
+    @foreach($data as $k => $v)
+        <tr>
+            @foreach($v as $c)
+                <td>
+                    {!! $c !!}
+                </td>
             @endforeach
-        @endforeach
-    </tr>
+        </tr>
+    @endforeach
     </tbody>
 </table>
