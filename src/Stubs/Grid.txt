@@ -31,10 +31,10 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     protected $linkableRows = {{ linkable }};
 
     /**
-    * Set the columns to be displayed. Check `docs/columns.md` for more information
+    * Set the columns to be displayed. Check `docs/customize_columns.md` for more information
     *
     * @return void
-    * @throws \Exception if an error occurs during parsing of row data
+    * @throws \Exception if an error occurs during parsing of the data
     */
     public function setColumns()
     {

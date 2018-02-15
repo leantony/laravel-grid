@@ -1,6 +1,7 @@
 # Customization
 Most of the grid's functionality is customizable, and for that which is not, am working on it. However, you should be able to;
 + [Customize existing buttons](customize_buttons.md)
++ [Customizing the grid columns](customize_columns.md)
 + Make row entries clickable (navigating to another page)
 + Enable/disable sort functionality per column
 + Add/Remove filters per column

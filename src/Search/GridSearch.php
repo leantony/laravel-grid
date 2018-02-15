@@ -57,18 +57,25 @@ trait GridSearch
     {
         $search = $columnData['search'] ?? [];
         $filter = $columnData['filter'] ?? [];
-        // try using a custom search function if defined
-        if (isset($search['query']) && is_callable($search['query'])) {
-            call_user_func($search['query'], $this->query, $columnName, $userInput);
 
-        } else {
-            if (isset($filter['query']) && is_callable($search['query'])) {
+        // try to use the filter query, if allowed to
+        if ($search['useFilterQuery'] ?? false) {
+
+            if (isset($filter['query']) && is_callable($filter['query'])) {
                 // otherwise, use the filter, if defined
                 call_user_func($filter['query'], $this->query, $columnName, $userInput);
+            }
+
+        } else {
+
+            if (isset($search['query']) && is_callable($search['query'])) {
+                // use the search filter
+                call_user_func($search['query'], $this->query, $columnName, $userInput);
+
             } else {
 
-                if($operator === strtolower('like')) {
-                    $value = 'like' ? '%' . $userInput . '%' : $userInput;
+                if ($operator === strtolower('like')) {
+                    $value = '%' . $userInput . '%';
                 } else {
                     $value = $userInput;
                 }

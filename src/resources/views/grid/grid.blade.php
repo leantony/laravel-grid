@@ -48,7 +48,7 @@
 
                                 @if($sort = $column->sortable)
                                     @if(is_callable($grid->getSortUrl()))
-                                        <th class="{{ $column->columnClass }}"
+                                        <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                             title="click to sort by {{ $column->key }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ call_user_func($grid->getSortUrl(), $column->key) }}">
@@ -56,7 +56,7 @@
                                             </a>
                                         </th>
                                     @else
-                                        <th class="{{ $column->columnClass }}"
+                                        <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                             title="click to sort by {{ $column->key }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ route($grid->getSortUrl(), add_query_param([$this->getSortParam() => $column->key])) }}">
@@ -65,7 +65,7 @@
                                         </th>
                                     @endif
                                 @else
-                                    <th class="{{ $column->columnClass }}">
+                                    <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                         {{ $column->name }}
                                     </th>
                                 @endif
@@ -73,7 +73,7 @@
                                 @if($sort = $column->sortable)
                                     @if(is_callable($grid->getSortUrl()))
                                         <th title="click to sort by {{ $column->key }}"
-                                            class="{{ $column->columnClass }}">
+                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ call_user_func($grid->getSortUrl(), $column->key) }}">
                                                 {{ $column->name }}
@@ -81,7 +81,7 @@
                                         </th>
                                     @else
                                         <th title="click to sort by {{ $column->key }}"
-                                            class="{{ $column->columnClass }}">
+                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ route($grid->getSortUrl(), add_query_param([$this->getSortParam() => $column->key])) }}">
                                                 {{ $column->name }}
@@ -89,7 +89,7 @@
                                         </th>
                                     @endif
                                 @else
-                                    <th class="{{ $column->columnClass }}">
+                                    <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                         {{ $column->name }}
                                     </th>
                                 @endif
