@@ -1,4 +1,4 @@
-# Laravel grid (laravel 5.5)
+# Laravel grid (laravel 5.5+)
 This package allows rendering of data via a tabular format (grid). 
 The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`
 
@@ -17,19 +17,18 @@ The package is available on composer. Just run;
 ```bash
 composer install leantony/laravel-grid
 ```
-If you are using `laravel <5.5`, then ensure that you add the service provider `Leantony\Grid\Providers\ServiceProvider::class` manually to your `app.php` config file
 
 ## Usage
 A laravel command is available to make it easy to create grids. 
 Once installed, just run the command:
 ```bash
-php artisan make:grid --model={modelClass}
+php artisan make:grid --model=modelClass
 ```
 
 Just make sure you replace `modelClass` with your actual `eloquent` model class.
 Once this happens, a grid will be generated. Default namespace for grid generation is `App\Grids`.
 
-Once the generation of the grid is done, you can add use it in your controller like this;
+Once the generation of the grid is done, you can add add it in your controller like this. E.g a `user` model grid:
 ```php
 class UsersController extends Controller
 {
@@ -51,7 +50,7 @@ class UsersController extends Controller
 ```
 > If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like so;
 ```php
-/**
+     /**
      * Register any application services.
      *
      * @return void
@@ -62,9 +61,25 @@ class UsersController extends Controller
     }
 ```
 
+Otherwise, you can also instantiate the grid class like this; You can then inject any constructor dependencies you might need.
+```php
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $grid = (new UsersGrid())->create(['query' => User::query(), 'request' => $request]);
 
-Ensure that your view/layout looks somthing like [this](https://gist.github.com/leantony/4a7a795904c60b6b7f91431e4241e37b). Especially with the javascript dependencies. The example is based off the grids sample application, which can be found [here](https://github.com/leantony/laravel_grid_app). The modal and its included view are not really required, so feel free to leave them out.
-> The grid injects its javascript into the `@stack('scripts')` section, so please ensure that you have this
+        return view('welcome', ['grid' => $grid]);
+    }
+```
+
+Ensure that your view/layout looks something like [this](https://gist.github.com/leantony/4a7a795904c60b6b7f91431e4241e37b). Especially with the javascript dependencies. 
+The example is based off the grids sample application, which can be found [here](https://github.com/leantony/laravel-grid-app). The modal and its included view are not really required, so feel free to leave them out.
+> The grid injects its javascript into the `@stack('scripts')` section, so please ensure that you have this on your layout
 
 Then display the grid on your view like this;
 ```php
