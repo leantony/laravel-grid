@@ -30,7 +30,7 @@
     "spatie/laravel-pjax": "For pjax support on the server side"
   },
   "require-dev": {
-    "phpunit/phpunit": "~5.0"
+    "phpunit/phpunit": "~7.0"
   },
   "autoload": {
     "psr-4": {
@@ -54,5 +54,7 @@
       "dev-master": "master",
       "dev": "dev"
     }
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

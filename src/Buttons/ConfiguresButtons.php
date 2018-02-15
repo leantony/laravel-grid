@@ -114,7 +114,7 @@ trait ConfiguresButtons
             'icon' => 'fa-plus-circle',
             'url' => $this->getCreateRouteName(),
             'title' => 'add new ' . $this->shortSingularGridName(),
-            'beforeRender' => function () {
+            'renderIf' => function () {
                 return in_array('create', $this->buttonsToGenerate);
             }
         ]));
@@ -136,7 +136,7 @@ trait ConfiguresButtons
             'url' => $this->getIndexRouteLink(),
             'type' => 'toolbar',
             'title' => 'refresh table for ' . strtolower($this->name),
-            'beforeRender' => function () {
+            'renderIf' => function () {
                 return in_array('refresh', $this->buttonsToGenerate);
             }
         ]));
@@ -161,7 +161,7 @@ trait ConfiguresButtons
             'gridId' => $this->id,
             'type' => 'toolbar',
             'exportRoute' => $this->getIndexRouteLink(),
-            'beforeRender' => function () {
+            'renderIf' => function () {
                 // only render the export button if `$allowsExporting` is set to true
                 return $this->allowsExporting || in_array('export', $this->buttonsToGenerate);
             }
@@ -185,7 +185,7 @@ trait ConfiguresButtons
             'url' => function ($gridName, $item) {
                 return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
             },
-            'beforeRender' => function ($gridName, $item) {
+            'renderIf' => function ($gridName, $item) {
                 return in_array('view', $this->buttonsToGenerate);
             }
         ]));
@@ -207,7 +207,7 @@ trait ConfiguresButtons
             'url' => function ($gridName, $item) {
                 return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
             },
-            'beforeRender' => function ($gridName, $item) {
+            'renderIf' => function ($gridName, $item) {
                 return in_array('delete', $this->buttonsToGenerate);
             }
         ]));

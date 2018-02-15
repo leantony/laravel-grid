@@ -23,7 +23,7 @@ class GenericButton implements Htmlable
      *
      * @var callable
      */
-    public $beforeRender = null;
+    public $renderIf = null;
 
     /**
      * Specify a custom way to render the button
@@ -135,18 +135,18 @@ class GenericButton implements Htmlable
     /**
      * @return callable
      */
-    public function getBeforeRender(): callable
+    public function getRenderIf(): callable
     {
-        return $this->beforeRender;
+        return $this->renderIf;
     }
 
     /**
-     * @param callable $beforeRender
+     * @param callable $renderIf
      * @return GenericButton
      */
-    public function setBeforeRender(callable $beforeRender): GenericButton
+    public function setRenderIf(callable $renderIf): GenericButton
     {
-        $this->beforeRender = $beforeRender;
+        $this->renderIf = $renderIf;
         return $this;
     }
 
