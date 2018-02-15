@@ -16,8 +16,8 @@
     {!! BootForm::textArea('Description', 'description') !!}
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn-dismiss" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;{{ 'Close' }}
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;{{ 'Close' }}
     </button>
-    <button type="submit" class="btn-main"><i class="fa fa-floppy-o"></i>&nbsp;{{ 'Save' }}</button>
+    <button type="submit" class="btn btn-success"><i class="fa fa-floppy-o"></i>&nbsp;{{ 'Save' }}</button>
 </div>
 {!! BootForm::close() !!}

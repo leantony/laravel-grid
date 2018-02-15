@@ -23,7 +23,7 @@ class ServiceProvider extends LaravelServiceProvider
         ], 'config');
 
         $this->publishes([
-            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/leantony/grid')
+            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/leantony')
         ], 'views');
 
         $this->publishes([

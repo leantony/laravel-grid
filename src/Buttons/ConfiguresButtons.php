@@ -204,6 +204,13 @@ trait ConfiguresButtons
             'name' => 'Delete',
             'icon' => 'fa-trash',
             'type' => 'row',
+            'title' => 'delete record',
+            'pjaxEnabled' => false,
+            'dataAttributes' => [
+                'method' => 'DELETE',
+                'confirm' => 'Sure?',
+                'pjax-target' => '#' . $this->id
+            ],
             'url' => function ($gridName, $item) {
                 return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
             },

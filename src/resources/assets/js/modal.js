@@ -29,7 +29,7 @@ var _modal = {};
                 $('#' + modal.options.modal_id).find('.modal-content').html(spinner_content);
             },
             onLoaded: function (e, modal) {
-                if (modal.options.onLoaded) {
+                if (modal && modal.options) {
                     modal.options.onLoaded(e);
                 }
             }

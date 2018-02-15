@@ -188,13 +188,16 @@
             var grid = "{{ '#' . $grid->getId() }}";
             var filterForm = "{{ '#' . $grid->getFilterFormId() }}";
             var searchForm = "{{ '#' . $grid->getSearchFormId() }}";
-            _grid({
+            _grid.init({
                 id: grid,
                 filterForm: filterForm,
                 dateRangeSelector: '.date-range',
                 searchForm: searchForm,
                 pjax: {
-                    pjaxOptions: {}
+                    pjaxOptions: {},
+                    afterPjax: function () {
+                        $.pjax.reload({container: grid})
+                    }
                 },
                 linkables: {
                     element: '.linkable',
@@ -202,6 +205,10 @@
                     timeout: 100
                 }
             });
+
+            _grid.executeAjaxRequest($('.data-remote'), 'click');
+            _grid.executeAjaxRequest($('form[data-remote]'), 'submit');
+
         })(jQuery);
     </script>
 @endpush
