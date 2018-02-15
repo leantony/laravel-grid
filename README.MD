@@ -90,3 +90,7 @@ You should see something like this...
 ![sample](docs/sample.png)
 
 To customize the grid, check out [the customization section](docs/customization.md)
+
+# TODO's
++ Add unit tests (in progress)
++ Fix issues with downloading of PDF reports
