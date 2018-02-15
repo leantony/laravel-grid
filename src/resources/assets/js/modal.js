@@ -135,6 +135,7 @@ var _modal = {};
             var action = form.attr('action');
             var method = form.attr('method') || 'POST';
             var originalButtonHtml = $(e).html();
+            var pjaxTarget = form.data('pjax-target');
             $.ajax({
                 type: method,
                 url: action,
@@ -154,12 +155,17 @@ var _modal = {};
                             // hide the modal after 1000 ms
                             setTimeout(function () {
                                 $('#' + $this.options.modal_id).modal('hide');
+                                if (pjaxTarget) {
+                                    // reload a pjax container
+                                    $.pjax.reload({container: pjaxTarget})
+                                }
                             }, 1000);
                         }
                     }
                     else {
                         // display message and hide modal
-                        $('#' + $this.options.notification_id).html($this.renderAlert('error', response.message));
+                        var el = $('#' + $this.options.notification_id);
+                        el.html($this.renderAlert('error', response.message));
                         setTimeout(function () {
                             $('#' + $this.options.modal_id).modal('hide');
                         }, 1000);
@@ -173,6 +179,7 @@ var _modal = {};
                 },
                 error: function (data) {
                     var msg;
+                    console.log(data);
                     // error handling
                     switch (data.status) {
                         case 500:
@@ -183,13 +190,14 @@ var _modal = {};
                             break;
                     }
                     // display errors
-                    $('#' + $this.options.notification_id).html(msg);
+                    var el = $('#' + $this.options.notification_id);
+                    el.html(msg);
 
                 }
             });
         };
 
-        $('#' + $this.options.modal_id).off("click").on("click", '#' + $this.options.form_id + ' button[type="submit"]', function (e) {
+        $('#' + $this.options.modal_id).off("click.leantony.modal").on("click.leantony.modal", '#' + $this.options.form_id + ' button[type="submit"]', function (e) {
             e.preventDefault();
             submit_form(this);
         });

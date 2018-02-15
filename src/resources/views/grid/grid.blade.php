@@ -196,7 +196,10 @@
                 pjax: {
                     pjaxOptions: {},
                     afterPjax: function () {
-                        $.pjax.reload({container: grid})
+                        $.pjax.reload({container: grid});
+                        _modal({});
+                        _grid.executeAjaxRequest($('.data-remote'), 'click');
+                        _grid.executeAjaxRequest($('form[data-remote]'), 'submit');
                     }
                 },
                 linkables: {
@@ -205,10 +208,6 @@
                     timeout: 100
                 }
             });
-
-            _grid.executeAjaxRequest($('.data-remote'), 'click');
-            _grid.executeAjaxRequest($('form[data-remote]'), 'submit');
-
         })(jQuery);
     </script>
 @endpush

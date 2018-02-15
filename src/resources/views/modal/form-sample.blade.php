@@ -8,7 +8,7 @@
     <h4 class="modal-title">{{ ucwords($action . ' '. class_basename($model)) }}</h4>
 </div>
 <div class="modal-body">
-    <div class="hidden" id="modal-notification"></div>
+    <div id="modal-notification"></div>
     @if(isset($data))
         {!! BootForm::bind($data) !!}
     @endif
