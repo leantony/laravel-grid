@@ -13,7 +13,7 @@ The grid is [pjax](https://github.com/defunkt/jquery-pjax) ready out of the box.
 + [Date picker](https://github.com/uxsolutions/bootstrap-datepicker.git) (optional)
 
 ## Installation
-The package is available on composer. Just run;
+The package is available on packagist. Just run;
 ```bash
 composer install leantony/laravel-grid
 ```

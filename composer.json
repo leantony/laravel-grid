@@ -49,10 +49,6 @@
       "providers": [
         "Leantony\\Grid\\Providers\\ServiceProvider"
       ]
-    },
-    "branch-alias": {
-      "dev-master": "master",
-      "dev": "dev"
     }
   },
   "minimum-stability": "dev",

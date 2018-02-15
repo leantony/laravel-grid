@@ -145,7 +145,7 @@ trait FiltersSearchesThenExportsData
     protected $searchFunctions = ['searchRows', 'sort', 'paginate'];
 
     /**
-     * Functions to be called after filtering is done
+     * Functions to be called after filtering of the data is done
      *
      * @var array
      */
@@ -178,22 +178,11 @@ trait FiltersSearchesThenExportsData
         // route searches to search functions
         if ($this->request->has($this->getSearchParam())) {
 
-            $this->executeSearches();
+            $this->executeSearchFunctions();
 
         } else {
             // otherwise do filter
-            foreach ($this->filterFunctions as $filter) {
-                if (method_exists($this, $filter)) {
-                    $this->{$filter}();
-                }
-            }
-            if (!empty($this->afterFilterFunctions)) {
-                foreach ($this->afterFilterFunctions as $item) {
-                    if (method_exists($this, $item)) {
-                        $this->{$item}();
-                    }
-                }
-            }
+            $this->executeFilterFunctions();
         }
     }
 
@@ -208,11 +197,11 @@ trait FiltersSearchesThenExportsData
     }
 
     /**
-     * Execute search
+     * Execute search functions
      *
      * @return void
      */
-    public function executeSearches()
+    public function executeSearchFunctions()
     {
         foreach ($this->searchFunctions as $searchFunction) {
             if (method_exists($this, $searchFunction)) {
@@ -455,6 +444,27 @@ trait FiltersSearchesThenExportsData
     public function getFilteredData()
     {
         return $this->filteredData;
+    }
+
+    /**
+     * Execute filter functions
+     *
+     * @return void
+     */
+    public function executeFilterFunctions()
+    {
+        foreach ($this->filterFunctions as $filter) {
+            if (method_exists($this, $filter)) {
+                $this->{$filter}();
+            }
+        }
+        if (!empty($this->afterFilterFunctions)) {
+            foreach ($this->afterFilterFunctions as $item) {
+                if (method_exists($this, $item)) {
+                    $this->{$item}();
+                }
+            }
+        }
     }
 
     /**
