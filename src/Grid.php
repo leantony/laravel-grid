@@ -98,6 +98,20 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $buttons = [];
 
     /**
+     * Short singular name for the grid
+     *
+     * @var string
+     */
+    protected $shortSingularName;
+
+    /**
+     * Short grid identifier, to be used for route param names
+     *
+     * @var string
+     */
+    protected $shortGridIdentifier;
+
+    /**
      * Create the grid
      *
      * @param array $params
@@ -123,6 +137,10 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         // the grid ID
         $this->id = Str::singular(Str::camel($this->name)) . '-' . 'grid';
+        // short singular name
+        $this->shortSingularName = $this->shortSingularGridName();
+        // short grid identifier
+        $this->shortGridIdentifier = $this->transformName();
         // any links defined
         $this->setRoutes();
         // default buttons on the grid
@@ -431,7 +449,10 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function transformName()
     {
-        return Str::slug(Str::singular($this->getName()), '_');
+        if ($this->shortGridIdentifier === null) {
+            return Str::slug(Str::singular($this->getName()), '_');
+        }
+        return $this->shortGridIdentifier;
     }
 
     /**
@@ -602,6 +623,9 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     protected function shortSingularGridName(): string
     {
-        return strtolower(Str::singular($this->getName()));
+        if ($this->shortSingularName === null) {
+            $this->shortSingularName = strtolower(Str::singular($this->getName()));
+        }
+        return $this->shortSingularName;
     }
 }

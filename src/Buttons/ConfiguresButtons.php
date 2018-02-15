@@ -130,10 +130,7 @@ trait ConfiguresButtons
     {
         return (new RefreshButton([
             'name' => 'Refresh',
-            'dataAttributes' => [
-                'trigger-pjax' => true,
-                'pjax-target' => '#' . $this->id
-            ],
+            'pjaxEnabled' => true,
             'icon' => 'fa-refresh',
             'gridId' => $this->id,
             'url' => $this->getIndexRouteLink(),

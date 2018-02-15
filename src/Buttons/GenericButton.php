@@ -10,7 +10,8 @@ class GenericButton implements Htmlable
     /**
      * A variable to be used to determine the position of the button
      * in respect to others within the same section
-     * A button with a lower position will be rendered to the far left, while one with a higher position will be rendered
+     * A button with a lower position will be rendered to the far left
+     * while one with a higher position will be rendered
      * to the far right
      *
      * @var integer
@@ -91,7 +92,7 @@ class GenericButton implements Htmlable
      * Type of button. Can be one of either `row` or `toolbar`
      * @var string
      */
-    protected $type = 'row';
+    protected $type = 'toolbar';
 
     /**
      * CreateButton constructor.
@@ -190,16 +191,17 @@ class GenericButton implements Htmlable
      */
     public function getUrl(): string
     {
-        return $this->link;
+        return $this->url;
     }
 
     /**
-     * @param string|callable $link
+     * @param string $url
      * @return GenericButton
+     * @internal param callable|string $link
      */
     public function setUrl(string $url): GenericButton
     {
-        $this->link = $link;
+        $this->url = $url;
         return $this;
     }
 
@@ -375,6 +377,7 @@ class GenericButton implements Htmlable
     /**
      * Render the button
      *
+     * @param array $args
      * @return string
      */
     public function render(...$args)
@@ -382,9 +385,12 @@ class GenericButton implements Htmlable
         if ($this->renderCustom && is_callable($this->renderCustom)) {
             return call_user_func($this->renderCustom, $this->compactData($args));
         }
-        if ($this->type === 'row') {
-            $args = array_collapse($args);
-        }
+        // apply preset attributes
+        $this->dataAttributes = $this->getDataAttributes();
+        // collapse the array of args into a single 1d array, so that the values passed can be
+        // accessed as key value pair
+        $args = array_collapse($args);
+
         return view($this->getButtonView(), $this->compactData($args))->render();
     }
 
