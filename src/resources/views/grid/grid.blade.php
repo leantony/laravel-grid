@@ -192,7 +192,7 @@
             var grid = "{{ '#' . $grid->getId() }}";
             var filterForm = "{{ '#' . $grid->getFilterFormId() }}";
             var searchForm = "{{ '#' . $grid->getSearchFormId() }}";
-            _grid.init({
+            leantony.grid.init({
                 id: grid,
                 filterForm: filterForm,
                 dateRangeSelector: '.date-range',
@@ -203,17 +203,7 @@
                     afterPjax: function () {
                         // reload the container
                         $.pjax.reload({container: grid});
-                        // re-initialize modal
-                        _modal({});
-                        // re-initialize listeners for ajax
-                        _grid.executeAjaxRequest($('.data-remote'), 'click');
-                        _grid.executeAjaxRequest($('form[data-remote]'), 'submit');
                     }
-                },
-                linkables: {
-                    element: '.linkable',
-                    url: 'url',
-                    timeout: 100
                 }
             });
         })(jQuery);
