@@ -186,7 +186,7 @@
         </div>
     </div>
 </div>
-@push('scripts')
+@push('grid_js')
     <script>
         (function ($) {
             var grid = "{{ '#' . $grid->getId() }}";

@@ -2,8 +2,10 @@
 This package allows rendering of data via a tabular format (grid). 
 The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`
 
+
 ## Requirements
-The grid is [pjax](https://github.com/defunkt/jquery-pjax) ready out of the box. You can use this package - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
+The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), 
+or create the middleware on your own using [jeffrey way's middleware](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 
 + Bootstrap 3 (for the styling)
 + Font awesome (for icons)
@@ -12,11 +14,17 @@ The grid is [pjax](https://github.com/defunkt/jquery-pjax) ready out of the box.
 + [Block UI](https://github.com/malsup/blockui) (optional)
 + [Date picker](https://github.com/uxsolutions/bootstrap-datepicker.git) (optional)
 
+
 ## Installation
 The package is available on packagist. Just run;
 ```bash
 composer install leantony/laravel-grid
 ```
+You can then publish the assets, incase you need to customize them. This will also copy the javascript & css assets to `public/vendor/leantony/grid`
+```bash
+php artisan vendor:publish --provider=Leantony\Grid\Providers\ServiceProvider::class
+```
+
 
 ## Usage
 A laravel command is available to make it easy to create grids. 
@@ -77,10 +85,6 @@ Otherwise, you can also instantiate the grid class like this; You can then injec
     }
 ```
 
-Ensure that your view/layout looks something like [this](https://gist.github.com/leantony/4a7a795904c60b6b7f91431e4241e37b). Especially with the javascript dependencies. 
-The example is based off the grids sample application, which can be found [here](https://github.com/leantony/laravel-grid-app). The modal and its included view are not really required, so feel free to leave them out.
-> The grid injects its javascript into the `@stack('scripts')` section, so please ensure that you have this on your layout
-
 Then display the grid on your view like this;
 ```php
 {!! $grid !!}
@@ -88,6 +92,34 @@ Then display the grid on your view like this;
 
 You should see something like this. Feel free to check out the [sample app](http://laravel-grid.herokuapp.com)
 ![sample](docs/sample.png)
+
+
+To enable javascript utilities such as Pjax, ensure that you have their dependencies included on your page/layout. Once you have done that, ensure that you have
+a `@push('grid_js')` section on your view, just after the required javascript dependencies. This is the point where the grid's javscript will be injected. An example is as shown below;
+```php
+
+    <!-- dependencies e.g jquery come here -->
+    
+    <!-- load the grid's javascipt -->
+    <script src="{{ asset('vendor/leantony/grid/js/grid.js') }}"></script>
+    <script>
+        // setup ajax
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        // initialize bootstrap modal
+        leantony.modal.init({});
+        // table links
+        leantony.utils.tableLinks({element: '.linkable', navigationDelay: 100});
+        // setup ajax listeners
+        leantony.utils.executeAjaxRequest($('.data-remote'), 'click');
+        leantony.utils.executeAjaxRequest($('form[data-remote]'), 'submit');
+    </script>
+    <!-- the js for any of the grid(s) will be injected here -->
+    @stack('grid_js')
+```
 
 To customize the grid, check out [the customization section](docs/customization.md)
 
