@@ -86,7 +86,7 @@ Then display the grid on your view like this;
 {!! $grid !!}
 ```
 
-You should see something like this...
+You should see something like this. Feel free to check out the [sample app](http://laravel-grid.herokuapp.com)
 ![sample](docs/sample.png)
 
 To customize the grid, check out [the customization section](docs/customization.md)
