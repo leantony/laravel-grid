@@ -10,10 +10,10 @@ use Leantony\Grid\Buttons\GenericButton;
 use Leantony\Grid\Buttons\RefreshButton;
 use Leantony\Grid\Buttons\ViewButton;
 
-trait ConfiguresButtons
+trait RendersButtons
 {
     /**
-     * Define if we need to render buttons on the grid
+     * Quick toggle to define if we need to render any buttons on the grid
      *
      * @var bool
      */
@@ -74,6 +74,16 @@ trait ConfiguresButtons
                 $button => $instance,
             ]
         ]);
+    }
+
+    /**
+     * Sets an array of buttons that would be rendered to the grid
+     *
+     * @return void
+     */
+    public function setButtons()
+    {
+        $this->setDefaultButtons();
     }
 
     /**
@@ -155,8 +165,8 @@ trait ConfiguresButtons
             'icon' => 'fa-download',
             'class' => 'btn btn-default',
             'title' => 'export data',
-            'renderCustom' => function ($v) {
-                return view('leantony::grid.buttons.export', $v)->render();
+            'renderCustom' => function ($data) {
+                return view('leantony::grid.buttons.export', $data)->render();
             },
             'gridId' => $this->id,
             'type' => 'toolbar',
@@ -221,10 +231,40 @@ trait ConfiguresButtons
     }
 
     /**
+     * Get an array of button instances to be rendered on the grid
+     *
+     * @param string|null $name
+     * @return array
+     */
+    public function getButtons($name = null)
+    {
+        if (!$this->renderButtons) {
+            // rendering disabled
+            return [];
+        }
+
+        $buttons = $name ? $this->buttons[$name] : $this->buttons;
+        // apply the position here
+        return collect($buttons)->sortBy(function ($v) {
+            return $v->position;
+        })->toArray();
+    }
+
+    /**
+     * Return the view used to display the search form
+     *
+     * @return string
+     */
+    public function getSearchView(): string
+    {
+        return 'leantony::grid.search';
+    }
+
+    /**
      * Add a custom button to the grid
      *
      * @param array $properties an array of key value pairs representing property names and values for the GenericButton instance
-     * @param string|null $position where this button will be placed. Defaults to 'row'
+     * @param string|null $position where this button will be placed. Defaults to 'toolbar'
      * @return GenericButton
      * @throws \Exception
      */
@@ -236,7 +276,7 @@ trait ConfiguresButtons
         } else {
             $this->addRowButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
         }
-        return $this->buttons[$position ?? 'row'][$name];
+        return $this->buttons[$position ?? 'toolbar'][$name];
     }
 
     /**

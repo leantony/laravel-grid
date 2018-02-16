@@ -3,11 +3,11 @@
 namespace Leantony\Grid;
 
 use Excel;
-use PDF;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Classes\LaravelExcelWorksheet;
 use Maatwebsite\Excel\Writers\LaravelExcelWriter;
+use PDF;
 
 trait ExportsData
 {
@@ -17,7 +17,12 @@ trait ExportsData
      * @var int
      */
     protected static $MAX_EXPORT_ROWS = 50000;
-
+    /**
+     * Quick toggle to specify if the grid allows exporting of records
+     *
+     * @var bool
+     */
+    protected $allowsExporting = true;
     /**
      * The filename that would be exported
      *
@@ -40,12 +45,12 @@ trait ExportsData
     protected $dataForExport = null;
 
     /**
-     * Export to data to excel. Also works with pdf and word
+     * Prepare export data
      *
      * @return $this
      * @throws \Exception
      */
-    public function exportExcel()
+    public function prepareData()
     {
         if (class_exists(LaravelExcelWriter::class)) {
             $instance = $this;
@@ -77,6 +82,52 @@ trait ExportsData
     }
 
     /**
+     * Get the data to be exported
+     *
+     * @return Collection
+     */
+    public function getExportData()
+    {
+        // work on the underlying query instance
+        // this one has already passed through the filter
+        $values = $this->getQuery()->take(static::$MAX_EXPORT_ROWS)->get();
+
+        $columns = collect($this->getColumnsToExport())->reject(function ($v) {
+            // reject all columns that have been set as not exportable
+            return !$v->export;
+        })->toArray();
+
+        // customize the results
+        $data = $values->map(function ($v) use ($columns) {
+            $data = [];
+            foreach ($columns as $column) {
+                // render as per requested on each column
+                // `processColumns()` would have already taken care of processing the callbacks
+                // so here, we only pass the required arguments
+                if (is_callable($column->data)) {
+                    array_push($data, [$column->name => call_user_func($column->data, $v, $column->key)]);
+                } else {
+                    array_push($data, [$column->name => $v->{$column->key}]);
+                }
+            }
+            // collapse the data by a single level
+            return collect($data)->collapse()->toArray();
+        });
+
+        return $data;
+    }
+
+    /**
+     * Gets the columns to be exported
+     *
+     * @return array
+     */
+    public function getColumnsToExport()
+    {
+        return $this->getProcessedColumns();
+    }
+
+    /**
      * Make an excel worksheet
      *
      * @param LaravelExcelWriter $excel
@@ -93,13 +144,6 @@ trait ExportsData
     }
 
     /**
-     * Gets the rows to be exported
-     *
-     * @return array
-     */
-    abstract public function getColumnsToExport();
-
-    /**
      * Download export data
      *
      * @param string $type
@@ -107,7 +151,7 @@ trait ExportsData
      * @throws \Throwable
      * @throws \Maatwebsite\Excel\Exceptions\LaravelExcelException
      */
-    public function downloadExportedAs($type = 'xlsx')
+    public function downloadAs($type = 'xlsx')
     {
         if ($type === 'pdf') {
             return $this->exportPdf();
@@ -126,13 +170,23 @@ trait ExportsData
     public function exportPdf()
     {
         // requires https://github.com/barryvdh/laravel-snappy
-        $pdf = PDF::loadView('leantony::reports.pdf_report', [
+        $pdf = PDF::loadView($this->getExportToPdfView(), [
             'title' => sprintf('%s report', $this->shortSingularGridName()),
             'columns' => $this->getProcessedColumns(),
             'data' => $this->dataForExport,
         ]);
 
         return $pdf->download($this->getFileNameForExport() . '.pdf');
+    }
+
+    /**
+     * Get the html view used for PDF export
+     *
+     * @return string
+     */
+    protected function getExportToPdfView(): string
+    {
+        return 'leantony::reports.pdf_report';
     }
 
     /**
@@ -145,11 +199,4 @@ trait ExportsData
     {
         $this->excelWriter->export($type);
     }
-
-    /**
-     * Get the data to be exported
-     *
-     * @return Collection|array
-     */
-    abstract protected function getExportData();
 }

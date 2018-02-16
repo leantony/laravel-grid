@@ -2,7 +2,9 @@
 
 namespace Leantony\Grid;
 
-trait GridSearch
+use Illuminate\Support\Str;
+
+trait SearchesData
 {
     /**
      * Check if a column can be searched
@@ -84,4 +86,53 @@ trait GridSearch
             }
         }
     }
+
+    /**
+     * Render the search form on the grid
+     *
+     * @return string
+     */
+    public function renderSearchForm()
+    {
+        $params = func_get_args();
+        $data = [
+            'colSize' => $this->toolbarSize[0], // size
+            'action' => $this->getSearchRoute(),
+            'id' => $this->getSearchFormId(),
+            'name' => $this->getSearchParam(),
+            'dataAttributes' => [],
+            'placeholder' => $this->getSearchPlaceholder(),
+        ];
+
+        return view($this->getSearchView(), array_merge($data, $params))->render();
+    }
+
+    /**
+     * Get the form id used for search
+     *
+     * @return string
+     */
+    public function getSearchFormId(): string
+    {
+        return 'search' . '-' . $this->getId();
+    }
+
+    /**
+     * Get the placeholder to use on the search form
+     *
+     * @return string
+     */
+    private function getSearchPlaceholder()
+    {
+        if (empty($this->searchableColumns)) {
+            $placeholder = Str::plural(Str::slug($this->getName()));
+
+            return sprintf('search %s ...', $placeholder);
+        }
+
+        $placeholder = collect($this->searchableColumns)->implode(',');
+
+        return sprintf('search %s by their %s ...', Str::lower($this->getName()), $placeholder);
+    }
+
 }

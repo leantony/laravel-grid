@@ -1,8 +1,6 @@
 <?php
 
-namespace Leantony\Grid;
-
-use Leantony\Grid\Filters\GenericFilter;
+namespace Leantony\Grid\Filters;
 
 interface GridFilterInterface
 {

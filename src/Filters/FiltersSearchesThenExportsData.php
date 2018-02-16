@@ -12,8 +12,8 @@ use Illuminate\Support\Str;
 trait FiltersSearchesThenExportsData
 {
     use ExportsData,
-        GridSearch,
-        GridFilter;
+        SearchesData,
+        FiltersData;
 
     /**
      * Specify if data should be paginated
@@ -218,6 +218,27 @@ trait FiltersSearchesThenExportsData
     }
 
     /**
+     * Execute filter functions
+     *
+     * @return void
+     */
+    public function executeFilterFunctions()
+    {
+        foreach ($this->filterFunctions as $filter) {
+            if (method_exists($this, $filter)) {
+                $this->{$filter}();
+            }
+        }
+        if (!empty($this->afterFilterFunctions)) {
+            foreach ($this->afterFilterFunctions as $item) {
+                if (method_exists($this, $item)) {
+                    $this->{$item}();
+                }
+            }
+        }
+    }
+
+    /**
      * Export the data
      *
      * @return void
@@ -232,7 +253,7 @@ trait FiltersSearchesThenExportsData
             $param = $this->request->get($this->exportParam);
 
             if (in_array($param, $this->allowedExportTypes)) {
-                $this->exportExcel()->downloadExportedAs($param);
+                $this->prepareData()->downloadAs($param);
             }
         }
     }
@@ -447,27 +468,6 @@ trait FiltersSearchesThenExportsData
     public function getFilteredData()
     {
         return $this->filteredData;
-    }
-
-    /**
-     * Execute filter functions
-     *
-     * @return void
-     */
-    public function executeFilterFunctions()
-    {
-        foreach ($this->filterFunctions as $filter) {
-            if (method_exists($this, $filter)) {
-                $this->{$filter}();
-            }
-        }
-        if (!empty($this->afterFilterFunctions)) {
-            foreach ($this->afterFilterFunctions as $item) {
-                if (method_exists($this, $item)) {
-                    $this->{$item}();
-                }
-            }
-        }
     }
 
     /**

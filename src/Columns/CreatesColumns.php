@@ -5,15 +5,21 @@ namespace Leantony\Grid;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
-trait GridColumns
+trait CreatesColumns
 {
-
     /**
      * The columns that appear on the table headers. Specified as $key => $value
      *
      * @var array
      */
     protected $columns = [];
+
+    /**
+     * The columns that have been processed
+     *
+     * @var array
+     */
+    protected $processedColumns = [];
 
     /**
      * The regxp pattern to be used to format the column names that will appear on the UI
@@ -29,6 +35,84 @@ trait GridColumns
      * @var array
      */
     protected $searchableColumns = [];
+
+    /**
+     * Return the columns to be displayed on the grid
+     *
+     * @return array
+     */
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    /**
+     * Get the processed columns
+     *
+     * @return array
+     */
+    public function getProcessedColumns(): array
+    {
+        return $this->processColumns();
+    }
+
+    /**
+     * Process the columns that were supplied
+     *
+     * @return array
+     */
+    public function processColumns()
+    {
+        if (!empty($this->processedColumns)) {
+            return $this->processedColumns;
+        }
+        $columns = [];
+        // process
+        foreach ($this->columns as $columnName => $columnData) {
+
+            // should render
+            if (!$this->canRenderColumn($columnName, $columnData)) {
+                continue;
+            }
+
+            // css styles
+            $styles = $this->fetchCssStyles($columnName, $columnData);
+
+            $columnClass = $styles['columnClass'];
+
+            $rowClass = $styles['rowClass'];
+
+            // label
+            $label = $this->fetchColumnLabel($columnName, $columnData)['label'];
+
+            // searchable columns
+            $searchable = $this->fetchSearchableColumns($columnName, $columnData)['searchable'];
+
+            // filter
+            $filter = $this->fetchColumnFilter($columnName, $columnData)['filter'];
+
+            // data
+            $data = $this->fetchColumnData($columnName, $columnData)['data'];
+
+            // once we are done, push to columns array
+            array_push($columns, new Column([
+                'name' => $label,
+                'key' => $columnName,
+                'data' => $data,
+                'searchable' => $searchable,
+                'rowClass' => $rowClass,
+                'columnClass' => $columnClass,
+                'sortable' => $columnData['sort'] ?? true,
+                'filter' => $filter,
+                'raw' => $columnData['raw'] ?? false,
+                'export' => $columnData['export'] ?? true,
+            ]));
+        }
+
+        $this->processedColumns = $columns;
+
+        return $this->processedColumns;
+    }
 
     /**
      * Determine if a column can be rendered on the grid
@@ -47,6 +131,28 @@ trait GridColumns
             }
         }
         return true;
+    }
+
+    /**
+     * Fetch css styles
+     *
+     * @param string $columnName
+     * @param array $columnData
+     * @return array
+     */
+    public function fetchCssStyles($columnName, $columnData)
+    {
+        // css
+        if (isset($columnData['styles'])) {
+            $classAttributes = $columnData['styles'];
+            $columnClass = $classAttributes['column'] ?? 'col-md-2';
+            $rowClass = $classAttributes['row'] ?? '';
+        } else {
+            $columnClass = '';
+            $rowClass = '';
+        }
+
+        return compact('columnClass', 'rowClass');
     }
 
     /**
@@ -116,29 +222,32 @@ trait GridColumns
     {
         if (isset($columnData['data'])) {
             // note that this can also be a callback
+            // the callback should take 2 args - $item (whats being iterated upon) and $key (the column name)
             // as such it would be called on the grid view
             $data = $columnData['data'];
         } else {
             // check for a presenter
-            if (isset($columnData['present'])) {
-                if (is_callable($columnData['present'])) {
-                    // custom
+            if (isset($columnData['presenter'])) {
+
+                if (is_callable($columnData['presenter'])) {
+                    // custom presenter
                     $data = function ($item, $row) use ($columnData) {
-                        return call_user_func($columnData['present'], $item, $row);
+                        return call_user_func($columnData['presenter'], $item, $row);
                     };
                 } else {
-                    // laracasts presenter. call the function on the model instance
+                    // Attempt to use the laracasts presenter. call the function on the model instance
                     $data = function ($item, $row) use ($columnData) {
                         return $item->present()->{$columnData['present']};
                     };
                 }
             } else {
-                // format any dates
+                // check for dates
                 if (isset($columnData['date'])) {
                     $data = function ($item, $row) use ($columnData) {
                         return Carbon::parse($item->{$row})->format($columnData['dateFormat'] ?? 'Y-m-d');
                     };
                 } else {
+                    // default processing strategy. Just access the attribute on the eloquent instance
                     $data = function ($item, $row) {
                         return $item->{$row};
                     };
@@ -146,27 +255,5 @@ trait GridColumns
             }
         }
         return compact('data');
-    }
-
-    /**
-     * Fetch css styles
-     *
-     * @param string $columnName
-     * @param array $columnData
-     * @return array
-     */
-    public function fetchCssStyles($columnName, $columnData)
-    {
-        // css
-        if (isset($columnData['styles'])) {
-            $classAttributes = $columnData['styles'];
-            $columnClass = $classAttributes['column'] ?? 'col-md-2';
-            $rowClass = $classAttributes['row'] ?? '';
-        } else {
-            $columnClass = '';
-            $rowClass = '';
-        }
-
-        return compact('columnClass', 'rowClass');
     }
 }

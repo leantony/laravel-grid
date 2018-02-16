@@ -2,7 +2,7 @@
 
 namespace Leantony\Grid;
 
-trait GridFilter
+trait FiltersData
 {
     /**
      * Check if filtering can be done
@@ -59,7 +59,7 @@ trait GridFilter
             call_user_func($filter['query'], $this->query, $columnName, $userInput);
         } else {
 
-            if($operator === strtolower('like')) {
+            if ($operator === strtolower('like')) {
                 $value = '%' . $userInput . '%';
             } else {
                 $value = $userInput;
@@ -73,5 +73,15 @@ trait GridFilter
                 $this->getQuery()->where($columnName, $operator, $value, $this->filterType);
             }
         }
+    }
+
+    /**
+     * Get id for the filter form
+     *
+     * @return string
+     */
+    public function getFilterFormId()
+    {
+        return $this->getId() . '-' . 'filter';
     }
 }

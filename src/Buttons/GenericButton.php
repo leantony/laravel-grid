@@ -314,49 +314,6 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @return array
-     */
-    public function getDataAttributes(): array
-    {
-        if ($this->pjaxEnabled) {
-            // set by default some attributes to control PJAX on the front end
-            return array_merge($this->dataAttributes, [
-                'trigger-pjax' => true,
-                'pjax-target' => '#' . $this->getGridId()
-            ]);
-        }
-        return $this->dataAttributes;
-    }
-
-    /**
-     * @param array $dataAttributes
-     * @return GenericButton
-     */
-    public function setDataAttributes(array $dataAttributes): GenericButton
-    {
-        $this->dataAttributes = $dataAttributes;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getGridId()
-    {
-        return $this->gridId;
-    }
-
-    /**
-     * @param mixed $gridId
-     * @return GenericButton
-     */
-    public function setGridId($gridId)
-    {
-        $this->gridId = $gridId;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function __toString()
@@ -416,6 +373,49 @@ class GenericButton implements Htmlable
     public function getExtraParams()
     {
         return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataAttributes(): array
+    {
+        if ($this->pjaxEnabled) {
+            // set by default some attributes to control PJAX on the front end
+            return array_merge($this->dataAttributes, [
+                'trigger-pjax' => true,
+                'pjax-target' => '#' . $this->getGridId()
+            ]);
+        }
+        return $this->dataAttributes;
+    }
+
+    /**
+     * @param array $dataAttributes
+     * @return GenericButton
+     */
+    public function setDataAttributes(array $dataAttributes): GenericButton
+    {
+        $this->dataAttributes = $dataAttributes;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGridId()
+    {
+        return $this->gridId;
+    }
+
+    /**
+     * @param mixed $gridId
+     * @return GenericButton
+     */
+    public function setGridId($gridId)
+    {
+        $this->gridId = $gridId;
+        return $this;
     }
 
     /**

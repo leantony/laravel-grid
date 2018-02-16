@@ -27,7 +27,10 @@
             </div>
             <div class="panel-body">
                 <div class="row">
-                    {!! $grid->getSearch() !!}
+                    <!-- search -->
+                {!! $grid->renderSearchForm() !!}
+                <!-- end search -->
+                    <!-- toolbar buttons -->
                     <div class="col-md-{{ $grid->getToolbarSize()[1] }}">
                         <div class="pull-right">
                             @foreach($grid->getButtons('toolbar') as $button)
@@ -35,6 +38,7 @@
                             @endforeach
                         </div>
                     </div>
+                    <!-- end toolbar buttons -->
                 </div>
                 <hr>
                 <form action="{{ $grid->getSearchRoute() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
@@ -98,7 +102,7 @@
                         <th></th>
                     </tr>
                     <!-- end headers -->
-                    <!-- filter -->
+                    <!-- filters -->
                     <tr>
                         @include('leantony::grid.filter', ['columns' => $columns, 'formId' => $grid->getFilterFormId()])
                     </tr>
@@ -195,9 +199,13 @@
                 searchForm: searchForm,
                 pjax: {
                     pjaxOptions: {},
+                    // what to do after a PJAX request
                     afterPjax: function () {
+                        // reload the container
                         $.pjax.reload({container: grid});
+                        // re-initialize modal
                         _modal({});
+                        // re-initialize listeners for ajax
                         _grid.executeAjaxRequest($('.data-remote'), 'click');
                         _grid.executeAjaxRequest($('form[data-remote]'), 'submit');
                     }

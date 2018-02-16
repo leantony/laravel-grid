@@ -40,8 +40,7 @@
       "Leantony\\Grid\\Buttons\\": "src/buttons",
       "Leantony\\Grid\\Columns\\": "src/columns",
       "Leantony\\Grid\\Filters\\": "src/filters",
-      "Leantony\\Grid\\Routing\\": "src/routing",
-      "Leantony\\Grid\\Search\\": "src/search"
+      "Leantony\\Grid\\Routing\\": "src/routing"
     }
   },
   "extra": {
