@@ -30,6 +30,6 @@
     font-size: 15px;
 }
 
-.linkable {
+tr .linkable {
     cursor: pointer;
 }

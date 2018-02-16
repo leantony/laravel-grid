@@ -1,14 +1,8 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Buttons;
 
 use InvalidArgumentException;
-use Leantony\Grid\Buttons\CreateButton;
-use Leantony\Grid\Buttons\DeleteButton;
-use Leantony\Grid\Buttons\ExportButton;
-use Leantony\Grid\Buttons\GenericButton;
-use Leantony\Grid\Buttons\RefreshButton;
-use Leantony\Grid\Buttons\ViewButton;
 
 trait RendersButtons
 {
@@ -173,7 +167,7 @@ trait RendersButtons
             'exportRoute' => $this->getIndexRouteLink(),
             'renderIf' => function () {
                 // only render the export button if `$allowsExporting` is set to true
-                return $this->allowsExporting || in_array('export', $this->buttonsToGenerate);
+                return in_array('export', $this->buttonsToGenerate) || $this->allowsExporting;
             }
         ]));
     }

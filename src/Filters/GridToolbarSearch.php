@@ -1,6 +1,6 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Filters;
 
 use Illuminate\Contracts\Support\Htmlable;
 

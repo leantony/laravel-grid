@@ -20,9 +20,9 @@ interface GridColumnsInterface
     public function setColumns();
 
     /**
-     * Get the processed rows
+     * Process the columns that were supplied
      *
      * @return array
      */
-    public function getProcessedColumns(): array;
+    public function processColumns();
 }

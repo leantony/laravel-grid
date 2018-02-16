@@ -1,6 +1,6 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Columns;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -22,8 +22,8 @@ trait CreatesColumns
     protected $processedColumns = [];
 
     /**
-     * The regxp pattern to be used to format the column names that will appear on the UI
-     * All symbols and invalid characters would be ignored and replaced with a space
+     * The pattern to be used to format the column names that will appear on the UI
+     * All symbols and invalid characters that match the pattern would be ignored and replaced with a space
      *
      * @var string
      */
@@ -126,7 +126,7 @@ trait CreatesColumns
         if (isset($columnData['renderIf']) && is_callable($columnData['renderIf'])) {
             $func = $columnData['renderIf'];
             // when the callback returns false, then skip this row
-            if (!$func($columnData)) {
+            if (!call_user_func($func, $columnData)) {
                 return false;
             }
         }
