@@ -35,11 +35,11 @@
   "autoload": {
     "psr-4": {
       "Leantony\\Grid\\": "src/",
-      "Leantony\\Grid\\Providers\\": "src/providers",
-      "Leantony\\Grid\\Commands\\": "src/commands",
       "Leantony\\Grid\\Buttons\\": "src/buttons",
       "Leantony\\Grid\\Columns\\": "src/columns",
+      "Leantony\\Grid\\Commands\\": "src/commands",
       "Leantony\\Grid\\Filters\\": "src/filters",
+      "Leantony\\Grid\\Providers\\": "src/providers",
       "Leantony\\Grid\\Routing\\": "src/routing"
     }
   },
