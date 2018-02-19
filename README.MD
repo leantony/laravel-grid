@@ -154,7 +154,7 @@ a `@push('grid_js')` section on your view/layout, just after the required javasc
             }
         });
     </script>
-    <!-- the js for any of the grid(s) you create will be injected here -->
+    <!-- the initialization javascript for any of the grid(s) you create will be injected here -->
     @stack('grid_js')
 ```
 
