@@ -192,24 +192,18 @@
             var grid = "{{ '#' . $grid->getId() }}";
             var filterForm = "{{ '#' . $grid->getFilterFormId() }}";
             var searchForm = "{{ '#' . $grid->getSearchFormId() }}";
-            leantony.grid.init({
+            _grids.grid.init({
                 id: grid,
                 filterForm: filterForm,
                 dateRangeSelector: '.date-range',
                 searchForm: searchForm,
                 pjax: {
-                    pjaxOptions: {},
+                    pjaxOptions: {
+                        scrollTo: false
+                    },
                     // what to do after a PJAX request. Js plugins have to be re-intialized
-                    afterPjax: function () {
-                        // reload the container
-                        $.pjax.reload({container: grid});
-                        // tooltip
-                        $('[data-toggle="tooltip"]').tooltip();
-                        // table links
-                        leantony.utils.tableLinks({element: '.linkable', navigationDelay: 100});
-                        // setup ajax listeners
-                        leantony.utils.executeAjaxRequest($('.data-remote'), 'click');
-                        leantony.utils.executeAjaxRequest($('form[data-remote]'), 'submit');
+                    afterPjax: function (e) {
+                        _grids.init();
                     }
                 }
             });

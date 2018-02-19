@@ -1,4 +1,4 @@
-var leantony = leantony || {};
+var _grids = _grids || {};
 
 (function ($) {
 
@@ -12,7 +12,7 @@ var leantony = leantony || {};
      * @type object
      * @public
      */
-    leantony.utils = {};
+    _grids.utils = {};
 
     (function ($) {
 
@@ -24,7 +24,7 @@ var leantony = leantony || {};
          * @param element
          * @param event
          */
-        leantony.utils.executeAjaxRequest = function (element, event) {
+        _grids.utils.executeAjaxRequest = function (element, event) {
             // click or submit
             event = event || 'click';
 
@@ -60,12 +60,12 @@ var leantony = leantony || {};
                         data: isForm ? obj.serialize() : null,
                         beforeSend: function () {
                             if (blockUi) {
-                                leantony.utils.blockUI(waitingMsg || 'Please wait ...')
+                                _grids.utils.blockUI(waitingMsg || 'Please wait ...')
                             }
                         },
                         complete: function () {
                             if (blockUi) {
-                                leantony.utils.unBlockUI();
+                                _grids.utils.unBlockUI();
                             }
                         },
                         success: function (data) {
@@ -90,7 +90,7 @@ var leantony = leantony || {};
          * Block UI. call this at the start of an ajax request
          * @param message
          */
-        leantony.utils.blockUI = function (message) {
+        _grids.utils.blockUI = function (message) {
             if (typeof message === 'undefined') {
                 message = 'Please wait ...';
             }
@@ -116,14 +116,14 @@ var leantony = leantony || {};
         /**
          * Unblock UI
          */
-        leantony.utils.unBlockUI = function () {
+        _grids.utils.unBlockUI = function () {
             $.unblockUI();
         };
 
         /**
          * Linkable rows on tables
          */
-        leantony.utils.tableLinks = function (options) {
+        _grids.utils.tableLinks = function (options) {
             if (!options) {
                 console.warn('No options defined.');
                 return;
@@ -147,7 +147,7 @@ var leantony = leantony || {};
      * @type object
      * @public
      */
-    leantony.grid = {};
+    _grids.grid = {};
 
     (function ($) {
 
@@ -164,7 +164,7 @@ var leantony = leantony || {};
                 /**
                  * The ID of the html element containing the grid
                  */
-                id: '#grid-leantony',
+                id: '#grid-_grids',
                 /**
                  * The ID of the html element containing the filter form
                  */
@@ -211,7 +211,11 @@ var leantony = leantony || {};
         grid.prototype.setupPjax = function (container, target, afterPjax, options) {
             // global timeout
             $.pjax.defaults.timeout = options.timeout || 3000;
-            $(document).pjax(target, container, options).on('pjax:end', afterPjax());
+            $(document).pjax(target, container, options);
+            $(document).on('ready pjax:end', function (event) {
+                console.log('after pjax');
+                afterPjax($(event.target));
+            })
         };
 
         /**
@@ -262,7 +266,7 @@ var leantony = leantony || {};
             }
         };
 
-        leantony.grid.init = function (options) {
+        _grids.grid.init = function (options) {
             var obj = new grid(options);
             obj.bindPjax();
             obj.search();
@@ -276,7 +280,7 @@ var leantony = leantony || {};
      * @type object
      * @public
      */
-    leantony.modal = {};
+    _grids.modal = {};
 
     (function ($) {
         'use strict';
@@ -348,7 +352,7 @@ var leantony = leantony || {};
                     });
             };
 
-            $(document.body).off('click.leantony.modal').on('click.leantony.modal', $this.options.modalTriggerSelector, function (e) {
+            $(document.body).off('click._grids.modal').on('click._grids.modal', $this.options.modalTriggerSelector, function (e) {
                 e.preventDefault();
                 clickHandler(this);
             });
@@ -475,18 +479,30 @@ var leantony = leantony || {};
                 });
             };
 
-            $('#' + $this.options.modal_id).off("click.leantony.modal").on("click.leantony.modal", '#' + $this.options.form_id + ' button[type="submit"]', function (e) {
+            $('#' + $this.options.modal_id).off("click._grids.modal").on("click._grids.modal", '#' + $this.options.form_id + ' button[type="submit"]', function (e) {
                 e.preventDefault();
                 submit_form(this);
             });
         };
 
-        leantony.modal.init = function (options) {
+        _grids.modal.init = function (options) {
             var obj = new modal(options);
             obj.show();
             obj.submitForm();
         };
     }(jQuery));
 
-    return leantony;
+    _grids.init = function () {
+        // tooltip
+        $('[data-toggle="tooltip"]').tooltip();
+        // initialize modal js
+        _grids.modal.init({});
+        // table links
+        _grids.utils.tableLinks({element: '.linkable', navigationDelay: 100});
+        // setup ajax listeners
+        _grids.utils.executeAjaxRequest($('.data-remote'), 'click');
+        _grids.utils.executeAjaxRequest($('form[data-remote]'), 'submit');
+    };
+
+    return _grids;
 })(jQuery);
