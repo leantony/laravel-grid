@@ -22,7 +22,23 @@ composer install leantony/laravel-grid
 ```
 You can then publish the assets, incase you need to customize them. This will also copy the javascript & css assets to `public/vendor/leantony/grid`
 ```bash
-php artisan vendor:publish --provider=Leantony\Grid\Providers\ServiceProvider::class
+php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
+```
+> You can publish the assets and views separately by passing the --tag argument to the command. For the values, try
+`assets`, `views` or `config` for js|css assets, views and config respectively
+
+When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run the command;
+```bash
+php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force
+```
+> You can also place this command in composer so that it is executed automatically on each update run. Like so;
+```php
+// ... composer config
+"post-autoload-dump": [
+    "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+    "@php artisan package:discover",
+    "@php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force"
+]
 ```
 
 
@@ -30,10 +46,13 @@ php artisan vendor:publish --provider=Leantony\Grid\Providers\ServiceProvider::c
 A laravel command is available to make it easy to create grids. 
 Once installed, just run the command:
 ```bash
-php artisan make:grid --model=modelClass
+php artisan make:grid --model="App\ModelClass"
 ```
 
-Just make sure you replace `modelClass` with your actual `eloquent` model class.
+Just make sure you replace `modelClass` with your actual `eloquent` model class. E.g 
+```bash
+php artisan make:grid --model="App\User"
+```
 Once this happens, a grid will be generated. Default namespace for grid generation is `App\Grids`.
 
 Once the generation of the grid is done, you can add add it in your controller like this. E.g a `user` model grid:
@@ -50,6 +69,7 @@ class UsersController extends Controller
     public function index(UsersGridInterface $usersGrid, Request $request)
     {
         // the 'query' argument needs to be an instance of the eloquent query builder
+        // you can load relationships at this point
         $grid = $usersGrid->create(['query' => User::query(), 'request' => $request]);
 
         return view('welcome', ['grid' => $grid]);
@@ -85,39 +105,56 @@ Otherwise, you can also instantiate the grid class like this; You can then injec
     }
 ```
 
+For eloquent relationships, its basically the same approach. Just ensure that you pass in an instance of the query builder. Like so;
+```php
+class UsersController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @param UsersGridInterface $usersGrid
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(UsersGridInterface $usersGrid, Request $request)
+    {
+        // load relationships
+        $query = User::with(['posts', 'activities'])
+        $grid = $usersGrid->create(['query' => $query, 'request' => $request]);
+
+        return view('welcome', ['grid' => $grid]);
+    }
+}
+```
+
 Then display the grid on your view like this;
 ```php
 {!! $grid !!}
 ```
 
 You should see something like this. Feel free to check out the [sample app](http://laravel-grid.herokuapp.com)
+
+
 ![sample](docs/sample.png)
 
 
 To enable javascript utilities such as Pjax, ensure that you have their dependencies included on your page/layout. Once you have done that, ensure that you have
-a `@push('grid_js')` section on your view, just after the required javascript dependencies. This is the point where the grid's javscript will be injected. An example is as shown below;
+a `@push('grid_js')` section on your view/layout, just after the required javascript dependencies. This is the point where the grid's javscript will be injected. An example is as shown below;
 ```php
 
-    <!-- dependencies e.g jquery come here -->
+    <!-- dependencies e.g jquery, pjax, bootstrap js come here -->
     
     <!-- load the grid's javascipt -->
     <script src="{{ asset('vendor/leantony/grid/js/grid.js') }}"></script>
     <script>
-        // setup ajax
+        // setup ajax. This is required, so that the CSRF token is sent during AJAX requests
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        // initialize bootstrap modal
-        leantony.modal.init({});
-        // table links
-        leantony.utils.tableLinks({element: '.linkable', navigationDelay: 100});
-        // setup ajax listeners
-        leantony.utils.executeAjaxRequest($('.data-remote'), 'click');
-        leantony.utils.executeAjaxRequest($('form[data-remote]'), 'submit');
     </script>
-    <!-- the js for any of the grid(s) will be injected here -->
+    <!-- the js for any of the grid(s) you create will be injected here -->
     @stack('grid_js')
 ```
 

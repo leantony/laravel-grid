@@ -193,7 +193,7 @@ var _grids = _grids || {};
                     /**
                      * Something to do once the PJAX request has been finished
                      */
-                    afterPjax: function () {
+                    afterPjax: function (e) {
                     }
                 }
             };
