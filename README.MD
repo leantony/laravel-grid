@@ -1,4 +1,7 @@
 # Laravel grid (laravel 5.6+)
+
+[![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
+
 This package allows rendering of data via a tabular format (grid). 
 The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`
 
