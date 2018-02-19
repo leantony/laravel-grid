@@ -1,5 +1,3 @@
-<h3>{{ $title }}</h3>
-<hr>
 <table class="table table-bordered">
     <thead>
     <tr>

@@ -26,11 +26,12 @@
   },
   "suggest": {
     "avengers/bootforms": "For rapid bootstrap form generation",
-    "maatwebsite/excel": "For exporting grid data as excel/pdf",
+    "maatwebsite/excel": "For exporting grid data as excel (~3.0)",
     "spatie/laravel-pjax": "For pjax support on the server side"
   },
   "require-dev": {
-    "phpunit/phpunit": "~7.0"
+    "phpunit/phpunit": "~7.0",
+    "orchestra/testbench": "~3.0"
   },
   "autoload": {
     "psr-4": {

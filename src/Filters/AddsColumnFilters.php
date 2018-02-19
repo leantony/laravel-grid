@@ -4,7 +4,6 @@ namespace Leantony\Grid\Filters;
 
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
-use Leantony\Grid\Filters\GenericFilter;
 
 trait AddsColumnFilters
 {

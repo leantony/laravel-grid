@@ -32,11 +32,22 @@ interface GridInterface
     public function getData();
 
     /**
-     * Render the grid
+     * An implicit call from the __toString() method. Passes in the grid data to the actual view that we have created
+     * so that it can be rendered
      *
      * @return string
      */
     public function render();
+
+    /**
+     * Pass the grid on to the user defined view e.g an index page, along with any data that may be required
+     * Will dynamically switch between displaying the grid and downloading exported files
+     *
+     * @param string $viewName
+     * @param array $data
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
+     */
+    public function renderOn(string $viewName, $data = []);
 
     /**
      * Return the ID of the grid

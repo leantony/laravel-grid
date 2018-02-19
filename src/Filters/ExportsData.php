@@ -3,11 +3,9 @@
 namespace Leantony\Grid\Filters;
 
 use Excel;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Classes\LaravelExcelWorksheet;
-use Maatwebsite\Excel\Writers\LaravelExcelWriter;
-use PDF;
 
 trait ExportsData
 {
@@ -17,68 +15,37 @@ trait ExportsData
      * @var int
      */
     protected static $MAX_EXPORT_ROWS = 50000;
+
     /**
      * Quick toggle to specify if the grid allows exporting of records
      *
      * @var bool
      */
     protected $allowsExporting = true;
+
     /**
      * The filename that would be exported
      *
      * @var string
      */
-    protected $exportFilename = null;
+    protected $exportFilename;
 
     /**
-     * The excel writer instance
+     * Download export data
      *
-     * @var LaravelExcelWriter
+     * @param string $type
+     * @return Response
+     * @throws \Throwable
      */
-    protected $excelWriter = null;
-
-    /**
-     * The data to be exported
-     *
-     * @var Collection
-     */
-    protected $dataForExport = null;
-
-    /**
-     * Prepare export data
-     *
-     * @return $this
-     * @throws \Exception
-     */
-    public function prepareData()
+    public function exportAs($type = 'xlsx')
     {
-        if (class_exists(LaravelExcelWriter::class)) {
-            $instance = $this;
+        $e = new DefaultExport(
+            sprintf('%s report', $this->shortSingularGridName()),
+            $this->getProcessedColumns(),
+            $this->getExportData()->toArray()
+        );
 
-            $this->exportFilename = $this->getFileNameForExport();
-
-            $data = $this->getExportData();
-
-            $this->dataForExport = $data;
-
-            $this->excelWriter = Excel::create($this->exportFilename, function ($excel) use ($data, $instance) {
-                /** @var $excel LaravelExcelWriter */
-                $instance->makeExcelFromGridData($excel, $data);
-            });
-            return $this;
-        }
-        throw new \Exception("Please ensure that the class Maatwebsite\\Excel\\Writers\\LaravelExcelWriter exists.");
-    }
-
-    /**
-     * Filename for export
-     *
-     * @return string
-     */
-    public function getFileNameForExport()
-    {
-        $this->exportFilename = Str::slug($this->getName()) . '-' . time();
-        return $this->exportFilename;
+        return Excel::download($e, $this->getFileNameForExport() . '.' . $type);
     }
 
     /**
@@ -86,7 +53,7 @@ trait ExportsData
      *
      * @return Collection
      */
-    public function getExportData()
+    public function getExportData(): Collection
     {
         // work on the underlying query instance
         // this one has already passed through the filter
@@ -122,81 +89,29 @@ trait ExportsData
      *
      * @return array
      */
-    public function getColumnsToExport()
+    public function getColumnsToExport(): array
     {
         return $this->getProcessedColumns();
     }
 
     /**
-     * Make an excel worksheet
-     *
-     * @param LaravelExcelWriter $excel
-     * @param Collection $data
-     */
-    protected function makeExcelFromGridData($excel, $data)
-    {
-        $max = static::$MAX_EXPORT_ROWS;
-
-        $excel->sheet('sheet1', function (LaravelExcelWorksheet $sheet) use ($data, $max) {
-
-            $sheet->fromModel($data);
-        });
-    }
-
-    /**
-     * Download export data
-     *
-     * @param string $type
-     * @return mixed
-     * @throws \Throwable
-     * @throws \Maatwebsite\Excel\Exceptions\LaravelExcelException
-     */
-    public function downloadAs($type = 'xlsx')
-    {
-        if ($type === 'pdf') {
-            return $this->exportPdf();
-        } else {
-            // this handles any other types, so we pass the type in
-            $this->exportGeneral($type);
-        }
-    }
-
-    /**
-     * Export to PDF
-     *
-     * @return mixed
-     * @throws \Throwable
-     */
-    public function exportPdf()
-    {
-        // requires https://github.com/barryvdh/laravel-snappy
-        $pdf = PDF::loadView($this->getExportToPdfView(), [
-            'title' => sprintf('%s report', $this->shortSingularGridName()),
-            'columns' => $this->getProcessedColumns(),
-            'data' => $this->dataForExport,
-        ]);
-
-        return $pdf->download($this->getFileNameForExport() . '.pdf');
-    }
-
-    /**
-     * Get the html view used for PDF export
+     * Filename for export
      *
      * @return string
      */
-    protected function getExportToPdfView(): string
+    public function getFileNameForExport(): string
     {
-        return 'leantony::reports.pdf_report';
+        $this->exportFilename = Str::slug($this->getName()) . '-' . time();
+        return $this->exportFilename;
     }
 
     /**
-     * Export to a general type
+     * Check if the user wants to export data
      *
-     * @param $type
-     * @throws \Maatwebsite\Excel\Exceptions\LaravelExcelException
+     * @return bool
      */
-    public function exportGeneral($type)
+    protected function wantsToExport(): bool
     {
-        $this->excelWriter->export($type);
+        return $this->request->has($this->exportParam) && $this->allowsExporting;
     }
 }

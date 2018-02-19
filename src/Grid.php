@@ -251,7 +251,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Render the grid
+     * Render the grid as HTML on the user defined view
      *
      * @return string
      */
@@ -389,6 +389,21 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function getClass(): string
     {
         return $this->class;
+    }
+
+    /**
+     * Render the grid on a user defined view
+     *
+     * @param string $viewName
+     * @param array $data
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
+     */
+    public function renderOn(string $viewName, $data = [])
+    {
+        if ($this->wantsToExport()) {
+            return $this->export();
+        }
+        return view($viewName, array_merge($data, ['grid' => $this]));
     }
 
     /**

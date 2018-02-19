@@ -4,6 +4,7 @@ namespace Leantony\Grid\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -145,13 +146,6 @@ trait FiltersSearchesThenExportsData
     protected $searchFunctions = ['searchRows', 'sort', 'paginate'];
 
     /**
-     * Functions to be called after filtering of the data is done
-     *
-     * @var array
-     */
-    protected $afterFilterFunctions = ['export'];
-
-    /**
      * The filtered data. Update this after all filters have been executed. E.g during pagination
      *
      * @var Collection|LengthAwarePaginator
@@ -229,31 +223,23 @@ trait FiltersSearchesThenExportsData
                 $this->{$filter}();
             }
         }
-        if (!empty($this->afterFilterFunctions)) {
-            foreach ($this->afterFilterFunctions as $item) {
-                if (method_exists($this, $item)) {
-                    $this->{$item}();
-                }
-            }
-        }
     }
 
     /**
      * Export the data
      *
-     * @return void
+     * @return Response
      * @throws \Exception
-     * @throws \Maatwebsite\Excel\Exceptions\LaravelExcelException
      * @throws \Throwable
      */
     public function export()
     {
-        if ($this->request->has($this->exportParam) && $this->allowsExporting) {
+        if ($this->wantsToExport()) {
 
             $param = $this->request->get($this->exportParam);
 
             if (in_array($param, $this->allowedExportTypes)) {
-                $this->prepareData()->downloadAs($param);
+                return $this->exportAs($param);
             }
         }
     }
