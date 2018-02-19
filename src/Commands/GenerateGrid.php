@@ -212,7 +212,7 @@ class GenerateGrid extends Command
                                 'sort' => false,
                                 'date' => 'true',
                                 'filter' => [
-                                    'enabled' => true,
+                                    'enabled' => false,
                                     'type' => 'date',
                                     'operator' => '<='
                                 ],
