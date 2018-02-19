@@ -56,6 +56,7 @@ php artisan make:grid --model="App\User"
 Once this happens, a grid will be generated. Default namespace for grid generation is `App\Grids`.
 
 Once the generation of the grid is done, you can add add it in your controller like this. E.g a `user` model grid:
+
 ```php
 class UsersController extends Controller
 {
@@ -70,9 +71,9 @@ class UsersController extends Controller
     {
         // the 'query' argument needs to be an instance of the eloquent query builder
         // you can load relationships at this point
-        $grid = $usersGrid->create(['query' => User::query(), 'request' => $request]);
-
-        return view('welcome', ['grid' => $grid]);
+        return $usersGrid
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome'); // render the grid on the welcome view
     }
 }
 ```
@@ -89,6 +90,7 @@ class UsersController extends Controller
     }
 ```
 
+
 Otherwise, you can also instantiate the grid class like this; You can then inject any constructor dependencies you might need.
 ```php
     /**
@@ -99,11 +101,31 @@ Otherwise, you can also instantiate the grid class like this; You can then injec
      */
     public function index(Request $request)
     {
-        $grid = (new UsersGrid())->create(['query' => User::query(), 'request' => $request]);
-
-        return view('welcome', ['grid' => $grid]);
+        return (new UsersGrid())
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome');
     }
 ```
+
+
+If you need to pass extra data to the view specified, you just need to pass the data as arguments, just as you do normally on any other laravel controller;
+```php
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $data = 'hello world';
+        
+        return (new UsersGrid())
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome', compact('data'));
+    }
+```
+
 
 For eloquent relationships, its basically the same approach. Just ensure that you pass in an instance of the query builder. Like so;
 ```php
@@ -120,9 +142,9 @@ class UsersController extends Controller
     {
         // load relationships
         $query = User::with(['posts', 'activities'])
-        $grid = $usersGrid->create(['query' => $query, 'request' => $request]);
-
-        return view('welcome', ['grid' => $grid]);
+        return $usersGrid
+                    ->create(['query' => $query, 'request' => $request])
+                    ->renderOn('welcome');
     }
 }
 ```
@@ -162,4 +184,3 @@ To customize the grid, check out [the customization section](docs/customization.
 
 # TODO's
 + Add unit tests (in progress)
-+ Fix issues with downloading of PDF reports
