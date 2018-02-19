@@ -193,8 +193,7 @@ var _grids = _grids || {};
                     /**
                      * Something to do once the PJAX request has been finished
                      */
-                    afterPjax: function (e) {
-                    }
+                    afterPjax: function (e) {}
                 }
             };
             this.opts = $.extend({}, defaults, opts || {});
@@ -213,7 +212,6 @@ var _grids = _grids || {};
             $.pjax.defaults.timeout = options.timeout || 3000;
             $(document).pjax(target, container, options);
             $(document).on('ready pjax:end', function (event) {
-                console.log('after pjax');
                 afterPjax($(event.target));
             })
         };
@@ -247,7 +245,7 @@ var _grids = _grids || {};
 
             if (form.length > 0) {
                 $(document).on('submit', $this.opts.filterForm, function (event) {
-                    $.pjax.submit(event, $this.opts.id)
+                    $.pjax.submit(event, $this.opts.id, $this.opts.pjax.pjaxOptions)
                 });
             }
         };
@@ -261,7 +259,7 @@ var _grids = _grids || {};
 
             if (form.length > 0) {
                 $(document).on('submit', $this.opts.searchForm, function (event) {
-                    $.pjax.submit(event, $this.opts.id)
+                    $.pjax.submit(event, $this.opts.id, $this.opts.pjax.pjaxOptions)
                 });
             }
         };
@@ -492,6 +490,9 @@ var _grids = _grids || {};
         };
     }(jQuery));
 
+    /**
+     * Initialize stuff
+     */
     _grids.init = function () {
         // tooltip
         $('[data-toggle="tooltip"]').tooltip();

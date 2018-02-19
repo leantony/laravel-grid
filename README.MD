@@ -37,7 +37,7 @@ php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" 
 "post-autoload-dump": [
     "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
     "@php artisan package:discover",
-    "@php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force"
+    "@php artisan vendor:publish --provider=\"Leantony\\Grid\\Providers\\ServiceProvider\" --tag=assets --force"
 ]
 ```
 
