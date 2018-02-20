@@ -2,17 +2,21 @@
   "name": "leantony/laravel-grid",
   "description": "A grid view for laravel, inspired by the yii2 grid widget",
   "license": "MIT",
+  "type": "library",
   "keywords": [
     "leantony",
     "laravel-grid",
     "pjax",
-    "grid"
+    "grid",
+    "laravel-5",
+    "laravel5"
   ],
   "homepage": "https://github.com/leantony/laravel-grid",
   "authors": [
     {
-      "name": "leantony",
-      "email": "chachaantony@gmail.com"
+      "name": "Antony [leantony] Chacha",
+      "email": "chachaantony@gmail.com",
+      "role": "Developer"
     }
   ],
   "require": {
