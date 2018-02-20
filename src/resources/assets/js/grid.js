@@ -130,8 +130,10 @@ var _grids = _grids || {};
             }
             var elements = $(options.element);
             elements.each(function (i, obj) {
-                var link = $(obj).data('url');
-                $(obj).click(function (e) {
+                var el = $(obj);
+                var link = el.data('url');
+                el.css({ 'cursor': "pointer" });
+                el.click(function (e) {
                     setTimeout(function () {
                         window.location = link;
                     }, options.navigationDelay || 100);
