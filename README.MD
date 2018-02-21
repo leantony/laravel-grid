@@ -7,8 +7,7 @@ The grid uses bootstrap classes to style the `table` elements. Icons used are fr
 
 
 ## Requirements
-The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), 
-or create the middleware on your own using [jeffrey way's middleware](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
+The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware.](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 
 + Bootstrap 3 (for the styling)
 + Font awesome (for icons)
@@ -24,6 +23,7 @@ The package is available on packagist. Just run;
 composer install leantony/laravel-grid
 ```
 You can then publish the assets, incase you need to customize them. This will also copy the javascript & css assets to `public/vendor/leantony/grid`
+
 ```bash
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
@@ -182,8 +182,13 @@ a `@push('grid_js')` section on your view/layout, just after the required javasc
     <!-- the initialization javascript for any of the grid(s) you create will be injected here -->
     @stack('grid_js')
 ```
+> Just make sure that the `meta` element with the name `csrf-token` is available on your layout/blade view. E.g
+```html
+<meta name="csrf-token" content="{{ csrf_token() }}">
+```
 
 To customize the grid, check out [the customization section](docs/customization.md)
 
 # TODO's
 + Add unit tests (in progress)
++ Completion of documentation
