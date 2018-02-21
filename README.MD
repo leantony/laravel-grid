@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
 
-This package allows rendering of data via a tabular format (grid). 
-The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`
+This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget.
 
 
 ## Requirements
@@ -11,10 +10,10 @@ The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box.
 
 + Bootstrap 3 (for the styling)
 + Font awesome (for icons)
-+ Jquery (for the grid.js)
++ Jquery (required by bootstrap and the package's javascript)
 + Jquery pjax (quickly view data without having to reload the page)
-+ [Block UI](https://github.com/malsup/blockui) (optional)
-+ [Date picker](https://github.com/uxsolutions/bootstrap-datepicker.git) (optional)
++ [Block UI](https://github.com/malsup/blockui) (optional - to 'block' the UI when doing an AJAX request that might presumably take a while).
++ [Date picker](https://github.com/uxsolutions/bootstrap-datepicker.git) (optional - for the date filters)
 
 
 ## Installation
@@ -22,15 +21,16 @@ The package is available on packagist. Just run;
 ```bash
 composer install leantony/laravel-grid
 ```
-You can then publish the assets, incase you need to customize them. This will also copy the javascript & css assets to `public/vendor/leantony/grid`
+You can then publish the resources (views) and assets (css & js), incase you need to customize them. This will also copy the javascript & css assets to `public/vendor/leantony/grid`
 
 ```bash
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
-> You can publish the assets and views separately by passing the --tag argument to the command. For the values, try
-`assets`, `views` or `config` for js|css assets, views and config respectively
+> You can publish the assets and views separately by passing the `--tag` argument to the command. For the argument values, try `assets`, `views` or `config` for js|css assets, views and config respectively.
 
-When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run the command;
+Or just run `php artisan vendor:publish` and select the provider index by name `Leantony\Grid\Providers\ServiceProvider`
+
+When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
 ```bash
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force
 ```
@@ -186,9 +186,15 @@ a `@push('grid_js')` section on your view/layout, just after the required javasc
 ```html
 <meta name="csrf-token" content="{{ csrf_token() }}">
 ```
+The grid's initialization javascript is dependent on the grid itself. A grid is initialized by an ID *(if you're curious, you can confirm this [here](https://github.com/leantony/laravel-grid/blob/13d88ca63d32a1885545fca0af014c065ea679b9/src/resources/views/grid/grid.blade.php#L189-L212)*. To read more about this, be sure to check out the [javascript](docs/javascript.md) section of the docs.
 
-To customize the grid, check out [the customization section](docs/customization.md)
+To customize the grid, check out [the customization section](docs/customization.md).
 
 # TODO's
-+ Add unit tests (in progress)
-+ Completion of documentation
+Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new)
+
++ Add unit tests (in progress).
++ Completion of documentation (in progress).
++ Add more customization options to published config file.
++ Add ability to culminate grid rows. E.g displaying a total of some sort.
++ Add ability to have a checkbox that can be used to select multiple items, after which an action can be done. E.g deleting mutiple items.
