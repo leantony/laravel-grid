@@ -179,7 +179,7 @@ a `@push('grid_js')` section on your view/layout, just after the required javasc
             }
         });
     </script>
-    <!-- the initialization javascript for any of the grid(s) you create will be injected here -->
+    <!-- the initialization javascript for any of the grid(s) you create will be injected here. Having this will ensure that the script is executed after it's dependencies have been loaded. -->
     @stack('grid_js')
 ```
 > Just make sure that the `meta` element with the name `csrf-token` is available on your layout/blade view. E.g

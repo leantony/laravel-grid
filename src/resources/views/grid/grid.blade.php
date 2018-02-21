@@ -31,13 +31,15 @@
                 {!! $grid->renderSearchForm() !!}
                 <!-- end search -->
                     <!-- toolbar buttons -->
-                    <div class="col-md-{{ $grid->getToolbarSize()[1] }}">
-                        <div class="pull-right">
-                            @foreach($grid->getButtons('toolbar') as $button)
-                                {!! $button->render() !!}
-                            @endforeach
+                    @if($grid->hasButtons('toolbar'))
+                        <div class="col-md-{{ $grid->getToolbarSize()[1] }}">
+                            <div class="pull-right">
+                                @foreach($grid->getButtons('toolbar') as $button)
+                                    {!! $button->render() !!}
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     <!-- end toolbar buttons -->
                 </div>
                 <hr>
@@ -154,7 +156,7 @@
                                                 </td>
                                             @endif
                                         @endif
-                                        @if($loop->last)
+                                        @if($loop->last && $grid->hasButtons('rows'))
                                             <td>
                                                 <div class="pull-right">
                                                     @foreach($grid->getButtons('rows') as $button)

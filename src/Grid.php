@@ -66,7 +66,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $warnIfEmpty = true;
 
     /**
-     * Extra parameters sent to the grid from the view
+     * Extra parameters sent to the grid's blade view
      *
      * @var array
      */
@@ -81,6 +81,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
 
     /**
      * The toolbar size. 6 columns on the right and 6 on the left
+     * Left holds the search bar, while the right part holds the buttons
      *
      * @var array
      */
@@ -141,7 +142,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         $this->setRoutes();
         // default buttons on the grid
         $this->setButtons();
-        // configuration to the buttons already set including adding new ones
+        // configuration to the buttons already set including adding new ones. Even clearing all of them
         $this->configureButtons();
         // user defined columns
         $this->setColumns();
@@ -197,7 +198,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     abstract public function setColumns();
 
     /**
-     * Get the data
+     * Get the data to be rendered on the grid
      *
      * @return Paginator|LengthAwarePaginator|Collection|array
      */
@@ -234,6 +235,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
 
     /**
      * @return string
+     * @throws \Throwable
      */
     public function __toString()
     {
@@ -244,6 +246,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * Get content as a string of HTML.
      *
      * @return string
+     * @throws \Throwable
      */
     public function toHtml()
     {
@@ -254,6 +257,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * Render the grid as HTML on the user defined view
      *
      * @return string
+     * @throws \Throwable
      */
     public function render()
     {
@@ -397,6 +401,8 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * @param string $viewName
      * @param array $data
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
+     * @throws \Exception
+     * @throws \Throwable
      */
     public function renderOn(string $viewName, $data = [])
     {
@@ -414,10 +420,10 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected function checkParameters()
     {
         if (!$this->query instanceof Builder) {
-            throw new InvalidArgumentException("The object of type query is invalid. Pass an instance of Illuminate\\Database\\Eloquent\\Builder");
+            throw new InvalidArgumentException("The object of type query is invalid. You need to pass an instance of Illuminate\\Database\\Eloquent\\Builder");
         }
         if (!$this->request instanceof Request) {
-            throw new InvalidArgumentException("The object of type request is invalid. Pass an instance of Illuminate\\Http\\Request");
+            throw new InvalidArgumentException("The object of type request is invalid. You need to pass an instance of Illuminate\\Http\\Request");
         }
     }
 }

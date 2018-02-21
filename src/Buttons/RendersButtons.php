@@ -74,6 +74,7 @@ trait RendersButtons
      * Sets an array of buttons that would be rendered to the grid
      *
      * @return void
+     * @throws \Exception
      */
     public function setButtons()
     {
@@ -227,21 +228,53 @@ trait RendersButtons
     /**
      * Get an array of button instances to be rendered on the grid
      *
-     * @param string|null $name
+     * @param string $section
      * @return array
      */
-    public function getButtons($name = null)
+    public function getButtons(string $section = 'toolbar')
     {
-        if (!$this->renderButtons) {
-            // rendering disabled
-            return [];
-        }
-
-        $buttons = $name ? $this->buttons[$name] : $this->buttons;
-        // apply the position here
+        $buttons = $section ? $this->buttons[$section] : $this->buttons;
+        // sort the buttons by position
         return collect($buttons)->sortBy(function ($v) {
             return $v->position;
         })->toArray();
+    }
+
+    /**
+     * Clear the buttons on a specific section
+     *
+     * @param string $section
+     * @return void
+     */
+    protected function clearButtons(string $section = 'toolbar')
+    {
+        unset($this->buttons[$section]);
+    }
+
+    /**
+     * Clear all buttons
+     *
+     * @return void
+     */
+    protected function clearAllButtons()
+    {
+        unset($this->buttons);
+    }
+
+    /**
+     * Check if the grid has any buttons
+     *
+     * @param string $section
+     * @return bool
+     */
+    public function hasButtons(string $section = 'toolbar')
+    {
+        if (!$this->renderButtons) {
+            // rendering disabled
+            return false;
+        }
+        // no buttons on section
+        return count($this->buttons[$section]) === 0 ? false : true;
     }
 
     /**
@@ -333,7 +366,7 @@ trait RendersButtons
      */
     private function ensureButtonInstanceValidity($button)
     {
-        if ($button == null || !$button instanceof GenericButton) {
+        if ($button === null || !$button instanceof GenericButton) {
             throw new InvalidArgumentException(sprintf("The button %s could not be found or is invalid.", $button));
         }
     }
