@@ -21,7 +21,7 @@ The package is available on packagist. Just run;
 ```bash
 composer install leantony/laravel-grid
 ```
-You can then publish the resources (views) and assets (css & js), incase you need to customize them. This will also copy the javascript & css assets to `public/vendor/leantony/grid`
+You can then publish the resources (views) and assets (css & js), incase you need to customize them. The css and js will be copied to `public/vendor/leantony/grid`
 
 ```bash
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
@@ -49,10 +49,10 @@ php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" 
 A laravel command is available to make it easy to create grids. 
 Once installed, just run the command:
 ```bash
-php artisan make:grid --model="App\ModelClass"
+php artisan make:grid --model="{modelClass}"
 ```
 
-Just make sure you replace `modelClass` with your actual `eloquent` model class. E.g 
+Just make sure you replace `{modelClass}` with your actual `eloquent` model class. E.g 
 ```bash
 php artisan make:grid --model="App\User"
 ```
@@ -80,7 +80,7 @@ class UsersController extends Controller
     }
 }
 ```
-> If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like so;
+> If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
 ```php
      /**
      * Register any application services.
@@ -94,7 +94,7 @@ class UsersController extends Controller
 ```
 
 
-Otherwise, you can also instantiate the grid class like this; You can then inject any constructor dependencies you might need.
+Otherwise, you can also instantiate the grid class like any other class then inject any constructor dependencies you might need.
 ```php
     /**
      * Display a listing of the resource.
@@ -130,7 +130,7 @@ If you need to pass extra data to the view specified, you just need to pass the 
 ```
 
 
-For eloquent relationships, its basically the same approach. Just ensure that you pass in an instance of the query builder. Like so;
+For eloquent relationships, its basically the same approach. Just ensure that you pass in an instance of the query builder. Like this;
 ```php
 class UsersController extends Controller
 {
@@ -163,8 +163,7 @@ You should see something like this. Feel free to check out the [sample app](http
 ![sample](docs/sample.png)
 
 
-To enable javascript utilities such as Pjax, ensure that you have their dependencies included on your page/layout. Once you have done that, ensure that you have
-a `@push('grid_js')` section on your view/layout, just after the required javascript dependencies. This is the point where the grid's javscript will be injected. An example is as shown below;
+To enable javascript utilities such as Pjax, ensure that you have their dependencies included on your page/layout. Once you have done that, ensure that you have a `@push('grid_js')` section on your view/layout, just after the required javascript dependencies. This is the point where the grid's javscript will be injected. An example is as shown below;
 ```php
 
     <!-- dependencies e.g jquery, pjax, bootstrap js come here -->
