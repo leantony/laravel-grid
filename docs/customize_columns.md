@@ -132,7 +132,7 @@ View sample usage below;
 	],
 ]
 
-// custom query. The `operator` option will be ignored
+// custom query. The `operator` option is ignored when you specify a query
 "name" => [
 	"filter" => [
 		"enabled" => true,
@@ -162,6 +162,35 @@ function($gridName, $gridItem) {
     //
 }
 ```
+Check sample usage below;
+```php
+// default
+"name" => [
+	"styles" => [
+		"column" => "col-md-2",
+		"row" => null
+	],
+]
+// adding row style as a string
+"name" => [
+	"styles" => [
+		"column" => "col-md-2",
+		"row" => "success"
+	],
+]
+// adding row style using a function. E.g to highlight the currently logged in user on the grid
+// assuming the grid displays a list of users
+$loggedInUser = auth()->user();
+"name" => [
+	"styles" => [
+		"column" => "col-md-2",
+		"row" => function($gridName, $gridItem) use ($loggedInUser) {
+			return $gridItem->id === $loggedInUser->id ? "success" : null;
+		}
+	],
+]
+```
+
 
 ### search
 + Possible values = `array`
