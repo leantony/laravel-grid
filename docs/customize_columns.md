@@ -81,7 +81,7 @@ This specifies if a column is sortable. Defaults to `true`. View sample usage be
 + Possible values = `string`
 + Required = `false`
 
-This represents a readable name for the `column name`. Defaults to `/[^a-z0-9 -]+/` and each valid match replaced with a space. View example usage below;
+This represents a readable name for the `column name`. Defaults to `null` and the regular expression - `/[^a-z0-9 -]+/` is used where each valid match is replaced with a space. View example usage below;
 ```php
 "name" => ["label" => "Username"];
 "name" => ["label" => "First Name"];
@@ -110,40 +110,36 @@ View sample usage below;
 // enabling the filter on a column
 "name" => [
 	"filter" => [
-			"enabled" => true,
-			"operator" => "="
-		],
+		"enabled" => true,
+		"operator" => "="
 	],
 ]
 // adding the filter type
 "name" => [
 	"filter" => [
-			"enabled" => true,
-			"operator" => "=",
-			"type" => "text"
-		],
+		"enabled" => true,
+		"operator" => "=",
+		"type" => "text"
 	],
 ]
 // adding a dropdown filter
 "name" => [
 	"filter" => [
-			"enabled" => true,
-			"operator" => "=",
-			"type" => "select",
-			"data" => Users::pluck('name', 'id'),
-		],
+		"enabled" => true,
+		"operator" => "=",
+		"type" => "select",
+		"data" => Users::pluck('name', 'id'),
 	],
 ]
-// custom query
+
+// custom query. The `operator` option will be ignored
 "name" => [
 	"filter" => [
-			"enabled" => true,
-			"operator" => "=",
-			"query" => function($query, $columnName, $userInput) {
-				return $query->where("name", "like", "%" . $userInput . "%")
-					    ->orWhere("first_name", "like", "%" . $userInput . "%")
-			}
-		],
+		"enabled" => true,
+		"query" => function($query, $columnName, $userInput) {
+			return $query->where("name", "like", "%" . $userInput . "%")
+				->orWhere("first_name", "like", "%" . $userInput . "%")
+		}
 	],
 ]
 ```
