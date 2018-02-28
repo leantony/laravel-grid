@@ -237,7 +237,6 @@ Check sample usage below;
 "name" => [
 	"search" => [
 		"enabled" => true,
-		"operator" => "like",
 		"useFilterQuery" => true
 	],
 	"filter" => [
@@ -262,7 +261,10 @@ Defines if a column would be sorted, when clicked on. Check sample usage below;
 ```php
 "name" => ["sort" => true];
 ```
+
+
 ### present
+Docs coming soon...
 
 
 ### data
@@ -272,9 +274,12 @@ defaults to = `$data->${column_name}`. E.g `name` will be `$data->name`
 
 
 ### date
+Docs coming soon...
 
 
 ### raw
+Docs coming soon...
+
 
 ### renderIf
 possible values = `callable`
