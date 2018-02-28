@@ -56,23 +56,39 @@ A default grid - in this case one for the default `users` model would have an ar
 The number of columns can be as many as you want. Just make sure that they fit within the space you allocate. A listing of each attribute
 within the columns array shall be explained below.
 
+
 ## Column name
-This is passed as a `key` in the array. Each array key **represents a column that exists** on the table that represents your eloquent model
+This is passed as a `key` in the array. Each array key should ideally **represent a column that exists** on the table that represents your eloquent model. 
+> If you specify a column that does not exist on your model, you need to customize how the data would be fetched
+
 
 ## Column data
 This is the `value` of the array. It has a variety of key value pairs too, which will be explained below;
+
 
 ### sort
 + Possible values = `boolean`
 + Required = `false`
 
-This specifies if a column is sortable. Defaults to `true`
+This specifies if a column is sortable. Defaults to `true`. View sample usage below;
+```php
+"name" => ["sort" => true];
+"name" => ["sort" => false]
+```
+
 
 ### label
 + Possible values = `string`
 + Required = `false`
 
-This represents a readable name for the `column name`. Defaults to `/[^a-z0-9 -]+/` and each valid match replaced with a space
+This represents a readable name for the `column name`. Defaults to `null` and the regular expression - `/[^a-z0-9 -]+/` is used where each valid match is replaced with a space. View example usage below;
+```php
+"name" => ["label" => "Username"];
+"name" => ["label" => "First Name"];
+// set to null or ommit the key to use the available defaults
+"name" => ["label" => null];
+```
+
 
 ### filter
 + Possible values = `array`
@@ -89,6 +105,47 @@ function($query, $columnName, $userInput) {
     //
 }
 ```
+View sample usage below;
+```php
+// enabling the filter on a column
+"name" => [
+	"filter" => [
+		"enabled" => true,
+		"operator" => "="
+	],
+]
+// adding the filter type
+"name" => [
+	"filter" => [
+		"enabled" => true,
+		"operator" => "=",
+		"type" => "text"
+	],
+]
+// adding a dropdown filter
+"name" => [
+	"filter" => [
+		"enabled" => true,
+		"operator" => "=",
+		"type" => "select",
+		"data" => Users::pluck('name', 'id'),
+	],
+]
+
+// custom query
+"name" => [
+	"filter" => [
+		"enabled" => true,
+		"query" => function($query, $columnName, $userInput) {
+			return $query->where("name", "like", "%" . $userInput . "%")
+				->orWhere("first_name", "like", "%" . $userInput . "%")
+		}
+	],
+]
+```
+> Note that all columns with filters will be joined during querying using the `and` operator. This can be configured in `app/config/grids.php` (configuration coming soon)
+
+> The `operator` option is ignored when you specify a query
 
 ### styles
 + Possible values = `array`
@@ -107,6 +164,35 @@ function($gridName, $gridItem) {
     //
 }
 ```
+Check sample usage below;
+```php
+// default
+"name" => [
+	"styles" => [
+		"column" => "col-md-2",
+		"row" => null
+	],
+]
+// adding row style as a string
+"name" => [
+	"styles" => [
+		"column" => "col-md-2",
+		"row" => "success"
+	],
+]
+// adding row style using a function. E.g to highlight the currently logged in user on the grid
+// assuming the grid displays a list of users
+$loggedInUser = auth()->user();
+"name" => [
+	"styles" => [
+		"column" => "col-md-2",
+		"row" => function($gridName, $gridItem) use ($loggedInUser) {
+			return $gridItem->id === $loggedInUser->id ? "success" : null;
+		}
+	],
+]
+```
+
 
 ### search
 + Possible values = `array`
@@ -126,8 +212,98 @@ function($query, $columnName, $userInput) {
 
 + `boolean` **useFilterQuery** - Specifies if the `query` supplied on the `filter` option will be used for searching. Defaults to `false`
 
+Check sample usage below;
+```php
+// basic
+"name" => [
+	"search" => [
+		"enabled" => true,
+		"operator" => "like",
+	],
+]
+
+// using a custom query
+"name" => [
+	"search" => [
+		"enabled" => true,
+		"query" => function($query, $columnName, $userInput) {
+			return $query->where("name", "like", "%" . $userInput . "%")
+				->orWhere("first_name", "like", "%" . $userInput . "%")
+		}
+	]
+]
+
+// using the filter query to perform search. Of course you need to have set up the `query` option for the filter
+"name" => [
+	"search" => [
+		"enabled" => true,
+		"useFilterQuery" => true
+	],
+	"filter" => [
+		"enabled" => true,
+		"query" => function($query, $columnName, $userInput) {
+			return $query->where("name", "like", "%" . $userInput . "%")
+				->orWhere("first_name", "like", "%" . $userInput . "%")
+		}
+	],
+]
+```
+
+> Just like the filter option, the `operator` option is ignored when you specify a query
+
+
 ## sort
 possible values = `boolean`
 Required = `false`
+Defaults to = `true`
 
-Defines if a column would be sorted, when clicked on. If not provided, this value defaults to `true`
+Defines if a column would be sorted, when clicked on. Check sample usage below;
+```php
+"name" => ["sort" => true];
+```
+
+
+### present
+Docs coming soon...
+
+
+### data
+possible values = `string|callable`
+required = `false`
+defaults to = `$data->${column_name}`. E.g `name` will be `$data->name`
+
+
+### date
+Docs coming soon...
+
+
+### raw
+Docs coming soon...
+
+
+### renderIf
+possible values = `callable`
+Required = `false`
+Defaults to = `null`
+
+Defines a function that would be called to determine if a column would be rendered. Check sample usage below;
+```php
+// render the column, only if the user is logged in
+"name" => [
+	"renderIf" => function() {
+		return auth()->check();
+	}
+]
+```
+> Note that here the callable function cannot use the grid's data because when the columns are rendered, the data has not been iterated over yet.
+
+
+### export
+possible values = `boolean`
+Required = `false`
+Defaults to = `true`
+
+Defines if a column would be exported, when an option to export is chosen. Check sample usage below;
+```php
+"name" => ["export" => true];
+```
