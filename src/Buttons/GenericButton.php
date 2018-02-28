@@ -315,6 +315,7 @@ class GenericButton implements Htmlable
 
     /**
      * @return string
+     * @throws \Throwable
      */
     public function __toString()
     {
@@ -325,6 +326,7 @@ class GenericButton implements Htmlable
      * Get content as a string of HTML.
      *
      * @return string
+     * @throws \Throwable
      */
     public function toHtml()
     {
@@ -336,14 +338,18 @@ class GenericButton implements Htmlable
      *
      * @param array $args
      * @return string
+     * @throws \Throwable
      */
     public function render(...$args)
     {
+        // apply preset attributes
+        $this->dataAttributes = $this->getDataAttributes();
+
+        // custom render
         if ($this->renderCustom && is_callable($this->renderCustom)) {
             return call_user_func($this->renderCustom, $this->compactData($args));
         }
-        // apply preset attributes
-        $this->dataAttributes = $this->getDataAttributes();
+
         // collapse the array of args into a single 1d array, so that the values passed can be
         // accessed as key value pair
         $args = array_collapse($args);

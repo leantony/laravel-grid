@@ -91,6 +91,7 @@ trait SearchesData
      * Render the search form on the grid
      *
      * @return string
+     * @throws \Throwable
      */
     public function renderSearchForm()
     {
