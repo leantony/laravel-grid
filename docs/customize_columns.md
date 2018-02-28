@@ -132,7 +132,7 @@ View sample usage below;
 	],
 ]
 
-// custom query. The `operator` option is ignored when you specify a query
+// custom query
 "name" => [
 	"filter" => [
 		"enabled" => true,
@@ -143,7 +143,9 @@ View sample usage below;
 	],
 ]
 ```
+> Note that all columns with filters will be joined during querying using the `and` operator. This can be configured in `app/config/grids.php` (configuration coming soon)
 
+> The `operator` option is ignored when you specify a query
 
 ### styles
 + Possible values = `array`
@@ -210,8 +212,93 @@ function($query, $columnName, $userInput) {
 
 + `boolean` **useFilterQuery** - Specifies if the `query` supplied on the `filter` option will be used for searching. Defaults to `false`
 
+Check sample usage below;
+```php
+// basic
+"name" => [
+	"search" => [
+		"enabled" => true,
+		"operator" => "like",
+	],
+]
+
+// using a custom query
+"name" => [
+	"search" => [
+		"enabled" => true,
+		"query" => function($query, $columnName, $userInput) {
+			return $query->where("name", "like", "%" . $userInput . "%")
+				->orWhere("first_name", "like", "%" . $userInput . "%")
+		}
+	]
+]
+
+// using the filter query to perform search. Of course you need to have set up the `query` option for the filter
+"name" => [
+	"search" => [
+		"enabled" => true,
+		"operator" => "like",
+		"useFilterQuery" => true
+	],
+	"filter" => [
+		"enabled" => true,
+		"query" => function($query, $columnName, $userInput) {
+			return $query->where("name", "like", "%" . $userInput . "%")
+				->orWhere("first_name", "like", "%" . $userInput . "%")
+		}
+	],
+]
+```
+
+> Just like the filter option, the `operator` option is ignored when you specify a query
+
+
 ## sort
 possible values = `boolean`
 Required = `false`
+Defaults to = `true`
 
-Defines if a column would be sorted, when clicked on. If not provided, this value defaults to `true`
+Defines if a column would be sorted, when clicked on. Check sample usage below;
+```php
+"name" => ["sort" => true];
+```
+### present
+
+
+### data
+possible values = `string|callable`
+required = `false`
+defaults to = `$data->${column_name}`. E.g `name` will be `$data->name`
+
+
+### date
+
+
+### raw
+
+### renderIf
+possible values = `callable`
+Required = `false`
+Defaults to = `null`
+
+Defines a function that would be called to determine if a column would be rendered. Check sample usage below;
+```php
+// render the column, only if the user is logged in
+"name" => [
+	"renderIf" => function() {
+		return auth()->check();
+	}
+]
+```
+> Note that here the callable function cannot use the grid's data because when the columns are rendered, the data has not been iterated over yet.
+
+
+### export
+possible values = `boolean`
+Required = `false`
+Defaults to = `true`
+
+Defines if a column would be exported, when an option to export is chosen. Check sample usage below;
+```php
+"name" => ["export" => true];
+```
