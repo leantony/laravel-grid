@@ -1,60 +1,5 @@
 # Customize the grid columns
-The grid is simply a bootstrap styled table but highly dynamic in nature. In the sense that the data, columns, filters, etc
-are all rendered depending on server side logic that you specify.
-
-A default grid - in this case one for the default `users` model would have an array of columns, like this:
-```php
-    /**
-    * Set the columns to be displayed. Check `docs/customize_columns.md` for more information
-    *
-    * @return void
-    * @throws \Exception if an error occurs during parsing of the data
-    */
-    public function setColumns()
-    {
-        $this->columns = [
-		    "id" => [
-		        "label" => "ID",
-		        "filter" => [
-		            "enabled" => true,
-		            "operator" => "="
-		        ],
-		        "styles" => [
-		            "column" => "col-md-2"
-		        ]
-		    ],
-		    "name" => [
-		        "search" => [
-		            "enabled" => true
-		        ],
-		        "filter" => [
-		            "enabled" => false,
-		            "operator" => "="
-		        ]
-		    ],
-		    "email" => [
-		        "search" => [
-		            "enabled" => true
-		        ],
-		        "filter" => [
-		            "enabled" => false,
-		            "operator" => "="
-		        ]
-		    ],
-		    "created_at" => [
-		        "sort" => false,
-		        "date" => "true",
-		        "filter" => [
-		            "enabled" => true,
-		            "type" => "date",
-		            "operator" => "<="
-		        ]
-		    ]
-		];
-    }
-```
-The number of columns can be as many as you want. Just make sure that they fit within the space you allocate. A listing of each attribute
-within the columns array shall be explained below.
+This section describes the properties that apply to the `columns` property that is needed to render the grid.
 
 
 ## Column name
@@ -263,9 +208,53 @@ Defines if a column would be sorted, when clicked on. Check sample usage below;
 ```
 
 
-### present
-Docs coming soon...
+### presenter
+possible values = `string|callable`
+Required = `false`
+Defaults to = `null`
 
+Allows you to specify a presenter that would be used to render the column value. If a string value is specified, it would be called on the
+[laracasts presenter](https://github.com/laracasts/Presenter). E.g
+```php
+// laracasts presenter class
+class UserPresenter extends Presenter {
+
+    public function fullName()
+    {
+        return $this->first . ' ' . $this->last;
+    }
+
+    public function accountAge()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
+}
+
+// user model
+use Laracasts\Presenter\PresentableTrait;
+
+class User extends \Eloquent {
+
+    use PresentableTrait;
+
+    protected $presenter = 'UserPresenter';
+
+}
+
+// grid column
+"name" => [
+	"presenter" => "fullName",
+]
+```
+Alternatively, you can specify the `presenter` as a callback that takes in two arguments - columnData, and columnName
+```php
+"name" => [
+	"query" => function($columnData, $columnName) {
+    	// do whatever you want to display the data for the `name` column
+    }
+]
+```
 
 ### data
 possible values = `string|callable`
@@ -274,12 +263,49 @@ defaults to = `$data->${column_name}`. E.g `name` will be `$data->name`
 
 
 ### date
-Docs coming soon...
+possible values =`boolean`
+required = `false`
+defaults to = `false`
+
+Specifies that the column in use is a `date`.
+```php
+"created_at" => [
+	"date" => true,
+]
+```
+
+
+### dateFormat
+possible values =`string`
+required = `false`
+defaults to = `Y-m-d`
+
+Allows the formatting of a grid column whose `date` attribute is set to true. E.g
+```php
+"created_at" => [
+	"date" => true,
+	"dateFormat" => "l jS \of F Y h:i:s A"
+]
+```
 
 
 ### raw
-Docs coming soon...
+possible values = `boolean`
+required = `false`
+defaults to = `false`.
 
+Used to render values as is (will be rendered within {!! !!}). This property relies on the `data` property. For example, if you need to render an image,
+you would obviously need to show it as HTML.
+
+```php
+"avatar" => [
+    "raw" => true,
+    "data" => function ($columnData, $columnName) {
+        // like for instance, displaying an image on the grid...
+        return new HtmlString(sprintf('<img src="%s" class="img-responsive" alt = "%s" width="40">', asset($columnData->{$columnName}), 'alternative'));
+    },
+]
+```
 
 ### renderIf
 possible values = `callable`
