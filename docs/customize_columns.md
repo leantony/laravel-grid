@@ -198,9 +198,9 @@ Check sample usage below;
 
 
 ## sort
-possible values = `boolean`
-Required = `false`
-Defaults to = `true`
++ possible values = `boolean`
++ Required = `false`
++ Defaults to = `true`
 
 Defines if a column would be sorted, when clicked on. Check sample usage below;
 ```php
@@ -209,9 +209,9 @@ Defines if a column would be sorted, when clicked on. Check sample usage below;
 
 
 ### presenter
-possible values = `string|callable`
-Required = `false`
-Defaults to = `null`
++ possible values = `string|callable`
++ Required = `false`
++ Defaults to = `null`
 
 Allows you to specify a presenter that would be used to render the column value. If a string value is specified, it would be called on the
 [laracasts presenter](https://github.com/laracasts/Presenter). E.g
@@ -257,15 +257,15 @@ Alternatively, you can specify the `presenter` as a callback that takes in two a
 ```
 
 ### data
-possible values = `string|callable`
-required = `false`
-defaults to = `$data->${column_name}`. E.g `name` will be `$data->name`
++ possible values = `string|callable`
++ required = `false`
++ defaults to = `$data->${column_name}`. E.g `name` will be `$data->name`
 
 
 ### date
-possible values =`boolean`
-required = `false`
-defaults to = `false`
++ possible values =`boolean`
++ required = `false`
++ defaults to = `false`
 
 Specifies that the column in use is a `date`.
 ```php
@@ -276,9 +276,9 @@ Specifies that the column in use is a `date`.
 
 
 ### dateFormat
-possible values =`string`
-required = `false`
-defaults to = `Y-m-d`
++ possible values =`string`
++ required = `false`
++ defaults to = `Y-m-d`
 
 Allows the formatting of a grid column whose `date` attribute is set to true. E.g
 ```php
@@ -290,9 +290,9 @@ Allows the formatting of a grid column whose `date` attribute is set to true. E.
 
 
 ### raw
-possible values = `boolean`
-required = `false`
-defaults to = `false`.
++ possible values = `boolean`
++ required = `false`
++ defaults to = `false`.
 
 Used to render values as is (will be rendered within {!! !!}). This property relies on the `data` property. For example, if you need to render an image,
 you would obviously need to show it as HTML.
@@ -308,9 +308,9 @@ you would obviously need to show it as HTML.
 ```
 
 ### renderIf
-possible values = `callable`
-Required = `false`
-Defaults to = `null`
++ possible values = `callable`
++ Required = `false`
++ Defaults to = `null`
 
 Defines a function that would be called to determine if a column would be rendered. Check sample usage below;
 ```php
@@ -325,9 +325,9 @@ Defines a function that would be called to determine if a column would be render
 
 
 ### export
-possible values = `boolean`
-Required = `false`
-Defaults to = `true`
++ possible values = `boolean`
++ Required = `false`
++ Defaults to = `true`
 
 Defines if a column would be exported, when an option to export is chosen. Check sample usage below;
 ```php
