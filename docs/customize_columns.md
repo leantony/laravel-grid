@@ -54,38 +54,38 @@ View sample usage below;
 ```php
 // enabling the filter on a column
 "name" => [
-	"filter" => [
-		"enabled" => true,
-		"operator" => "="
-	],
+    "filter" => [
+        "enabled" => true,
+        "operator" => "="
+    ],
 ]
 // adding the filter type
 "name" => [
-	"filter" => [
-		"enabled" => true,
-		"operator" => "=",
-		"type" => "text"
-	],
+    "filter" => [
+        "enabled" => true,
+        "operator" => "=",
+        "type" => "text"
+    ],
 ]
 // adding a dropdown filter
 "name" => [
-	"filter" => [
-		"enabled" => true,
-		"operator" => "=",
-		"type" => "select",
-		"data" => Users::pluck('name', 'id'),
-	],
+    "filter" => [
+        "enabled" => true,
+        "operator" => "=",
+        "type" => "select",
+        "data" => Users::pluck('name', 'id'),
+    ],
 ]
 
 // custom query
 "name" => [
-	"filter" => [
-		"enabled" => true,
-		"query" => function($query, $columnName, $userInput) {
-			return $query->where("name", "like", "%" . $userInput . "%")
-				->orWhere("first_name", "like", "%" . $userInput . "%")
-		}
-	],
+    "filter" => [
+        "enabled" => true,
+        "query" => function($query, $columnName, $userInput) {
+            return $query->where("name", "like", "%" . $userInput . "%")
+                ->orWhere("first_name", "like", "%" . $userInput . "%")
+        }
+    ],
 ]
 ```
 > Note that all columns with filters will be joined during querying using the `and` operator. This can be configured in `app/config/grids.php` (configuration coming soon)
@@ -113,28 +113,28 @@ Check sample usage below;
 ```php
 // default
 "name" => [
-	"styles" => [
-		"column" => "col-md-2",
-		"row" => null
-	],
+    "styles" => [
+        "column" => "col-md-2",
+        "row" => null
+    ],
 ]
 // adding row style as a string
 "name" => [
-	"styles" => [
-		"column" => "col-md-2",
-		"row" => "success"
-	],
+    "styles" => [
+        "column" => "col-md-2",
+        "row" => "success"
+    ],
 ]
 // adding row style using a function. E.g to highlight the currently logged in user on the grid
 // assuming the grid displays a list of users
 $loggedInUser = auth()->user();
 "name" => [
-	"styles" => [
-		"column" => "col-md-2",
-		"row" => function($gridName, $gridItem) use ($loggedInUser) {
-			return $gridItem->id === $loggedInUser->id ? "success" : null;
-		}
-	],
+    "styles" => [
+        "column" => "col-md-2",
+        "row" => function($gridName, $gridItem) use ($loggedInUser) {
+            return $gridItem->id === $loggedInUser->id ? "success" : null;
+        }
+    ],
 ]
 ```
 
@@ -161,36 +161,36 @@ Check sample usage below;
 ```php
 // basic
 "name" => [
-	"search" => [
-		"enabled" => true,
-		"operator" => "like",
-	],
+    "search" => [
+        "enabled" => true,
+        "operator" => "like",
+    ],
 ]
 
 // using a custom query
 "name" => [
-	"search" => [
-		"enabled" => true,
-		"query" => function($query, $columnName, $userInput) {
-			return $query->where("name", "like", "%" . $userInput . "%")
-				->orWhere("first_name", "like", "%" . $userInput . "%")
-		}
-	]
+    "search" => [
+        "enabled" => true,
+        "query" => function($query, $columnName, $userInput) {
+            return $query->where("name", "like", "%" . $userInput . "%")
+                ->orWhere("first_name", "like", "%" . $userInput . "%")
+        }
+    ]
 ]
 
 // using the filter query to perform search. Of course you need to have set up the `query` option for the filter
 "name" => [
-	"search" => [
-		"enabled" => true,
-		"useFilterQuery" => true
-	],
-	"filter" => [
-		"enabled" => true,
-		"query" => function($query, $columnName, $userInput) {
-			return $query->where("name", "like", "%" . $userInput . "%")
-				->orWhere("first_name", "like", "%" . $userInput . "%")
-		}
-	],
+    "search" => [
+        "enabled" => true,
+        "useFilterQuery" => true
+    ],
+    "filter" => [
+        "enabled" => true,
+        "query" => function($query, $columnName, $userInput) {
+            return $query->where("name", "like", "%" . $userInput . "%")
+                ->orWhere("first_name", "like", "%" . $userInput . "%")
+        }
+    ],
 ]
 ```
 
@@ -244,14 +244,14 @@ class User extends \Eloquent {
 
 // grid column
 "name" => [
-	"presenter" => "fullName",
+    "presenter" => "fullName",
 ]
 ```
 Alternatively, you can specify the `presenter` as a callback that takes in two arguments - columnData, and columnName
 ```php
 "name" => [
-	"query" => function($columnData, $columnName) {
-    	// do whatever you want to display the data for the `name` column
+    "query" => function($columnData, $columnName) {
+        // do whatever you want to display the data for the `name` column
     }
 ]
 ```
@@ -270,7 +270,7 @@ defaults to = `false`
 Specifies that the column in use is a `date`.
 ```php
 "created_at" => [
-	"date" => true,
+    "date" => true,
 ]
 ```
 
@@ -283,8 +283,8 @@ defaults to = `Y-m-d`
 Allows the formatting of a grid column whose `date` attribute is set to true. E.g
 ```php
 "created_at" => [
-	"date" => true,
-	"dateFormat" => "l jS \of F Y h:i:s A"
+    "date" => true,
+    "dateFormat" => "l jS \of F Y h:i:s A"
 ]
 ```
 
@@ -316,9 +316,9 @@ Defines a function that would be called to determine if a column would be render
 ```php
 // render the column, only if the user is logged in
 "name" => [
-	"renderIf" => function() {
-		return auth()->check();
-	}
+    "renderIf" => function() {
+        return auth()->check();
+    }
 ]
 ```
 > Note that here the callable function cannot use the grid's data because when the columns are rendered, the data has not been iterated over yet.
