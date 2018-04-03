@@ -231,7 +231,7 @@ trait RendersButtons
      * @param string $section
      * @return array
      */
-    public function getButtons(string $section = 'toolbar')
+    public function getButtons($section = 'toolbar')
     {
         $buttons = $section ? $this->buttons[$section] : $this->buttons;
         // sort the buttons by position

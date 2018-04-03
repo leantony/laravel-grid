@@ -65,14 +65,14 @@ trait SearchesData
 
             if (isset($filter['query']) && is_callable($filter['query'])) {
                 // otherwise, use the filter, if defined
-                call_user_func($filter['query'], $this->query, $columnName, $userInput);
+                call_user_func($filter['query'], $this->getQuery(), $columnName, $userInput);
             }
 
         } else {
 
             if (isset($search['query']) && is_callable($search['query'])) {
                 // use the search filter
-                call_user_func($search['query'], $this->query, $columnName, $userInput);
+                call_user_func($search['query'], $this->getQuery(), $columnName, $userInput);
 
             } else {
 

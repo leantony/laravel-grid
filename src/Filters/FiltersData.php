@@ -56,7 +56,7 @@ trait FiltersData
         $data = $columnData['data'] ?? [];
         // check for custom filter strategies and call them
         if (isset($filter['query']) && is_callable($filter['query'])) {
-            call_user_func($filter['query'], $this->query, $columnName, $userInput);
+            call_user_func($filter['query'], $this->getQuery(), $columnName, $userInput);
         } else {
 
             if ($operator === strtolower('like')) {

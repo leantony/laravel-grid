@@ -5,7 +5,6 @@ namespace Leantony\Grid;
 use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -419,8 +418,10 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     protected function checkParameters()
     {
-        if (!$this->query instanceof Builder) {
-            throw new InvalidArgumentException("The object of type query is invalid. You need to pass an instance of Illuminate\\Database\\Eloquent\\Builder");
+        if (!$this->getQuery() instanceof \Illuminate\Database\Query\Builder
+            || !$this->getQuery() instanceof \Illuminate\Database\Eloquent\Builder) {
+            throw new InvalidArgumentException("The object of type query is invalid. 
+            You need to pass an instance of Illuminate\\Database\\Eloquent\\Builder or \Illuminate\Database\Query\Builder");
         }
         if (!$this->request instanceof Request) {
             throw new InvalidArgumentException("The object of type request is invalid. You need to pass an instance of Illuminate\\Http\\Request");

@@ -37,7 +37,7 @@ interface GridButtonsInterface
      * @param string|null $key
      * @return array
      */
-    public function getButtons($key = null);
+    public function getButtons($key);
 
     /**
      * Sets an array of buttons that would be rendered to the grid

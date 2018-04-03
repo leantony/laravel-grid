@@ -2,7 +2,6 @@
 
 namespace Leantony\Grid\Filters;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -26,7 +25,7 @@ trait FiltersSearchesThenExportsData
     /**
      * A query builder instance
      *
-     * @var Builder
+     * @var \Illuminate\Database\Query\Builder | \Illuminate\Database\Eloquent\Builder
      */
     protected $query;
 
@@ -253,7 +252,7 @@ trait FiltersSearchesThenExportsData
     {
         $pageSize = $this->getPageSize();
 
-        $this->filteredData = $this->query->paginate($pageSize);
+        $this->filteredData = $this->getQuery()->paginate($pageSize);
     }
 
     /**
@@ -363,7 +362,7 @@ trait FiltersSearchesThenExportsData
     public function simplePaginate()
     {
         $pageSize = $this->getPageSize();
-        $this->filteredData = $this->query->simplePaginate($pageSize);
+        $this->filteredData = $this->getQuery()->simplePaginate($pageSize);
     }
 
     /**
@@ -374,7 +373,7 @@ trait FiltersSearchesThenExportsData
     public function sort()
     {
         if ($sort = $this->checkAndReturnSortParam()) {
-            $this->query->orderBy($sort, $this->getSortDirection());
+            $this->getQuery()->orderBy($sort, $this->getSortDirection());
         }
     }
 
@@ -413,9 +412,9 @@ trait FiltersSearchesThenExportsData
     /**
      * Get the query builder
      *
-     * @return Builder
+     * @return \Illuminate\Database\Query\Builder | \Illuminate\Database\Eloquent\Builder
      */
-    public function getQuery(): Builder
+    public function getQuery()
     {
         return $this->query;
     }
