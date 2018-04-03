@@ -352,7 +352,7 @@ var _grids = _grids || {};
                     });
             };
 
-            $(document.body).off('click._grids.modal').on('click._grids.modal', $this.options.modalTriggerSelector, function (e) {
+            $(document.body).off('click.bs.modal').on('click.bs.modal', $this.options.modalTriggerSelector, function (e) {
                 e.preventDefault();
                 clickHandler(this);
             });
@@ -479,7 +479,7 @@ var _grids = _grids || {};
                 });
             };
 
-            $('#' + $this.options.modal_id).off("click._grids.modal").on("click._grids.modal", '#' + $this.options.form_id + ' button[type="submit"]', function (e) {
+            $('#' + $this.options.modal_id).off("click.bs.modal").on("click.bs.modal", '#' + $this.options.form_id + ' button[type="submit"]', function (e) {
                 e.preventDefault();
                 submit_form(this);
             });

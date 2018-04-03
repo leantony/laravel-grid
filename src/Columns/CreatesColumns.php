@@ -236,6 +236,7 @@ trait CreatesColumns
                     };
                 } else {
                     // Attempt to use the laracasts presenter. call the function on the model instance
+                    // https://github.com/laracasts/Presenter
                     $data = function ($item, $row) use ($columnData) {
                         return $item->present()->{$columnData['presenter']};
                     };
