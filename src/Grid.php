@@ -421,7 +421,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         if (!$this->getQuery() instanceof \Illuminate\Database\Query\Builder
             || !$this->getQuery() instanceof \Illuminate\Database\Eloquent\Builder) {
             throw new InvalidArgumentException("The object of type query is invalid. 
-            You need to pass an instance of Illuminate\\Database\\Eloquent\\Builder or \Illuminate\Database\Query\Builder");
+            You need to pass an instance of Illuminate\\Database\\Eloquent\\Builder or Illuminate\\Database\\Query\\Builder");
         }
         if (!$this->request instanceof Request) {
             throw new InvalidArgumentException("The object of type request is invalid. You need to pass an instance of Illuminate\\Http\\Request");
