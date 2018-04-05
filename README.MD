@@ -5,10 +5,16 @@
 This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
 
 # Features
-+ Full export functionality - (to pdf, csv, and excel)
++ Grid generation via a laravel command
++ Full export functionality - (to pdf, csv, and excel. Relies on the `maatwebsite/excel` package)
 + Bootstrap modal support
-+ Column filters
-+ Global search
++ Customizable column filters (supports text, date, date-range, dropdowns )
++ Adding of dynamic column names (that do not exist on the actual eloquent models)
++ Raw HTML support for the column data
++ Customizable global search
++ Attribute sorting
++ Dynamic addition, removal and disabling of buttons
++ Dynamic manipulation of row and column HTML classes
 + pjax support
 + Pagination
 
@@ -64,7 +70,7 @@ Just make sure you replace `{modelClass}` with your actual `eloquent` model clas
 ```bash
 php artisan make:grid --model="App\User"
 ```
-Once this happens, a grid will be generated. Default namespace for grid generation is `App\Grids`.
+Once this is run, a grid will be generated. Default namespace for grid generation is `App\Grids`.
 
 Once the generation of the grid is done, you can add add it in your controller like this. E.g a `user` model grid:
 
@@ -112,8 +118,9 @@ Otherwise, you can also instantiate the grid class like any other class then inj
      */
     public function index(Request $request)
     {
+        $user = $request->user();
         return (new UsersGrid())
-                    ->create(['query' => User::query(), 'request' => $request])
+                    ->create(['query' => User::query(), 'request' => $request, 'user' => $user]) // you can then add it as a public property on the grid with name $user, then use it
                     ->renderOn('welcome');
     }
 ```
