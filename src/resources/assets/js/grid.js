@@ -166,7 +166,7 @@ var _grids = _grids || {};
                 /**
                  * The ID of the html element containing the grid
                  */
-                id: '#grid-_grids',
+                id: '#some-grid',
                 /**
                  * The ID of the html element containing the filter form
                  */
@@ -498,6 +498,8 @@ var _grids = _grids || {};
     _grids.init = function () {
         // tooltip
         $('[data-toggle="tooltip"]').tooltip();
+        // date picker
+        $('.grid-datepicker').datepicker();
         // initialize modal js
         _grids.modal.init({});
         // table links

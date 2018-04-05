@@ -145,6 +145,7 @@ class GenerateGrid extends Command
      *
      * @param $model
      * @return array|bool
+     * @throws \Exception
      */
     protected function generateRows($model)
     {
@@ -156,7 +157,7 @@ class GenerateGrid extends Command
 
             $this->error("Invalid model supplied.");
 
-            return false;
+            throw new \Exception("Invalid model.");
         }
 
         // primary key

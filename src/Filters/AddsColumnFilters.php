@@ -79,7 +79,7 @@ trait AddsColumnFilters
             'id' => $elementId,
             'enabled' => $enabled,
             'formId' => $this->getFilterFormId(),
-            'class' => 'form-control datepicker grid-filter ' . $elementClass,
+            'class' => 'form-control grid-datepicker grid-filter ' . $elementClass,
             'type' => 'text', // just use text, since its text input
             'title' => 'filter by ' . $elementId,
             'dataAttributes' => [

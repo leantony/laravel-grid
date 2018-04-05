@@ -2,7 +2,15 @@
 
 [![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
 
-This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget.
+This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
+
+# Features
++ Full export functionality - (to pdf, csv, and excel)
++ Bootstrap modal support
++ Column filters
++ Global search
++ pjax support
++ Pagination
 
 
 ## Requirements

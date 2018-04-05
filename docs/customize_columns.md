@@ -250,7 +250,7 @@ class User extends \Eloquent {
 Alternatively, you can specify the `presenter` as a callback that takes in two arguments - columnData, and columnName
 ```php
 "name" => [
-    "query" => function($columnData, $columnName) {
+    "presenter" => function($columnData, $columnName) {
         // do whatever you want to display the data for the `name` column
     }
 ]
@@ -260,7 +260,16 @@ Alternatively, you can specify the `presenter` as a callback that takes in two a
 + possible values = `string|callable`
 + required = `false`
 + defaults to = `$data->${column_name}`. E.g `name` will be `$data->name`
-
+```php
+"name" => [
+    "data" => function($gridItem, $columnName) {
+        // $gridItem - column object
+        // $columnName - the name of this column (ie, name)
+        return $gridItem->{$columnName}
+    }
+]
+```
+> The data property should ideally not be used. Please use the `presenter` property to achieve the same results
 
 ### date
 + possible values =`boolean`
