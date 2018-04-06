@@ -157,7 +157,7 @@ class GenerateGrid extends Command
 
             $this->error("Invalid model supplied.");
 
-            throw new \Exception("Invalid model.");
+            die(-1);
         }
 
         // primary key
@@ -203,6 +203,7 @@ class GenerateGrid extends Command
                                 'type' => 'select',
                                 'data' => [] // add a key value pair that will be rendered on a drop-down
                             ],
+                            'export' => false,
                         ],
                     ];
                 } else {
@@ -251,24 +252,24 @@ class GenerateGrid extends Command
      */
     protected function dumpBinding($model): array
     {
-        $st = __DIR__ . '/../Stubs/GridInterface.txt';
+        $stub = __DIR__ . '/../Stubs/GridInterface.txt';
 
         list($namespace, $interfaceName, $replaced) = $this->makeReplacementsForBinding($model,
-            $this->generateDynamicNamespace(), $st);
+            $this->generateDynamicNamespace(), $stub);
 
         $this->binding = $interfaceName;
 
         $filename = $this->makeFileName($interfaceName);
 
-        $p = $this->getPath($namespace);
+        $path = $this->getPath($namespace);
 
-        if ($this->dumpFile($p, $filename, $replaced)) {
+        if ($this->dumpFile($path, $filename, $replaced)) {
 
-            $this->info("Wrote generated binding to " . $p);
+            $this->info("Wrote generated binding to " . $path);
 
         } else {
 
-            $this->info("skipped overwriting existing binding at " . $p);
+            $this->info("skipped overwriting existing binding at " . $path);
         }
 
         return array($namespace, $replaced, $filename);
