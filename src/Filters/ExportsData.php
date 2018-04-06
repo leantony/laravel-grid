@@ -14,7 +14,7 @@ trait ExportsData
      *
      * @var int
      */
-    protected static $MAX_EXPORT_ROWS = 50000;
+    protected $maxExportRows = 50000;
 
     /**
      * Quick toggle to specify if the grid allows exporting of records
@@ -31,9 +31,16 @@ trait ExportsData
     protected $exportFilename;
 
     /**
+     * Available columns for export
+     *
+     * @var array|null
+     */
+    protected $availableColumnsForExport = null;
+
+    /**
      * Download export data
      *
-     * @param string $type
+     * @param string $type any of xlsx, xls, csv or pdf
      * @return Response
      * @throws \Throwable
      */
@@ -41,7 +48,7 @@ trait ExportsData
     {
         $e = new DefaultExport(
             sprintf('%s report', $this->shortSingularGridName()),
-            $this->getProcessedColumns(),
+            $this->getExportableColumns()[1], // columns are at index 1
             $this->getExportData()->toArray()
         );
 
@@ -55,14 +62,11 @@ trait ExportsData
      */
     public function getExportData(): Collection
     {
-        // work on the underlying query instance
-        // this one has already passed through the filter
-        $values = $this->getQuery()->take(static::$MAX_EXPORT_ROWS)->get();
+        list($pinch, $columns) = $this->getExportableColumns();
 
-        $columns = collect($this->getColumnsToExport())->reject(function ($v) {
-            // reject all columns that have been set as not exportable
-            return !$v->export;
-        })->toArray();
+        // work on the underlying query instance, selecting only what we need
+        // this one has already passed through the filter
+        $values = $this->getQuery()->take($this->maxExportRows)->get($pinch);
 
         // customize the results
         $data = $values->map(function ($v) use ($columns) {
@@ -113,5 +117,31 @@ trait ExportsData
     protected function wantsToExport(): bool
     {
         return $this->request->has($this->exportParam) && $this->allowsExporting;
+    }
+
+    /**
+     * Get exportable columns by skipping the ones that were not requested
+     *
+     * @return array
+     */
+    protected function getExportableColumns(): array
+    {
+        if ($this->availableColumnsForExport !== null) {
+            return $this->availableColumnsForExport;
+        }
+
+        $pinch = [];
+        $availableColumns = $this->getColumnsToExport();
+        $columns = collect($availableColumns)->reject(function ($v) use (&$pinch) {
+            // reject all columns that have been set as not exportable
+            $canBeSkipped = !$v->export;
+            if (!$canBeSkipped) {
+                // add this to an array to be used below for granular selection
+                $pinch[] = $v->key;
+            }
+            return $canBeSkipped;
+        });
+        $this->availableColumnsForExport = [$pinch, $columns];
+        return $this->availableColumnsForExport;
     }
 }
