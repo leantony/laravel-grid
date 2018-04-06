@@ -64,9 +64,8 @@ trait ExportsData
     {
         list($pinch, $columns) = $this->getExportableColumns();
 
-        // work on the underlying query instance, selecting only what we need
-        // this one has already passed through the filter
-        $values = $this->getQuery()->take($this->maxExportRows)->get($pinch);
+        // works on the underlying query instance
+        $values = $this->getQuery()->take($this->maxExportRows)->get();
 
         // customize the results
         $data = $values->map(function ($v) use ($columns) {
