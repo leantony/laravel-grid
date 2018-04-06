@@ -112,10 +112,12 @@ trait RendersButtons
      */
     protected function addCreateButton(): GenericButton
     {
-        return (new CreateButton([
+        return (new GenericButton([
             'gridId' => $this->id,
+            'position' => 1,
+            'name' => "Create",
+            'class' => "btn btn-success show_modal_form",
             'type' => 'toolbar',
-            'name' => 'Create',
             'icon' => 'fa-plus-circle',
             'url' => $this->getCreateRouteName(),
             'title' => 'add new ' . $this->shortSingularGridName(),
@@ -133,9 +135,10 @@ trait RendersButtons
      */
     protected function addRefreshButton(): GenericButton
     {
-        return (new RefreshButton([
+        return (new GenericButton([
             'name' => 'Refresh',
             'pjaxEnabled' => true,
+            'position' => 2,
             'icon' => 'fa-refresh',
             'gridId' => $this->id,
             'url' => $this->getIndexRouteLink(),
@@ -181,9 +184,11 @@ trait RendersButtons
      */
     protected function addViewButton(): GenericButton
     {
-        return (new ViewButton([
+        return (new GenericButton([
             'name' => 'View',
             'icon' => 'fa-eye',
+            'position' => 1,
+            'class' => 'btn btn-primary btn-xs show_modal_form',
             'gridId' => $this->id,
             'type' => 'row',
             'title' => 'view record',
@@ -204,9 +209,11 @@ trait RendersButtons
      */
     protected function addDeleteButton(): GenericButton
     {
-        return (new DeleteButton([
+        return (new GenericButton([
             'gridId' => $this->id,
             'name' => 'Delete',
+            'position' => 2,
+            'class' => 'data-remote btn btn-danger btn-xs btn-grid-row',
             'icon' => 'fa-trash',
             'type' => 'row',
             'title' => 'delete record',

@@ -7,7 +7,7 @@ class ExportButton extends GenericButton
     public $position = 3;
 
     /**
-     * Route to be used for export
+     * Route to be used for export. This needs to be set when configuring the routes.
      *
      * @var string
      */
@@ -23,17 +23,17 @@ class ExportButton extends GenericButton
         return [
             'exportOptions' => [
                 'excel' => [
-                    'url' => $this->checkUrl('xlsx'),
+                    'url' => $this->generateExportUrl('xlsx'),
                     'icon' => 'file-excel-o',
                     'title' => 'export to excel'
                 ],
                 'csv' => [
-                    'url' => $this->checkUrl('csv'),
+                    'url' => $this->generateExportUrl('csv'),
                     'icon' => 'file',
                     'title' => 'export to csv'
                 ],
                 'pdf' => [
-                    'url' => $this->checkUrl('pdf'),
+                    'url' => $this->generateExportUrl('pdf'),
                     'icon' => 'file-pdf-o',
                     'title' => 'export to pdf'
                 ]
@@ -47,7 +47,7 @@ class ExportButton extends GenericButton
      * @param string $extension
      * @return string
      */
-    protected function checkUrl($extension = 'xlsx'): string
+    protected function generateExportUrl($extension = 'xlsx'): string
     {
         if (filter_var($this->exportRoute, FILTER_VALIDATE_URL)) {
             $v = add_query_param(['export' => $extension]);
