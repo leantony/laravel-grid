@@ -37,14 +37,14 @@ trait FiltersSearchesThenExportsData
     protected $request;
 
     /**
-     * The filter type. AND, OR, NOT, etc
+     * The filter type SQL query. AND, OR, NOT, etc
      *
      * @var string
      */
     protected $filterType = 'and';
 
     /**
-     * The search type. AND, OR, NOT, etc
+     * The search type SQL query. AND, OR, NOT, etc
      *
      * @var string
      */
@@ -66,7 +66,7 @@ trait FiltersSearchesThenExportsData
     protected $valid_directions = ['asc', 'desc'];
 
     /**
-     * The table to be sorted
+     * The table to be sorted. This will be inferred from the grid name
      *
      * @var string
      */
@@ -80,26 +80,28 @@ trait FiltersSearchesThenExportsData
     protected $sortParam = 'sort_by';
 
     /**
+     * The search input parameter used on the global search input
+     *
      * @var string
      */
     protected $searchParam = 'q';
 
     /**
-     * Sort direction
+     * Query parameter used for sort direction
      *
      * @var string
      */
     protected $sortDirParam = 'sort_dir';
 
     /**
-     * Export param option
+     * Query parameter used for data export
      *
      * @var string
      */
     protected $exportParam = 'export';
 
     /**
-     * Allowed document exports
+     * Allowed file types for export
      *
      * @var array
      */
