@@ -19,12 +19,12 @@ var _grids = _grids || {};
         "use strict";
 
         /**
-         * Execute an ajax request from a button, form, link, etc
+         * Handle an ajax request from a button, form, link, etc
          *
          * @param element
          * @param event
          */
-        _grids.utils.executeAjaxRequest = function (element, event) {
+        _grids.utils.handleAjaxRequest = function (element, event) {
             // click or submit
             event = event || 'click';
 
@@ -79,7 +79,7 @@ var _grids = _grids || {};
                             if (typeof toastr !== 'undefined') {
                                 toastr.error("An error occurred", "Whoops!");
                             }
-                            console.error("An error occurred");
+                            alert("An error occurred");
                         }
                     });
                 });
@@ -98,16 +98,18 @@ var _grids = _grids || {};
             $.blockUI({
                 message: content,
                 css: {
-                    border: 'none', padding: '15px',
-                    backgroundColor: '#333C44',
+                    'border': 'none',
+                    'padding': '15px',
+                    'backgroundColor': '#333C44',
                     '-webkit-border-radius': '3px',
                     '-moz-border-radius': '3px',
-                    opacity: 1, color: '#fff'
+                    'opacity': 1,
+                    'color': '#fff'
                 },
                 overlayCSS: {
-                    backgroundColor: '#000',
-                    opacity: 0.4,
-                    cursor: 'wait',
+                    'backgroundColor': '#000',
+                    'opacity': 0.4,
+                    'cursor': 'wait',
                     'z-index': 1030
                 }
             });
@@ -121,7 +123,7 @@ var _grids = _grids || {};
         };
 
         /**
-         * Linkable rows on tables
+         * Linkable rows on tables (rows that can be clicked to navigate to a location)
          */
         _grids.utils.tableLinks = function (options) {
             if (!options) {
@@ -132,7 +134,7 @@ var _grids = _grids || {};
             elements.each(function (i, obj) {
                 var el = $(obj);
                 var link = el.data('url');
-                el.css({ 'cursor': "pointer" });
+                el.css({'cursor': "pointer"});
                 el.click(function (e) {
                     setTimeout(function () {
                         window.location = link;
@@ -195,7 +197,8 @@ var _grids = _grids || {};
                     /**
                      * Something to do once the PJAX request has been finished
                      */
-                    afterPjax: function (e) {}
+                    afterPjax: function (e) {
+                    }
                 }
             };
             this.opts = $.extend({}, defaults, opts || {});
@@ -230,11 +233,15 @@ var _grids = _grids || {};
                 $this.opts.pjax.pjaxOptions
             );
 
-            if ($this.opts.dateRangeSelector && typeof moment === 'function') {
-                var start = moment().subtract(29, 'days');
-                var end = moment();
+            if ($this.opts.dateRangeSelector) {
+                if (typeof moment !== 'function') {
+                    console.warn('date range picker option requires moment.js');
+                } else {
+                    var start = moment().subtract(29, 'days');
+                    var end = moment();
 
-                $($this.opts.dateRangeSelector).daterangepicker({startDate: start, endDate: end});
+                    $($this.opts.dateRangeSelector).daterangepicker({startDate: start, endDate: end});
+                }
             }
         };
 
@@ -307,8 +314,8 @@ var _grids = _grids || {};
                 },
                 onShow: function (e, modal) {
                     // display a loader, when the modal is being displayed
-                    var spinner_content = '<div class="row"><div class="col-md-12"><div class="text-center"><i class="fa fa-spinner fa-6x fa-spin color-primary mt30"></i></div></div></div>';
-                    $('#' + modal.options.modal_id).find('.modal-content').html(spinner_content);
+                    var spinnerContent = '<div class="row"><div class="col-md-12"><div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div></div></div>';
+                    $('#' + modal.options.modal_id).find('.modal-content').html(spinnerContent);
                 },
                 onLoaded: function (e, modal) {
                     if (modal && modal.options) {
@@ -361,10 +368,10 @@ var _grids = _grids || {};
         /**
          * Render a bootstrap alert to the user. Requires the html to be inserted to the target element
          * @param type
-         * @param message
+         * @param response
          * @returns {string}
          */
-        modal.prototype.renderAlert = function (type, message) {
+        modal.prototype.renderAlert = function (type, response) {
             var validTypes = ['success', 'error', 'notice'], html = '';
             if (typeof type === 'undefined' || ($.inArray(type, validTypes) < 0)) {
                 type = validTypes[0];
@@ -380,29 +387,27 @@ var _grids = _grids || {};
             html += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
             // add a heading
             if (type === 'error') {
-                html += "<strong>Please fix the following errors:</strong>";
+                html += response.message || 'Please fix the following errors';
+                html = "<strong>" + html + "</strong>";
+                var errs = this.getLaravelValidationErrors(response.errors || {});
+                return html + errs + '</div>';
+            } else {
+                return html + response + '</div>'
             }
-            message = this.processMessageObject(message);
-            return html + message + '</div>';
         };
 
         /**
          * Laravel returns validation error messages as a json object
          * We process that to respective html here
-         * @param message
+         * @param response
          * @returns {string}
          */
-        modal.prototype.processMessageObject = function (message) {
-            var errors = '';
-            // check if the msg was an object
-            if ($.type(message) === "object") {
-                $.each(message, function (key, value) {
-                    errors += '<li>' + value[0] + '</li>';
-                });
-            } else {
-                errors += '<p>' + message + '</p>';
-            }
-            return errors;
+        modal.prototype.getLaravelValidationErrors = function (response) {
+            var errorsHtml = '';
+            $.each(response, function (key, value) {
+                errorsHtml += '<li>' + value + '</li>';
+            });
+            return errorsHtml;
         };
 
         /**
@@ -461,7 +466,6 @@ var _grids = _grids || {};
                     },
                     error: function (data) {
                         var msg;
-                        console.log(data);
                         // error handling
                         switch (data.status) {
                             case 500:
@@ -474,7 +478,6 @@ var _grids = _grids || {};
                         // display errors
                         var el = $('#' + $this.options.notification_id);
                         el.html(msg);
-
                     }
                 });
             };
@@ -505,8 +508,8 @@ var _grids = _grids || {};
         // table links
         _grids.utils.tableLinks({element: '.linkable', navigationDelay: 100});
         // setup ajax listeners
-        _grids.utils.executeAjaxRequest($('.data-remote'), 'click');
-        _grids.utils.executeAjaxRequest($('form[data-remote]'), 'submit');
+        _grids.utils.handleAjaxRequest($('.data-remote'), 'click');
+        _grids.utils.handleAjaxRequest($('form[data-remote]'), 'submit');
     };
 
     return _grids;
