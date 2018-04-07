@@ -201,7 +201,7 @@ To enable javascript utilities such as Pjax, ensure that you have their dependen
 <meta name="csrf-token" content="{{ csrf_token() }}">
 ```
 
-To customize the grid, check out [the customization section](docs/customization.md). Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new).
+To customize the grid, check out [the customization section](https://github.com/leantony/laravel-grid/wiki/Customization). Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new).
 
 # TODO's
 + Add unit tests (in progress. The `passing` badge was triggered by running a dummy unit test actually. Real tests will soon be added).
@@ -211,4 +211,5 @@ To customize the grid, check out [the customization section](docs/customization.
 + Add ability to culminate grid rows. E.g displaying a total of some sort.
 + Add ability to have a checkbox that can be used to select multiple items, after which an action can be done. E.g deleting mutiple items.
 
+# More docs
 For more docs, please checkout the [wiki](https://github.com/leantony/laravel-grid/wiki).
