@@ -210,3 +210,5 @@ To customize the grid, check out [the customization section](docs/customization.
 + Toggle between sorting in ascending and descending order.
 + Add ability to culminate grid rows. E.g displaying a total of some sort.
 + Add ability to have a checkbox that can be used to select multiple items, after which an action can be done. E.g deleting mutiple items.
+
+For more docs, please checkout the [wiki](https://github.com/leantony/laravel-grid/wiki).
