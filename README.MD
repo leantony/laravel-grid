@@ -5,10 +5,10 @@
 This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
 
 # Features
-+ Grid generation via a laravel command
++ Grid generation via a laravel command.
 + Full export functionality - (to pdf, csv, and excel. Relies on the `maatwebsite/excel` package)
 + Bootstrap modal support
-+ Customizable column filters (supports text, date, date-range, dropdowns )
++ Customizable column filters (supports text, date, date-range, dropdowns)
 + Adding of dynamic column names (that do not exist on the actual eloquent models)
 + Raw HTML support for the column data
 + Customizable global search
@@ -32,23 +32,23 @@ The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box.
 
 ## Installation
 The package is available on packagist. Just run;
-```bash
+```php
 composer install leantony/laravel-grid
 ```
 You can then publish the resources (views) and assets (css & js), incase you need to customize them. The css and js will be copied to `public/vendor/leantony/grid`
 
-```bash
+```php
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
 > You can publish the assets and views separately by passing the `--tag` argument to the command. For the argument values, try `assets`, `views` or `config` for js|css assets, views and config respectively.
 
-Or just run `php artisan vendor:publish` and select the provider index by name `Leantony\Grid\Providers\ServiceProvider`
+You can also run `php artisan vendor:publish` and select the provider index by the name `Leantony\Grid\Providers\ServiceProvider`
 
 When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
-```bash
+```php
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force
 ```
-> You can also place this command in composer so that it is executed automatically on each update run. Like so;
+> You can also place this command in composer so that it is executed automatically on each update run. Like this;
 ```php
 // ... composer config
 "post-autoload-dump": [
@@ -62,12 +62,11 @@ php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" 
 ## Usage
 A laravel command is available to make it easy to create grids. 
 Once installed, just run the command:
-```bash
+```php
 php artisan make:grid --model="{modelClass}"
 ```
-
-Just make sure you replace `{modelClass}` with your actual `eloquent` model class. E.g 
-```bash
+Just make sure you replace `{modelClass}` with your actual `eloquent` model class. E.g
+```php
 php artisan make:grid --model="App\User"
 ```
 Once this is run, a grid will be generated. Default namespace for grid generation is `App\Grids`.
@@ -119,11 +118,12 @@ Otherwise, you can also instantiate the grid class like any other class then inj
     public function index(Request $request)
     {
         $user = $request->user();
-        return (new UsersGrid())
-                    ->create(['query' => User::query(), 'request' => $request, 'user' => $user]) // you can then add it as a public property on the grid with name $user, then use it
+        return (new UsersGrid(['user' => $user)) // you can then use it as $user within the class. It's set implicitly using the __set() call
+                    ->create(['query' => User::query(), 'request' => $request])
                     ->renderOn('welcome');
     }
 ```
+> Adding `$user` above as part of the key value pair array on the create method would achieve the same results as above.
 
 
 If you need to pass extra data to the view specified, you just need to pass the data as arguments, just as you do normally on any other laravel controller;
@@ -172,7 +172,7 @@ Then display the grid on your view like this;
 {!! $grid !!}
 ```
 
-You should see something like this. Feel free to check out the [sample app](http://laravel-grid.herokuapp.com). Also for reference, its source code is [here](https://github.com/leantony/laravel-grid-app)
+You should see something like this (see the image below). Feel free to check out the [sample app](http://laravel-grid.herokuapp.com). Also for reference, its source code is [here](https://github.com/leantony/laravel-grid-app)
 
 
 ![sample](docs/sample.png)
@@ -200,15 +200,13 @@ To enable javascript utilities such as Pjax, ensure that you have their dependen
 ```html
 <meta name="csrf-token" content="{{ csrf_token() }}">
 ```
-The grid's initialization javascript is dependent on the grid itself. A grid is initialized by an ID *(if you're curious, you can confirm this [here](https://github.com/leantony/laravel-grid/blob/13d88ca63d32a1885545fca0af014c065ea679b9/src/resources/views/grid/grid.blade.php#L189-L212)*. To read more about this, be sure to check out the [javascript](docs/javascript.md) section of the docs.
 
-To customize the grid, check out [the customization section](docs/customization.md).
+To customize the grid, check out [the customization section](docs/customization.md). Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new).
 
 # TODO's
-Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new)
-
 + Add unit tests (in progress. The `passing` badge was triggered by running a dummy unit test actually. Real tests will soon be added).
 + Completion of documentation (in progress).
 + Add more customization options to published config file. Stuff like pagination, filters, buttons, etc
++ Toggle between sorting in ascending and descending order.
 + Add ability to culminate grid rows. E.g displaying a total of some sort.
 + Add ability to have a checkbox that can be used to select multiple items, after which an action can be done. E.g deleting mutiple items.
