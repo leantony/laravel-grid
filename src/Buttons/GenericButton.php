@@ -10,7 +10,8 @@ class GenericButton implements Htmlable
     /**
      * A variable to be used to determine the position of the button
      * in respect to others within the same section
-     * A button with a lower position will be rendered to the far left, while one with a higher position will be rendered
+     * A button with a lower position will be rendered to the far left
+     * while one with a higher position will be rendered
      * to the far right
      *
      * @var integer
@@ -22,7 +23,7 @@ class GenericButton implements Htmlable
      *
      * @var callable
      */
-    public $beforeRender = null;
+    public $renderIf = null;
 
     /**
      * Specify a custom way to render the button
@@ -91,7 +92,7 @@ class GenericButton implements Htmlable
      * Type of button. Can be one of either `row` or `toolbar`
      * @var string
      */
-    protected $type = 'row';
+    protected $type = 'toolbar';
 
     /**
      * CreateButton constructor.
@@ -134,18 +135,18 @@ class GenericButton implements Htmlable
     /**
      * @return callable
      */
-    public function getBeforeRender(): callable
+    public function getRenderIf(): callable
     {
-        return $this->beforeRender;
+        return $this->renderIf;
     }
 
     /**
-     * @param callable $beforeRender
+     * @param callable $renderIf
      * @return GenericButton
      */
-    public function setBeforeRender(callable $beforeRender): GenericButton
+    public function setRenderIf(callable $renderIf): GenericButton
     {
-        $this->beforeRender = $beforeRender;
+        $this->renderIf = $renderIf;
         return $this;
     }
 
@@ -190,16 +191,17 @@ class GenericButton implements Htmlable
      */
     public function getUrl(): string
     {
-        return $this->link;
+        return $this->url;
     }
 
     /**
-     * @param string|callable $link
+     * @param string $url
      * @return GenericButton
+     * @internal param callable|string $link
      */
     public function setUrl(string $url): GenericButton
     {
-        $this->link = $link;
+        $this->url = $url;
         return $this;
     }
 
@@ -312,6 +314,74 @@ class GenericButton implements Htmlable
     }
 
     /**
+     * @return string
+     * @throws \Throwable
+     */
+    public function __toString()
+    {
+        return $this->toHtml();
+    }
+
+    /**
+     * Get content as a string of HTML.
+     *
+     * @return string
+     * @throws \Throwable
+     */
+    public function toHtml()
+    {
+        return $this->render();
+    }
+
+    /**
+     * Render the button
+     *
+     * @param array $args
+     * @return string
+     * @throws \Throwable
+     */
+    public function render(...$args)
+    {
+        // apply preset attributes
+        $this->dataAttributes = $this->getDataAttributes();
+
+        // custom render
+        if ($this->renderCustom && is_callable($this->renderCustom)) {
+            return call_user_func($this->renderCustom, $this->compactData($args));
+        }
+
+        // collapse the array of args into a single 1d array, so that the values passed can be
+        // accessed as key value pair
+        $args = array_collapse($args);
+
+        return view($this->getButtonView(), $this->compactData($args))->render();
+    }
+
+    /**
+     * Specify the data to be sent to the view
+     *
+     * @param array $params
+     * @return array
+     */
+    protected function compactData($params)
+    {
+        foreach (array_merge($params, $this->getExtraParams()) as $key => $value) {
+            $this->__set($key, $value);
+        }
+        return get_object_vars($this);
+    }
+
+    /**
+     * Allow extra parameters to be added on this object
+     *
+     * @return array
+     */
+    public function getExtraParams()
+    {
+        return [];
+    }
+
+    /**
      * @return array
      */
     public function getDataAttributes(): array
@@ -352,64 +422,6 @@ class GenericButton implements Htmlable
     {
         $this->gridId = $gridId;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toHtml();
-    }
-
-    /**
-     * Get content as a string of HTML.
-     *
-     * @return string
-     */
-    public function toHtml()
-    {
-        return $this->render();
-    }
-
-    /**
-     * Render the button
-     *
-     * @return string
-     */
-    public function render(...$args)
-    {
-        if ($this->renderCustom && is_callable($this->renderCustom)) {
-            return call_user_func($this->renderCustom, $this->compactData($args));
-        }
-        if ($this->type === 'row') {
-            $args = array_collapse($args);
-        }
-        return view($this->getButtonView(), $this->compactData($args))->render();
-    }
-
-    /**
-     * Specify the data to be sent to the view
-     *
-     * @param array $params
-     * @return array
-     */
-    protected function compactData($params)
-    {
-        foreach (array_merge($params, $this->getExtraParams()) as $key => $value) {
-            $this->__set($key, $value);
-        }
-        return get_object_vars($this);
-    }
-
-    /**
-     * Allow extra parameters to be added on this object
-     *
-     * @return array
-     */
-    public function getExtraParams()
-    {
-        return [];
     }
 
     /**

@@ -1,67 +1,100 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Filters;
 
 use Excel;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Classes\LaravelExcelWorksheet;
-use Maatwebsite\Excel\Writers\LaravelExcelWriter;
 
 trait ExportsData
 {
     /**
-     * Max export rows
+     * Max export rows. More = slower export process
      *
      * @var int
      */
-    protected static $MAX_EXPORT_ROWS = 50000;
+    protected $maxExportRows = 50000;
+
+    /**
+     * Quick toggle to specify if the grid allows exporting of records
+     *
+     * @var bool
+     */
+    protected $allowsExporting = true;
 
     /**
      * The filename that would be exported
      *
      * @var string
      */
-    protected $exportFilename = null;
+    protected $exportFilename;
 
     /**
-     * The excel writer instance
+     * Available columns for export
      *
-     * @var LaravelExcelWriter
+     * @var array|null
      */
-    protected $excelWriter = null;
+    protected $availableColumnsForExport = null;
 
     /**
-     * The data to be exported
+     * Download export data
      *
-     * @var Collection
+     * @param string $type any of xlsx, xls, csv or pdf
+     * @return Response
+     * @throws \Throwable
      */
-    protected $dataForExport = null;
-
-    /**
-     * Export to data to excel. Also works with pdf and word
-     *
-     * @return $this
-     * @throws \Exception
-     */
-    public function exportExcel()
+    public function exportAs($type = 'xlsx')
     {
-        if (class_exists(LaravelExcelWriter::class)) {
-            $instance = $this;
+        $e = new DefaultExport(
+            sprintf('%s report', $this->shortSingularGridName()),
+            $this->getExportableColumns()[1], // columns are at index 1
+            $this->getExportData()->toArray()
+        );
 
-            $this->exportFilename = $this->getFileNameForExport();
+        return Excel::download($e, $this->getFileNameForExport() . '.' . $type);
+    }
 
-            $data = $this->getExportData();
+    /**
+     * Get the data to be exported
+     *
+     * @return Collection
+     */
+    public function getExportData(): Collection
+    {
+        list($pinch, $columns) = $this->getExportableColumns();
 
-            $this->dataForExport = $data;
+        // works on the underlying query instance
+        $values = $this->getQuery()->take($this->maxExportRows)->get();
 
-            $this->excelWriter = Excel::create($this->exportFilename, function ($excel) use ($data, $instance) {
-                /** @var $excel LaravelExcelWriter */
-                $instance->makeExcelFromGridData($excel, $data);
-            });
-            return $this;
-        }
-        throw new \Exception("Please ensure that the class Maatwebsite\\Excel\\Writers\\LaravelExcelWriter exists.");
+        // customize the results
+        $data = $values->map(function ($v) use ($columns) {
+            $data = [];
+            foreach ($columns as $column) {
+                // render as per requested on each column
+                // `processColumns()` would have already taken care of processing the callbacks
+                // so here, we only pass the required arguments
+                if (is_callable($column->data)) {
+                    array_push($data, [$column->name => call_user_func($column->data, $v, $column->key)]);
+                } else {
+                    array_push($data, [$column->name => $v->{$column->key}]);
+                }
+            }
+            // collapse the data by a single level
+            return collect($data)->collapse()->toArray();
+        });
+
+        return $data;
+    }
+
+    /**
+     * Gets the columns to be exported
+     *
+     * @return array
+     */
+    public function getColumnsToExport(): array
+    {
+        return $this->getProcessedColumns();
     }
 
     /**
@@ -69,64 +102,45 @@ trait ExportsData
      *
      * @return string
      */
-    public function getFileNameForExport()
+    public function getFileNameForExport(): string
     {
         $this->exportFilename = Str::slug($this->getName()) . '-' . time();
         return $this->exportFilename;
     }
 
     /**
-     * Make an excel worksheet
+     * Check if the user wants to export data
      *
-     * @param LaravelExcelWriter $excel
-     * @param Collection $data
+     * @return bool
      */
-    protected function makeExcelFromGridData($excel, $data)
+    protected function wantsToExport(): bool
     {
-        $max = static::$MAX_EXPORT_ROWS;
-
-        $excel->sheet('sheet1', function (LaravelExcelWorksheet $sheet) use ($data, $max) {
-
-            $sheet->fromModel($data);
-        });
+        return $this->request->has($this->exportParam) && $this->allowsExporting;
     }
 
     /**
-     * Gets the rows to be exported
+     * Get exportable columns by skipping the ones that were not requested
      *
      * @return array
      */
-    abstract public function getColumnsToExport();
-
-    /**
-     * Download export data
-     *
-     * @param string $type
-     */
-    public function downloadExportedAs($type = 'xlsx')
+    protected function getExportableColumns(): array
     {
-        if ($type === 'pdf') {
-            // requires https://github.com/barryvdh/laravel-snappy
-            $pdf = app('snappy.pdf.wrapper');
-
-//            dd($this->processedRows, $this->dataForExport->toArray());
-            $pdf->loadHtml(view('leantony::grid.reports.pdf_report', [
-                'title' => 'Pdf Report',
-                'rows' => $this->getProcessedColumns(),
-                'data' => $this->dataForExport->toArray(),
-            ])->render());
-
-            return $pdf->inline();
-        } else {
-            // use excel export
-            $this->excelWriter->export($type);
+        if ($this->availableColumnsForExport !== null) {
+            return $this->availableColumnsForExport;
         }
-    }
 
-    /**
-     * Get the data to be exported
-     *
-     * @return Collection|array
-     */
-    abstract protected function getExportData();
+        $pinch = [];
+        $availableColumns = $this->getColumnsToExport();
+        $columns = collect($availableColumns)->reject(function ($v) use (&$pinch) {
+            // reject all columns that have been set as not exportable
+            $canBeSkipped = !$v->export;
+            if (!$canBeSkipped) {
+                // add this to an array to be used below for granular selection
+                $pinch[] = $v->key;
+            }
+            return $canBeSkipped;
+        });
+        $this->availableColumnsForExport = [$pinch, $columns];
+        return $this->availableColumnsForExport;
+    }
 }

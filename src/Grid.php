@@ -5,27 +5,29 @@ namespace Leantony\Grid;
 use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Leantony\Grid\Buttons\GridButtonsInterface;
+use Leantony\Grid\Buttons\RendersButtons;
+use Leantony\Grid\Columns\CreatesColumns;
+use Leantony\Grid\Columns\GridColumnsInterface;
+use Leantony\Grid\Filters\AddsColumnFilters;
+use Leantony\Grid\Filters\FiltersSearchesThenExportsData;
+use Leantony\Grid\Filters\GridDataExportInterface;
+use Leantony\Grid\Filters\GridFilterInterface;
+use Leantony\Grid\Routing\ConfiguresRoutes;
+use Leantony\Grid\Routing\GridRoutesInterface;
 
-abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, GridFilterInterface
+abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, GridFilterInterface, GridDataExportInterface, GridColumnsInterface, GridRoutesInterface
 {
-    use FiltersSearchesThenExportsData,
-        AddsColumnFilters,
-        ConfiguresButtons,
+    use CreatesColumns,
         ConfiguresRoutes,
-        GridColumns;
-
-    /**
-     * Specify if the grid allows exporting of records
-     *
-     * @var bool
-     */
-    protected $allowsExporting = true;
+        AddsColumnFilters,
+        RendersButtons,
+        FiltersSearchesThenExportsData;
 
     /**
      * Specify if the rows on the table should be clicked to navigate to the record
@@ -42,7 +44,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $class = 'table table-bordered table-hover';
 
     /**
-     * The id of the grid
+     * The id of the grid. Many grids can exist on the same page, but the ID has to be unique
      *
      * @var string
      */
@@ -63,7 +65,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $warnIfEmpty = true;
 
     /**
-     * Extra parameters sent to the grid from the view
+     * Extra parameters sent to the grid's blade view
      *
      * @var array
      */
@@ -77,14 +79,8 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $data;
 
     /**
-     * The rows that have been processed
-     *
-     * @var array
-     */
-    protected $processedColumns = [];
-
-    /**
      * The toolbar size. 6 columns on the right and 6 on the left
+     * Left holds the search bar, while the right part holds the buttons
      *
      * @var array
      */
@@ -96,6 +92,20 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * @var array
      */
     protected $buttons = [];
+
+    /**
+     * Short singular name for the grid
+     *
+     * @var string
+     */
+    protected $shortSingularName;
+
+    /**
+     * Short grid identifier, to be used for route param names
+     *
+     * @var string
+     */
+    protected $shortGridIdentifier;
 
     /**
      * Create the grid
@@ -123,11 +133,15 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         // the grid ID
         $this->id = Str::singular(Str::camel($this->name)) . '-' . 'grid';
+        // short singular name
+        $this->shortSingularName = $this->shortSingularGridName();
+        // short grid identifier
+        $this->shortGridIdentifier = $this->transformName();
         // any links defined
         $this->setRoutes();
         // default buttons on the grid
         $this->setButtons();
-        // configuration to the buttons already set including adding new ones
+        // configuration to the buttons already set including adding new ones. Even clearing all of them
         $this->configureButtons();
         // user defined columns
         $this->setColumns();
@@ -135,6 +149,43 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         $this->executeFilters();
         // get filtered data
         $this->data = $this->getFilteredData();
+    }
+
+    /**
+     * Return a short name for the grid that can be used as a route identifier
+     *
+     * @return string
+     */
+    protected function shortSingularGridName(): string
+    {
+        if ($this->shortSingularName === null) {
+            $this->shortSingularName = strtolower(Str::singular($this->getName()));
+        }
+        return $this->shortSingularName;
+    }
+
+    /**
+     * Get the name of the grid. Can be the table name
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Transform the name of the grid, to a short, identifier
+     * Useful for route param names
+     *
+     * @return string
+     */
+    public function transformName()
+    {
+        if ($this->shortGridIdentifier === null) {
+            return Str::slug(Str::singular($this->getName()), '_');
+        }
+        return $this->shortGridIdentifier;
     }
 
     /**
@@ -146,7 +197,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     abstract public function setColumns();
 
     /**
-     * Get the data
+     * Get the data to be rendered on the grid
      *
      * @return Paginator|LengthAwarePaginator|Collection|array
      */
@@ -183,6 +234,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
 
     /**
      * @return string
+     * @throws \Throwable
      */
     public function __toString()
     {
@@ -193,6 +245,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * Get content as a string of HTML.
      *
      * @return string
+     * @throws \Throwable
      */
     public function toHtml()
     {
@@ -200,9 +253,10 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Render the grid
+     * Render the grid as HTML on the user defined view
      *
      * @return string
+     * @throws \Throwable
      */
     public function render()
     {
@@ -235,64 +289,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Process the rows that were supplied
-     *
-     * @return array
-     */
-    public function processColumns()
-    {
-        if (!empty($this->processedColumns)) {
-            return $this->processedColumns;
-        }
-        $columns = [];
-        // process
-        foreach ($this->columns as $columnName => $columnData) {
-
-            // should render
-            if (!$this->canRenderColumn($columnName, $columnData)) {
-                continue;
-            }
-
-            // css styles
-            $styles = $this->fetchCssStyles($columnName, $columnData);
-
-            $columnClass = $styles['columnClass'];
-
-            $rowClass = $styles['rowClass'];
-
-            // label
-            $label = $this->fetchColumnLabel($columnName, $columnData)['label'];
-
-            // searchable columns
-            $searchable = $this->fetchSearchableColumns($columnName, $columnData)['searchable'];
-
-            // filter
-            $filter = $this->fetchColumnFilter($columnName, $columnData)['filter'];
-
-            // data
-            $data = $this->fetchColumnData($columnName, $columnData)['data'];
-
-            // once we are done, push to columns array
-            array_push($columns, new Column([
-                'name' => $label,
-                'key' => $columnName,
-                'data' => $data,
-                'searchable' => $searchable,
-                'rowClass' => $rowClass,
-                'columnClass' => $columnClass,
-                'sortable' => $columnData['sort'] ?? true,
-                'filter' => $filter,
-                'raw' => $columnData['raw'] ?? false,
-                'export' => $columnData['export'] ?? true,
-            ]));
-        }
-
-        $this->processedColumns = $columns;
-
-        return $this->processedColumns;
-    }
-
-    /**
      * Any extra parameters that need to be passed to the grid
      * $params is func_get_args() passed from render
      *
@@ -302,16 +298,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function getExtraParams($params)
     {
         return array_merge($this->extraParams, $params);
-    }
-
-    /**
-     * Get id for the filter form
-     *
-     * @return string
-     */
-    public function getFilterFormId()
-    {
-        return $this->getId() . '-' . 'filter';
     }
 
     /**
@@ -356,85 +342,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     abstract public function getRowCssStyle(): Closure;
 
     /**
-     * Render the search form on the grid
-     *
-     * @return string
-     */
-    public function getSearch()
-    {
-        $params = func_get_args();
-        $data = [
-            'colSize' => $this->toolbarSize[0], // size
-            'action' => $this->getSearchRoute(),
-            'id' => $this->getSearchFormId(),
-            'name' => $this->getSearchParam(),
-            'dataAttributes' => [],
-            'placeholder' => $this->getSearchPlaceholder(),
-        ];
-
-        return view($this->getSearchView(), array_merge($data, $params))->render();
-    }
-
-    /**
-     * Get the form id used for search
-     *
-     * @return string
-     */
-    public function getSearchFormId(): string
-    {
-        return 'search' . '-' . $this->getId();
-    }
-
-    /**
-     * Get the placeholder to use on the search form
-     *
-     * @return string
-     */
-    private function getSearchPlaceholder()
-    {
-        if (empty($this->searchableColumns)) {
-            $placeholder = Str::plural(Str::slug($this->getName()));
-
-            return sprintf('search %s ...', $placeholder);
-        }
-
-        $placeholder = collect($this->searchableColumns)->implode(',');
-
-        return sprintf('search %s by their %s ...', Str::lower($this->getName()), $placeholder);
-    }
-
-    /**
-     * Get the name of the grid. Can be the table name
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Return the view used to display the search form
-     *
-     * @return string
-     */
-    public function getSearchView(): string
-    {
-        return 'leantony::grid.search';
-    }
-
-    /**
-     * Transform the name of the grid, to a short, identifier
-     * Useful for route param names
-     *
-     * @return string
-     */
-    public function transformName()
-    {
-        return Str::slug(Str::singular($this->getName()), '_');
-    }
-
-    /**
      * Check if grid has items
      *
      * @return bool
@@ -454,8 +361,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function wantsPagination()
     {
-        // both simple and normal
-        return $this->data instanceof LengthAwarePaginator || $this->data instanceof Paginator;
+        return $this->data instanceof LengthAwarePaginator;
     }
 
     /**
@@ -479,16 +385,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Return the columns to be displayed on the grid
-     *
-     * @return array
-     */
-    public function getColumns(): array
-    {
-        return $this->columns;
-    }
-
-    /**
      * The class of the grid table
      *
      * @return string
@@ -499,85 +395,20 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Get an array of button instances to be rendered on the grid
+     * Render the grid on a user defined view
      *
-     * @param null $key
-     * @return array
+     * @param string $viewName
+     * @param array $data
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
+     * @throws \Exception
+     * @throws \Throwable
      */
-    public function getButtons($key = null)
+    public function renderOn(string $viewName, $data = [])
     {
-        $buttons = $key ? $this->buttons[$key] : $this->buttons;
-
-        // apply the position here
-        return collect($buttons)->sortBy(function ($v) {
-            return $v->position;
-        })->toArray();
-    }
-
-    /**
-     * Sets an array of buttons that would be rendered to the grid
-     *
-     * @return void
-     */
-    public function setButtons()
-    {
-        $this->setDefaultButtons();
-    }
-
-    /**
-     * Get the data to be exported
-     *
-     * @return Collection
-     */
-    public function getExportData()
-    {
-        // work on the underlying query instance
-        // this one has already passed through the filter
-        $values = $this->getQuery()->take(static::$MAX_EXPORT_ROWS)->get();
-
-        $columns = collect($this->getColumnsToExport())->reject(function ($v) {
-            // reject all columns that have been set as not exportable
-            return !$v->export;
-        })->toArray();
-
-        // map the results to the db query values
-        $data = $values->map(function ($v) use ($columns) {
-            $data = [];
-            foreach ($columns as $column) {
-                // render as per requested on each column
-                // processRows() would have already taken care of processing the callbacks
-                // so here, we only pass the required arguments
-                if (is_callable($column->data)) {
-                    array_push($data, [$column->name => call_user_func($column->data, $v, $column->key)]);
-                } else {
-                    array_push($data, [$column->name => $v->{$column->key}]);
-                }
-            }
-            // collapse the data by a single level
-            return collect($data)->collapse()->toArray();
-        });
-
-        return $data;
-    }
-
-    /**
-     * Gets the columns to be exported
-     *
-     * @return array
-     */
-    public function getColumnsToExport()
-    {
-        return $this->getProcessedColumns();
-    }
-
-    /**
-     * Get the processed columns
-     *
-     * @return array
-     */
-    public function getProcessedColumns(): array
-    {
-        return $this->processColumns();
+        if ($this->wantsToExport()) {
+            return $this->export();
+        }
+        return view($viewName, array_merge($data, ['grid' => $this]));
     }
 
     /**
@@ -587,21 +418,13 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     protected function checkParameters()
     {
-        if (!$this->query instanceof Builder) {
-            throw new InvalidArgumentException("The object of type query is invalid. Pass an instance of Illuminate\\Database\\Eloquent\\Builder");
+        if (!$this->getQuery() instanceof \Illuminate\Database\Query\Builder
+            || !$this->getQuery() instanceof \Illuminate\Database\Eloquent\Builder) {
+            throw new InvalidArgumentException("The object of type query is invalid. 
+            You need to pass an instance of Illuminate\\Database\\Eloquent\\Builder or Illuminate\\Database\\Query\\Builder");
         }
         if (!$this->request instanceof Request) {
-            throw new InvalidArgumentException("The object of type request is invalid. Pass an instance of Illuminate\\Http\\Request");
+            throw new InvalidArgumentException("The object of type request is invalid. You need to pass an instance of Illuminate\\Http\\Request");
         }
-    }
-
-    /**
-     * Return a short name for the grid that can be used as a route identifier
-     *
-     * @return string
-     */
-    protected function shortSingularGridName(): string
-    {
-        return strtolower(Str::singular($this->getName()));
     }
 }

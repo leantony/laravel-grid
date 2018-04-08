@@ -1,9 +1,9 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Filters;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -12,8 +12,8 @@ use Illuminate\Support\Str;
 trait FiltersSearchesThenExportsData
 {
     use ExportsData,
-        GridSearch,
-        GridFilter;
+        SearchesData,
+        FiltersData;
 
     /**
      * Specify if data should be paginated
@@ -25,7 +25,7 @@ trait FiltersSearchesThenExportsData
     /**
      * A query builder instance
      *
-     * @var Builder
+     * @var \Illuminate\Database\Query\Builder | \Illuminate\Database\Eloquent\Builder
      */
     protected $query;
 
@@ -145,13 +145,6 @@ trait FiltersSearchesThenExportsData
     protected $searchFunctions = ['searchRows', 'sort', 'paginate'];
 
     /**
-     * Functions to be called after filtering is done
-     *
-     * @var array
-     */
-    protected $afterFilterFunctions = ['export'];
-
-    /**
      * The filtered data. Update this after all filters have been executed. E.g during pagination
      *
      * @var Collection|LengthAwarePaginator
@@ -178,22 +171,11 @@ trait FiltersSearchesThenExportsData
         // route searches to search functions
         if ($this->request->has($this->getSearchParam())) {
 
-            $this->executeSearches();
+            $this->executeSearchFunctions();
 
         } else {
             // otherwise do filter
-            foreach ($this->filterFunctions as $filter) {
-                if (method_exists($this, $filter)) {
-                    $this->{$filter}();
-                }
-            }
-            if (!empty($this->afterFilterFunctions)) {
-                foreach ($this->afterFilterFunctions as $item) {
-                    if (method_exists($this, $item)) {
-                        $this->{$item}();
-                    }
-                }
-            }
+            $this->executeFilterFunctions();
         }
     }
 
@@ -208,11 +190,11 @@ trait FiltersSearchesThenExportsData
     }
 
     /**
-     * Execute search
+     * Execute search functions
      *
      * @return void
      */
-    public function executeSearches()
+    public function executeSearchFunctions()
     {
         foreach ($this->searchFunctions as $searchFunction) {
             if (method_exists($this, $searchFunction)) {
@@ -229,18 +211,34 @@ trait FiltersSearchesThenExportsData
     }
 
     /**
-     * Export the data
+     * Execute filter functions
      *
      * @return void
      */
+    public function executeFilterFunctions()
+    {
+        foreach ($this->filterFunctions as $filter) {
+            if (method_exists($this, $filter)) {
+                $this->{$filter}();
+            }
+        }
+    }
+
+    /**
+     * Export the data
+     *
+     * @return Response
+     * @throws \Exception
+     * @throws \Throwable
+     */
     public function export()
     {
-        if ($this->request->has($this->exportParam) && $this->allowsExporting) {
+        if ($this->wantsToExport()) {
 
             $param = $this->request->get($this->exportParam);
 
             if (in_array($param, $this->allowedExportTypes)) {
-                $this->exportExcel()->downloadExportedAs($param);
+                return $this->exportAs($param);
             }
         }
     }
@@ -254,7 +252,7 @@ trait FiltersSearchesThenExportsData
     {
         $pageSize = $this->getPageSize();
 
-        $this->filteredData = $this->query->paginate($pageSize);
+        $this->filteredData = $this->getQuery()->paginate($pageSize);
     }
 
     /**
@@ -364,7 +362,7 @@ trait FiltersSearchesThenExportsData
     public function simplePaginate()
     {
         $pageSize = $this->getPageSize();
-        $this->filteredData = $this->query->simplePaginate($pageSize);
+        $this->filteredData = $this->getQuery()->simplePaginate($pageSize);
     }
 
     /**
@@ -375,7 +373,7 @@ trait FiltersSearchesThenExportsData
     public function sort()
     {
         if ($sort = $this->checkAndReturnSortParam()) {
-            $this->query->orderBy($sort, $this->getSortDirection());
+            $this->getQuery()->orderBy($sort, $this->getSortDirection());
         }
     }
 
@@ -414,9 +412,9 @@ trait FiltersSearchesThenExportsData
     /**
      * Get the query builder
      *
-     * @return Builder
+     * @return \Illuminate\Database\Query\Builder | \Illuminate\Database\Eloquent\Builder
      */
-    public function getQuery(): Builder
+    public function getQuery()
     {
         return $this->query;
     }

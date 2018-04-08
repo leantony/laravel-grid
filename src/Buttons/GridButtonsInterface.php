@@ -1,8 +1,6 @@
 <?php
 
-namespace Leantony\Grid;
-
-use Leantony\Grid\Buttons\GenericButton;
+namespace Leantony\Grid\Buttons;
 
 interface GridButtonsInterface
 {
@@ -32,4 +30,19 @@ interface GridButtonsInterface
      * @return void
      */
     public function setDefaultButtons();
+
+    /**
+     * Get an array of button instances to be rendered on the grid
+     *
+     * @param string|null $key
+     * @return array
+     */
+    public function getButtons($key);
+
+    /**
+     * Sets an array of buttons that would be rendered to the grid
+     *
+     * @return void
+     */
+    public function setButtons();
 }

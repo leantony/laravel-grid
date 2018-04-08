@@ -14,7 +14,7 @@
                 <button type="submit"
                         class="btn btn-default"
                         title="filter data"
-                        form="{{ $formId }}">Filter
+                        form="{{ $formId }}">Filter&nbsp;<i class="fa fa-filter"></i>
                 </button>
             </div>
         </th>

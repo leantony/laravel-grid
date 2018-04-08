@@ -1,19 +1,13 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Buttons;
 
 use InvalidArgumentException;
-use Leantony\Grid\Buttons\CreateButton;
-use Leantony\Grid\Buttons\DeleteButton;
-use Leantony\Grid\Buttons\ExportButton;
-use Leantony\Grid\Buttons\GenericButton;
-use Leantony\Grid\Buttons\RefreshButton;
-use Leantony\Grid\Buttons\ViewButton;
 
-trait ConfiguresButtons
+trait RendersButtons
 {
     /**
-     * Define if we need to render buttons on the grid
+     * Quick toggle to define if we need to render any buttons on the grid
      *
      * @var bool
      */
@@ -77,6 +71,17 @@ trait ConfiguresButtons
     }
 
     /**
+     * Sets an array of buttons that would be rendered to the grid
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function setButtons()
+    {
+        $this->setDefaultButtons();
+    }
+
+    /**
      * Set default buttons for the grid
      *
      * @return void
@@ -107,14 +112,16 @@ trait ConfiguresButtons
      */
     protected function addCreateButton(): GenericButton
     {
-        return (new CreateButton([
+        return (new GenericButton([
             'gridId' => $this->id,
+            'position' => 1,
+            'name' => "Create",
+            'class' => "btn btn-success show_modal_form",
             'type' => 'toolbar',
-            'name' => 'Create',
             'icon' => 'fa-plus-circle',
             'url' => $this->getCreateRouteName(),
             'title' => 'add new ' . $this->shortSingularGridName(),
-            'beforeRender' => function () {
+            'renderIf' => function () {
                 return in_array('create', $this->buttonsToGenerate);
             }
         ]));
@@ -128,18 +135,16 @@ trait ConfiguresButtons
      */
     protected function addRefreshButton(): GenericButton
     {
-        return (new RefreshButton([
+        return (new GenericButton([
             'name' => 'Refresh',
-            'dataAttributes' => [
-                'trigger-pjax' => true,
-                'pjax-target' => '#' . $this->id
-            ],
+            'pjaxEnabled' => true,
+            'position' => 2,
             'icon' => 'fa-refresh',
             'gridId' => $this->id,
             'url' => $this->getIndexRouteLink(),
             'type' => 'toolbar',
             'title' => 'refresh table for ' . strtolower($this->name),
-            'beforeRender' => function () {
+            'renderIf' => function () {
                 return in_array('refresh', $this->buttonsToGenerate);
             }
         ]));
@@ -158,15 +163,15 @@ trait ConfiguresButtons
             'icon' => 'fa-download',
             'class' => 'btn btn-default',
             'title' => 'export data',
-            'renderCustom' => function ($v) {
-                return view('leantony::grid.buttons.export', $v)->render();
+            'renderCustom' => function ($data) {
+                return view('leantony::grid.buttons.export', $data)->render();
             },
             'gridId' => $this->id,
             'type' => 'toolbar',
             'exportRoute' => $this->getIndexRouteLink(),
-            'beforeRender' => function () {
+            'renderIf' => function () {
                 // only render the export button if `$allowsExporting` is set to true
-                return $this->allowsExporting || in_array('export', $this->buttonsToGenerate);
+                return in_array('export', $this->buttonsToGenerate) || $this->allowsExporting;
             }
         ]));
     }
@@ -179,16 +184,18 @@ trait ConfiguresButtons
      */
     protected function addViewButton(): GenericButton
     {
-        return (new ViewButton([
+        return (new GenericButton([
             'name' => 'View',
             'icon' => 'fa-eye',
+            'position' => 1,
+            'class' => 'btn btn-primary btn-xs show_modal_form',
             'gridId' => $this->id,
             'type' => 'row',
             'title' => 'view record',
             'url' => function ($gridName, $item) {
                 return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
             },
-            'beforeRender' => function ($gridName, $item) {
+            'renderIf' => function ($gridName, $item) {
                 return in_array('view', $this->buttonsToGenerate);
             }
         ]));
@@ -202,25 +209,96 @@ trait ConfiguresButtons
      */
     protected function addDeleteButton(): GenericButton
     {
-        return (new DeleteButton([
+        return (new GenericButton([
             'gridId' => $this->id,
             'name' => 'Delete',
+            'position' => 2,
+            'class' => 'data-remote btn btn-danger btn-xs btn-grid-row',
             'icon' => 'fa-trash',
             'type' => 'row',
+            'title' => 'delete record',
+            'pjaxEnabled' => false,
+            'dataAttributes' => [
+                'method' => 'DELETE',
+                'confirm' => 'Sure?',
+                'pjax-target' => '#' . $this->id
+            ],
             'url' => function ($gridName, $item) {
                 return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
             },
-            'beforeRender' => function ($gridName, $item) {
+            'renderIf' => function ($gridName, $item) {
                 return in_array('delete', $this->buttonsToGenerate);
             }
         ]));
     }
 
     /**
+     * Get an array of button instances to be rendered on the grid
+     *
+     * @param string $section
+     * @return array
+     */
+    public function getButtons($section = 'toolbar')
+    {
+        $buttons = $section ? $this->buttons[$section] : $this->buttons;
+        // sort the buttons by position
+        return collect($buttons)->sortBy(function ($v) {
+            return $v->position;
+        })->toArray();
+    }
+
+    /**
+     * Clear the buttons on a specific section
+     *
+     * @param string $section
+     * @return void
+     */
+    protected function clearButtons(string $section = 'toolbar')
+    {
+        unset($this->buttons[$section]);
+    }
+
+    /**
+     * Clear all buttons
+     *
+     * @return void
+     */
+    protected function clearAllButtons()
+    {
+        unset($this->buttons);
+    }
+
+    /**
+     * Check if the grid has any buttons
+     *
+     * @param string $section
+     * @return bool
+     */
+    public function hasButtons(string $section = 'toolbar')
+    {
+        if (!$this->renderButtons) {
+            // rendering disabled
+            return false;
+        }
+        // no buttons on section
+        return count($this->buttons[$section]) === 0 ? false : true;
+    }
+
+    /**
+     * Return the view used to display the search form
+     *
+     * @return string
+     */
+    public function getSearchView(): string
+    {
+        return 'leantony::grid.search';
+    }
+
+    /**
      * Add a custom button to the grid
      *
      * @param array $properties an array of key value pairs representing property names and values for the GenericButton instance
-     * @param string|null $position where this button will be placed. Defaults to 'row'
+     * @param string|null $position where this button will be placed. Defaults to 'toolbar'
      * @return GenericButton
      * @throws \Exception
      */
@@ -232,7 +310,7 @@ trait ConfiguresButtons
         } else {
             $this->addRowButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
         }
-        return $this->buttons[$position ?? 'row'][$name];
+        return $this->buttons[$position ?? 'toolbar'][$name];
     }
 
     /**
@@ -295,7 +373,7 @@ trait ConfiguresButtons
      */
     private function ensureButtonInstanceValidity($button)
     {
-        if ($button == null || !$button instanceof GenericButton) {
+        if ($button === null || !$button instanceof GenericButton) {
             throw new InvalidArgumentException(sprintf("The button %s could not be found or is invalid.", $button));
         }
     }

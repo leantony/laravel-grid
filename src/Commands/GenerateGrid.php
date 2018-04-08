@@ -145,6 +145,7 @@ class GenerateGrid extends Command
      *
      * @param $model
      * @return array|bool
+     * @throws \Exception
      */
     protected function generateRows($model)
     {
@@ -156,19 +157,24 @@ class GenerateGrid extends Command
 
             $this->error("Invalid model supplied.");
 
-            return false;
+            die(-1);
         }
 
         // primary key
         $model->getKeyName();
+
+        // cols
         $columns = array_merge($columns, [$model->getKeyName()]);
-        // fillable
+
+        // use only fillable cols
         $columns = array_merge($columns, $model->getFillable());
-        // timestamps
+
+        // timestamps. skip updated_at
         if ($model->timestamps) {
             $columns = array_merge($columns, [$model->getCreatedAtColumn()]);
         }
 
+        // skip column exclusions
         $rows = collect($columns)->reject(function ($v) {
             return in_array($v, $this->excludedColumns);
 
@@ -197,6 +203,7 @@ class GenerateGrid extends Command
                                 'type' => 'select',
                                 'data' => [] // add a key value pair that will be rendered on a drop-down
                             ],
+                            'export' => false,
                         ],
                     ];
                 } else {
@@ -221,7 +228,7 @@ class GenerateGrid extends Command
                                     'enabled' => true,
                                 ],
                                 'filter' => [
-                                    'enabled' => false,
+                                    'enabled' => true,
                                     'operator' => '='
                                 ],
                             ],
@@ -245,24 +252,24 @@ class GenerateGrid extends Command
      */
     protected function dumpBinding($model): array
     {
-        $st = __DIR__ . '/../Stubs/GridInterface.txt';
+        $stub = __DIR__ . '/../Stubs/GridInterface.txt';
 
         list($namespace, $interfaceName, $replaced) = $this->makeReplacementsForBinding($model,
-            $this->generateDynamicNamespace(), $st);
+            $this->generateDynamicNamespace(), $stub);
 
         $this->binding = $interfaceName;
 
         $filename = $this->makeFileName($interfaceName);
 
-        $p = $this->getPath($namespace);
+        $path = $this->getPath($namespace);
 
-        if ($this->dumpFile($p, $filename, $replaced)) {
+        if ($this->dumpFile($path, $filename, $replaced)) {
 
-            $this->info("Wrote generated binding to " . $p);
+            $this->info("Wrote generated binding to " . $path);
 
         } else {
 
-            $this->info("skipped overwriting existing binding at " . $p);
+            $this->info("skipped overwriting existing binding at " . $path);
         }
 
         return array($namespace, $replaced, $filename);
@@ -449,7 +456,6 @@ class GenerateGrid extends Command
      */
     protected function replaceOtherContent(array $replacements, &$stub)
     {
-
         $replaced = str_replace(array_values(array_except($this->searches, 'rows')), [
             $replacements['namespace'],
             $replacements['modelName'],
@@ -458,7 +464,9 @@ class GenerateGrid extends Command
             $replacements['routeRoot'],
             $replacements['binding']
         ], $stub);
+
         $this->info("Finished performing replacements to the stub files...");
+
         return $replaced;
     }
 }

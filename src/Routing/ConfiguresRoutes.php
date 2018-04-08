@@ -1,6 +1,6 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Routing;
 
 use InvalidArgumentException;
 

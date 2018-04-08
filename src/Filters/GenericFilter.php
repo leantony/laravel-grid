@@ -119,6 +119,7 @@ class GenericFilter implements Htmlable
     /**
      * @return string
      * @throws \Exception
+     * @throws \Throwable
      */
     public function __toString()
     {
@@ -130,6 +131,7 @@ class GenericFilter implements Htmlable
      *
      * @return string
      * @throws \Exception
+     * @throws \Throwable
      */
     public function toHtml()
     {
@@ -141,6 +143,7 @@ class GenericFilter implements Htmlable
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|mixed
      * @throws \Exception
+     * @throws \Throwable
      */
     public function render()
     {

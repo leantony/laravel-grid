@@ -1,35 +1,78 @@
-# Laravel grid (laravel 5.5)
-This package allows rendering of data via a tabular format (grid). 
-The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`
+# Laravel grid (laravel 5.6+)
+
+[![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
+
+This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
+
+# Features
++ Grid generation via a laravel command.
++ Full export functionality - (to pdf, csv, and excel. Relies on the `maatwebsite/excel` package)
++ Bootstrap modal support
++ Customizable column filters (supports text, date, date-range, dropdowns)
++ Adding of dynamic column names (that do not exist on the actual eloquent models)
++ Raw HTML support for the column data
++ Customizable global search
++ Attribute sorting
++ Dynamic addition, removal and disabling of buttons
++ Dynamic manipulation of row and column HTML classes
++ pjax support
++ Pagination
+
 
 ## Requirements
-The grid is [pjax](https://github.com/defunkt/jquery-pjax) ready out of the box. You can use this package - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
+The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware.](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 
 + Bootstrap 3 (for the styling)
 + Font awesome (for icons)
-+ Jquery (for the grid.js)
++ Jquery (required by bootstrap and the package's javascript)
 + Jquery pjax (quickly view data without having to reload the page)
-+ [Block UI](https://github.com/malsup/blockui) (optional)
-+ [Date picker](https://github.com/uxsolutions/bootstrap-datepicker.git) (optional)
++ [Block UI](https://github.com/malsup/blockui) (optional - to 'block' the UI when doing an AJAX request that might presumably take a while).
++ [Date picker](https://github.com/uxsolutions/bootstrap-datepicker.git) (optional - for the date filters)
+
 
 ## Installation
-The package is available on composer. Just run;
-```bash
+The package is available on packagist. Just run;
+```php
 composer install leantony/laravel-grid
 ```
-If you are using `laravel <5.5`, then ensure that you add the service provider `Leantony\Grid\Providers\ServiceProvider::class` manually to your `app.php` config file
+You can then publish the resources (views) and assets (css & js), incase you need to customize them. The css and js will be copied to `public/vendor/leantony/grid`
+
+```php
+php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
+```
+> You can publish the assets and views separately by passing the `--tag` argument to the command. For the argument values, try `assets`, `views` or `config` for js|css assets, views and config respectively.
+
+You can also run `php artisan vendor:publish` and select the provider index by the name `Leantony\Grid\Providers\ServiceProvider`
+
+When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
+```php
+php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force
+```
+> You can also place this command in composer so that it is executed automatically on each update run. Like this;
+```php
+// ... composer config
+"post-autoload-dump": [
+    "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+    "@php artisan package:discover",
+    "@php artisan vendor:publish --provider=\"Leantony\\Grid\\Providers\\ServiceProvider\" --tag=assets --force"
+]
+```
+
 
 ## Usage
 A laravel command is available to make it easy to create grids. 
 Once installed, just run the command:
-```bash
-php artisan make:grid --model={modelClass}
+```php
+php artisan make:grid --model="{modelClass}"
 ```
+Just make sure you replace `{modelClass}` with your actual `eloquent` model class. E.g
+```php
+php artisan make:grid --model="App\User"
+```
+Once this is run, a grid will be generated. Default namespace for grid generation is `App\Grids`.
 
-Just make sure you replace `modelClass` with your actual `eloquent` model class.
-Once this happens, a grid will be generated. Default namespace for grid generation is `App\Grids`.
+Once the generation of the grid is done, you can add add it in your controller like this. E.g a `user` model grid:
 
-Once the generation of the grid is done, you can add use it in your controller like this;
 ```php
 class UsersController extends Controller
 {
@@ -43,15 +86,16 @@ class UsersController extends Controller
     public function index(UsersGridInterface $usersGrid, Request $request)
     {
         // the 'query' argument needs to be an instance of the eloquent query builder
-        $grid = $usersGrid->create(['query' => User::query(), 'request' => $request]);
-
-        return view('welcome', ['grid' => $grid]);
+        // you can load relationships at this point
+        return $usersGrid
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome'); // render the grid on the welcome view
     }
 }
 ```
-> If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like so;
+> If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
 ```php
-/**
+     /**
      * Register any application services.
      *
      * @return void
@@ -63,15 +107,109 @@ class UsersController extends Controller
 ```
 
 
-Ensure that your view/layout looks somthing like [this](https://gist.github.com/leantony/4a7a795904c60b6b7f91431e4241e37b). Especially with the javascript dependencies. The example is based off the grids sample application, which can be found [here](https://github.com/leantony/laravel_grid_app). The modal and its included view are not really required, so feel free to leave them out.
-> The grid injects its javascript into the `@stack('scripts')` section, so please ensure that you have this
+Otherwise, you can also instantiate the grid class like any other class then inject any constructor dependencies you might need.
+```php
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        return (new UsersGrid(['user' => $user)) // you can then use it as $user within the class. It's set implicitly using the __set() call
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome');
+    }
+```
+> Adding `$user` above as part of the key value pair array on the create method would achieve the same results as above.
+
+
+If you need to pass extra data to the view specified, you just need to pass the data as arguments, just as you do normally on any other laravel controller;
+```php
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $data = 'hello world';
+        
+        return (new UsersGrid())
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome', compact('data'));
+    }
+```
+
+
+For eloquent relationships, its basically the same approach. Just ensure that you pass in an instance of the query builder. Like this;
+```php
+class UsersController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @param UsersGridInterface $usersGrid
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(UsersGridInterface $usersGrid, Request $request)
+    {
+        // load relationships
+        $query = User::with(['posts', 'activities'])
+        return $usersGrid
+                    ->create(['query' => $query, 'request' => $request])
+                    ->renderOn('welcome');
+    }
+}
+```
 
 Then display the grid on your view like this;
 ```php
 {!! $grid !!}
 ```
 
-You should see something like this...
+You should see something like this (see the image below). Feel free to check out the [sample app](http://laravel-grid.herokuapp.com). Also for reference, its source code is [here](https://github.com/leantony/laravel-grid-app)
+
+
 ![sample](docs/sample.png)
 
-To customize the grid, check out [the customization section](docs/customization.md)
+
+To enable javascript utilities such as Pjax, ensure that you have their dependencies included on your page/layout. Once you have done that, ensure that you have a `@push('grid_js')` section on your view/layout, just after the required javascript dependencies. This is the point where the grid's javscript will be injected. An example is as shown below;
+```php
+
+    <!-- dependencies e.g jquery, pjax, bootstrap js come here -->
+    
+    <!-- load the grid's javascipt -->
+    <script src="{{ asset('vendor/leantony/grid/js/grid.js') }}"></script>
+    <script>
+        // setup ajax. This is required, so that the CSRF token is sent during AJAX requests
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
+    <!-- the initialization javascript for any of the grid(s) you create will be injected here. Having this will ensure that the script is executed after it's dependencies have been loaded. -->
+    @stack('grid_js')
+```
+> Just make sure that the `meta` element with the name `csrf-token` is available on your layout/blade view. E.g
+```html
+<meta name="csrf-token" content="{{ csrf_token() }}">
+```
+
+To customize the grid, check out [the customization section](https://github.com/leantony/laravel-grid/wiki/Customization). Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new).
+
+# TODO's
++ Add unit tests (in progress. The `passing` badge was triggered by running a dummy unit test actually. Real tests will soon be added).
++ Completion of documentation (in progress).
++ Add more customization options to published config file. Stuff like pagination, filters, buttons, etc
++ Toggle between sorting in ascending and descending order.
++ Add ability to culminate grid rows. E.g displaying a total of some sort.
++ Add ability to have a checkbox that can be used to select multiple items, after which an action can be done. E.g deleting mutiple items.
+
+# More docs
+For more docs, please checkout the [wiki](https://github.com/leantony/laravel-grid/wiki).

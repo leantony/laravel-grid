@@ -1,8 +1,8 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Filters;
 
-trait GridFilter
+trait FiltersData
 {
     /**
      * Check if filtering can be done
@@ -25,7 +25,7 @@ trait GridFilter
      */
     public function canUseProvidedColumn(string $columnName, array $validColumns)
     {
-        return !in_array($columnName, $validColumns);
+        return in_array($columnName, $validColumns);
     }
 
     /**
@@ -56,12 +56,13 @@ trait GridFilter
         $data = $columnData['data'] ?? [];
         // check for custom filter strategies and call them
         if (isset($filter['query']) && is_callable($filter['query'])) {
-            call_user_func($filter['query'], $this->query, $columnName, $userInput);
+            call_user_func($filter['query'], $this->getQuery(), $columnName, $userInput);
         } else {
-            if ($operator == 'like') {
+
+            if ($operator === strtolower('like')) {
                 $value = '%' . $userInput . '%';
             } else {
-                $value = $columnName;
+                $value = $userInput;
             }
             if (isset($data['date']) && $data['date'] === true) {
                 // skip invalid dates
@@ -72,5 +73,15 @@ trait GridFilter
                 $this->getQuery()->where($columnName, $operator, $value, $this->filterType);
             }
         }
+    }
+
+    /**
+     * Get id for the filter form
+     *
+     * @return string
+     */
+    public function getFilterFormId()
+    {
+        return $this->getId() . '-' . 'filter';
     }
 }

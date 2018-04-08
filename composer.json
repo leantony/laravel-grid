@@ -2,46 +2,52 @@
   "name": "leantony/laravel-grid",
   "description": "A grid view for laravel, inspired by the yii2 grid widget",
   "license": "MIT",
+  "type": "library",
   "keywords": [
     "leantony",
+    "bootstrap",
     "laravel-grid",
+    "laravel",
     "pjax",
-    "grid"
+    "grid",
+    "laravel-5",
+    "laravel5"
   ],
   "homepage": "https://github.com/leantony/laravel-grid",
   "authors": [
     {
-      "name": "leantony",
-      "email": "chachaantony@gmail.com"
+      "name": "Antony [leantony] Chacha",
+      "email": "chachaantony@gmail.com",
+      "role": "Developer"
     }
   ],
   "require": {
-    "illuminate/view": "~5.5",
-    "illuminate/support": "~5.5",
-    "illuminate/console": "~5.5",
-    "illuminate/contracts": "~5.5",
-    "illuminate/http": "~5.5",
-    "illuminate/database": "~5.5",
-    "illuminate/pagination": "~5.5"
+    "illuminate/view": "~5.6",
+    "illuminate/support": "~5.6",
+    "illuminate/console": "~5.6",
+    "illuminate/contracts": "~5.6",
+    "illuminate/http": "~5.6",
+    "illuminate/database": "~5.6",
+    "illuminate/pagination": "~5.6"
   },
   "suggest": {
     "avengers/bootforms": "For rapid bootstrap form generation",
-    "maatwebsite/excel": "For exporting grid data as excel/pdf",
+    "maatwebsite/excel": "For exporting grid data as excel (~3.0)",
     "spatie/laravel-pjax": "For pjax support on the server side"
   },
   "require-dev": {
-    "phpunit/phpunit": "~5.0"
+    "phpunit/phpunit": "~7.0",
+    "orchestra/testbench": "~3.0"
   },
   "autoload": {
     "psr-4": {
       "Leantony\\Grid\\": "src/",
-      "Leantony\\Grid\\Providers\\": "src/providers",
-      "Leantony\\Grid\\Commands\\": "src/commands",
       "Leantony\\Grid\\Buttons\\": "src/buttons",
       "Leantony\\Grid\\Columns\\": "src/columns",
+      "Leantony\\Grid\\Commands\\": "src/commands",
       "Leantony\\Grid\\Filters\\": "src/filters",
-      "Leantony\\Grid\\Routing\\": "src/routing",
-      "Leantony\\Grid\\Search\\": "src/search"
+      "Leantony\\Grid\\Providers\\": "src/providers",
+      "Leantony\\Grid\\Routing\\": "src/routing"
     }
   },
   "extra": {
@@ -49,9 +55,8 @@
       "providers": [
         "Leantony\\Grid\\Providers\\ServiceProvider"
       ]
-    },
-    "branch-alias": {
-      "dev-master": "master"
     }
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

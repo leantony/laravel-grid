@@ -1,10 +1,9 @@
 <?php
 
-namespace Leantony\Grid;
+namespace Leantony\Grid\Filters;
 
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
-use Leantony\Grid\Filters\GenericFilter;
 
 trait AddsColumnFilters
 {
@@ -25,30 +24,31 @@ trait AddsColumnFilters
         $filterInstance = null;
         if (!$filterType instanceof GenericFilter) {
             switch ($filterType) {
-                case 'date':
-                    {
-                        $filterInstance = $this->addDateFilter($filterEnabled, $columnName, $filterDataAttributes,
-                            $filterClass);
-                        break;
-                    }
-                case 'daterange':
-                    {
-                        $filterInstance = $this->addTextFilter($filterEnabled, $columnName,
-                            $filterClass . ' date-range');
-                        break;
-                    }
-                case 'text':
-                    {
-                        // use text for any other filter type. E.g a custom one you might need
-                        $filterInstance = $this->addTextFilter($filterEnabled, $columnName, $filterClass);
-                        break;
-                    }
-                case 'select':
-                    {
-                        $filterInstance = $this->addSelectFilter($filterEnabled, $columnName,
-                            $columnData['data'] ?? []);
-                        break;
-                    }
+                case 'date': {
+                    $filterInstance = $this->addDateFilter(
+                        $filterEnabled, $columnName, $filterDataAttributes, $filterClass
+                    );
+                    break;
+                }
+                case 'daterange': {
+                    $filterInstance = $this->addTextFilter(
+                        $filterEnabled, $columnName, $filterClass . ' date-range'
+                    );
+                    break;
+                }
+                case 'text': {
+                    // use text for any other filter type. E.g a custom one you might need
+                    $filterInstance = $this->addTextFilter(
+                        $filterEnabled, $columnName, $filterClass
+                    );
+                    break;
+                }
+                case 'select': {
+                    $filterInstance = $this->addSelectFilter(
+                        $filterEnabled, $columnName, $columnData['data'] ?? []
+                    );
+                    break;
+                }
                 default:
                     throw new InvalidArgumentException("Unknown filterType type " . $filterType . " for " . $columnName);
             }
@@ -72,13 +72,14 @@ trait AddsColumnFilters
         $elementId,
         array $filterDataAttributes,
         $elementClass = null
-    ): GenericFilter {
+    ): GenericFilter
+    {
         $filter = new GenericFilter([
             'name' => $elementId,
             'id' => $elementId,
             'enabled' => $enabled,
             'formId' => $this->getFilterFormId(),
-            'class' => 'form-control datepicker grid-filter ' . $elementClass,
+            'class' => 'form-control grid-datepicker grid-filter ' . $elementClass,
             'type' => 'text', // just use text, since its text input
             'title' => 'filter by ' . $elementId,
             'dataAttributes' => [

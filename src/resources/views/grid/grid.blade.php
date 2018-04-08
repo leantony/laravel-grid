@@ -27,14 +27,20 @@
             </div>
             <div class="panel-body">
                 <div class="row">
-                    {!! $grid->getSearch() !!}
-                    <div class="col-md-{{ $grid->getToolbarSize()[1] }}">
-                        <div class="pull-right">
-                            @foreach($grid->getButtons('toolbar') as $button)
-                                {!! $button->render() !!}
-                            @endforeach
+                    <!-- search -->
+                {!! $grid->renderSearchForm() !!}
+                <!-- end search -->
+                    <!-- toolbar buttons -->
+                    @if($grid->hasButtons('toolbar'))
+                        <div class="col-md-{{ $grid->getToolbarSize()[1] }}">
+                            <div class="pull-right">
+                                @foreach($grid->getButtons('toolbar') as $button)
+                                    {!! $button->render() !!}
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @endif
+                    <!-- end toolbar buttons -->
                 </div>
                 <hr>
                 <form action="{{ $grid->getSearchRoute() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
@@ -48,7 +54,7 @@
 
                                 @if($sort = $column->sortable)
                                     @if(is_callable($grid->getSortUrl()))
-                                        <th class="{{ $column->columnClass }}"
+                                        <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                             title="click to sort by {{ $column->key }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ call_user_func($grid->getSortUrl(), $column->key) }}">
@@ -56,7 +62,7 @@
                                             </a>
                                         </th>
                                     @else
-                                        <th class="{{ $column->columnClass }}"
+                                        <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                             title="click to sort by {{ $column->key }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ route($grid->getSortUrl(), add_query_param([$this->getSortParam() => $column->key])) }}">
@@ -65,7 +71,7 @@
                                         </th>
                                     @endif
                                 @else
-                                    <th class="{{ $column->columnClass }}">
+                                    <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                         {{ $column->name }}
                                     </th>
                                 @endif
@@ -73,7 +79,7 @@
                                 @if($sort = $column->sortable)
                                     @if(is_callable($grid->getSortUrl()))
                                         <th title="click to sort by {{ $column->key }}"
-                                            class="{{ $column->columnClass }}">
+                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ call_user_func($grid->getSortUrl(), $column->key) }}">
                                                 {{ $column->name }}
@@ -81,7 +87,7 @@
                                         </th>
                                     @else
                                         <th title="click to sort by {{ $column->key }}"
-                                            class="{{ $column->columnClass }}">
+                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ route($grid->getSortUrl(), add_query_param([$this->getSortParam() => $column->key])) }}">
                                                 {{ $column->name }}
@@ -89,7 +95,7 @@
                                         </th>
                                     @endif
                                 @else
-                                    <th class="{{ $column->columnClass }}">
+                                    <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                         {{ $column->name }}
                                     </th>
                                 @endif
@@ -98,7 +104,7 @@
                         <th></th>
                     </tr>
                     <!-- end headers -->
-                    <!-- filter -->
+                    <!-- filters -->
                     <tr>
                         @include('leantony::grid.filter', ['columns' => $columns, 'formId' => $grid->getFilterFormId()])
                     </tr>
@@ -150,11 +156,11 @@
                                                 </td>
                                             @endif
                                         @endif
-                                        @if($loop->last)
+                                        @if($loop->last && $grid->hasButtons('rows'))
                                             <td>
                                                 <div class="pull-right">
                                                     @foreach($grid->getButtons('rows') as $button)
-                                                        @if(call_user_func($button->beforeRender, $grid->transformName(), $item))
+                                                        @if(call_user_func($button->renderIf, $grid->transformName(), $item))
                                                             {!! $button->render(['gridName' => $grid->transformName(), 'gridItem' => $item]) !!}
                                                         @else
                                                             @continue
@@ -182,24 +188,25 @@
         </div>
     </div>
 </div>
-@push('scripts')
+@push('grid_js')
     <script>
         (function ($) {
             var grid = "{{ '#' . $grid->getId() }}";
             var filterForm = "{{ '#' . $grid->getFilterFormId() }}";
             var searchForm = "{{ '#' . $grid->getSearchFormId() }}";
-            _grid({
+            _grids.grid.init({
                 id: grid,
                 filterForm: filterForm,
                 dateRangeSelector: '.date-range',
                 searchForm: searchForm,
                 pjax: {
-                    pjaxOptions: {}
-                },
-                linkables: {
-                    element: '.linkable',
-                    url: 'url',
-                    timeout: 100
+                    pjaxOptions: {
+                        scrollTo: false
+                    },
+                    // what to do after a PJAX request. Js plugins have to be re-intialized
+                    afterPjax: function (e) {
+                        _grids.init();
+                    }
                 }
             });
         })(jQuery);

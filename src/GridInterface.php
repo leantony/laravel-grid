@@ -18,77 +18,6 @@ interface GridInterface
     public function create(array $params): GridInterface;
 
     /**
-     * Set the links to be used on the grid for the buttons and forms (filter and search)
-     * Use route names for simplicity
-     *
-     * @return void
-     */
-    public function setRoutes();
-
-    /**
-     * Filename for export
-     *
-     * @return string
-     */
-    public function getFileNameForExport();
-
-    /**
-     * Download export data
-     *
-     * @param string $type
-     */
-    public function downloadExportedAs($type = 'xlsx');
-
-    /**
-     * Execute all filters
-     *
-     * @return void
-     */
-    public function executeFilters();
-
-    /**
-     * Paginate the filtered data
-     *
-     * @return void
-     */
-    public function paginate();
-
-    /**
-     * Search the rows
-     *
-     * @return void
-     */
-    public function searchRows();
-
-    /**
-     * Filter the grid rows
-     *
-     * @return void
-     */
-    public function filterRows();
-
-    /**
-     * The table name to be sorted
-     *
-     * @return \Closure
-     */
-    public function getSortTable();
-
-    /**
-     * Sort a query builder
-     *
-     * @return void
-     */
-    public function sort();
-
-    /**
-     * Get the filtered data
-     *
-     * @return LengthAwarePaginator|Collection
-     */
-    public function getFilteredData();
-
-    /**
      * Initialize grid variables
      *
      * @return void
@@ -103,18 +32,22 @@ interface GridInterface
     public function getData();
 
     /**
-     * Render the grid
+     * An implicit call from the __toString() method. Passes in the grid data to the actual view that we have created
+     * so that it can be rendered
      *
      * @return string
      */
     public function render();
 
     /**
-     * Process the rows that were supplied
+     * Pass the grid on to the user defined view e.g an index page, along with any data that may be required
+     * Will dynamically switch between displaying the grid and downloading exported files
      *
-     * @return array
+     * @param string $viewName
+     * @param array $data
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
-    public function processColumns();
+    public function renderOn(string $viewName, $data = []);
 
     /**
      * Return the ID of the grid
@@ -139,13 +72,6 @@ interface GridInterface
     public function allowsLinkableRows();
 
     /**
-     * Render the search form on the grid
-     *
-     * @return string
-     */
-    public function getSearch();
-
-    /**
      * Get the name of the grid. Can be the table name
      *
      * @return string
@@ -153,60 +79,9 @@ interface GridInterface
     public function getName(): string;
 
     /**
-     * Return the rows to be displayed on the grid
-     *
-     * @return array
-     */
-    public function getColumns(): array;
-
-    /**
-     * Set the columns to be displayed
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function setColumns();
-
-    /**
      * The HTML class/classes of the grid table
      *
      * @return string
      */
     public function getClass(): string;
-
-    /**
-     * Get an array of button instances to be rendered on the grid
-     *
-     * @param null $key
-     * @return array
-     */
-    public function getButtons($key = null);
-
-    /**
-     * Sets an array of buttons that would be rendered to the grid
-     *
-     * @return void
-     */
-    public function setButtons();
-
-    /**
-     * Get the data to be exported
-     *
-     * @return Collection|array|LengthAwarePaginator
-     */
-    public function getExportData();
-
-    /**
-     * Gets the columns to be exported
-     *
-     * @return array
-     */
-    public function getColumnsToExport();
-
-    /**
-     * Get the processed rows
-     *
-     * @return array
-     */
-    public function getProcessedColumns(): array;
 }
