@@ -68,6 +68,13 @@ class GenericButton implements Htmlable
     public $icon = null;
 
     /**
+     * If a modal should be displayed
+     *
+     * @var bool
+     */
+    public $showModal = false;
+
+    /**
      * The title of the button
      *
      * @var string
@@ -147,6 +154,24 @@ class GenericButton implements Htmlable
     public function setRenderIf(callable $renderIf): GenericButton
     {
         $this->renderIf = $renderIf;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShowModal(): bool
+    {
+        return $this->showModal;
+    }
+
+    /**
+     * @param bool $showModal
+     * @return GenericButton
+     */
+    public function setShowModal(bool $showModal): GenericButton
+    {
+        $this->showModal = $showModal;
         return $this;
     }
 
@@ -345,6 +370,15 @@ class GenericButton implements Htmlable
         // apply preset attributes
         $this->dataAttributes = $this->getDataAttributes();
 
+        // check if modal is needed, and adjust the class attribute
+        $this->isShowModal() ? $this->setClass($this->getClass() . ' show_modal_form') : false;
+
+        // can render
+        if (!is_callable($this->renderIf)) {
+            $this->renderIf = function () {
+                return true;
+            };
+        }
         // custom render
         if ($this->renderCustom && is_callable($this->renderCustom)) {
             return call_user_func($this->renderCustom, $this->compactData($args));

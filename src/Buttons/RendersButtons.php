@@ -116,7 +116,8 @@ trait RendersButtons
             'gridId' => $this->id,
             'position' => 1,
             'name' => "Create",
-            'class' => "btn btn-success show_modal_form",
+            'class' => "btn btn-success",
+            'showModal' => true,
             'type' => 'toolbar',
             'icon' => 'fa-plus-circle',
             'url' => $this->getCreateRouteName(),
@@ -188,7 +189,8 @@ trait RendersButtons
             'name' => 'View',
             'icon' => 'fa-eye',
             'position' => 1,
-            'class' => 'btn btn-primary btn-xs show_modal_form',
+            'class' => 'btn btn-primary btn-xs',
+            'showModal' => true,
             'gridId' => $this->id,
             'type' => 'row',
             'title' => 'view record',
@@ -255,7 +257,7 @@ trait RendersButtons
      */
     protected function clearButtons(string $section = 'toolbar')
     {
-        unset($this->buttons[$section]);
+        $this->buttons[$section] = [];
     }
 
     /**
@@ -265,7 +267,7 @@ trait RendersButtons
      */
     protected function clearAllButtons()
     {
-        unset($this->buttons);
+        $this->buttons = [];
     }
 
     /**
@@ -281,7 +283,7 @@ trait RendersButtons
             return false;
         }
         // no buttons on section
-        return count($this->buttons[$section]) === 0 ? false : true;
+        return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
     }
 
     /**
@@ -305,12 +307,13 @@ trait RendersButtons
     protected function makeCustomButton(array $properties, $position = null): GenericButton
     {
         $name = $properties['name'] ?? 'unknown';
+        $position = $position ?? 'toolbar';
         if ($position === 'toolbar') {
             $this->addToolbarButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
         } else {
             $this->addRowButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
         }
-        return $this->buttons[$position ?? 'toolbar'][$name];
+        return $this->buttons[$position][$name];
     }
 
     /**
@@ -323,11 +326,7 @@ trait RendersButtons
      */
     protected function addToolbarButton(string $button, GenericButton $instance)
     {
-        $this->buttons = array_merge_recursive($this->buttons, [
-            'toolbar' => [
-                $button => $instance->setType('toolbar'),
-            ]
-        ]);
+        $this->addButton('toolbar', strtolower($button), $instance);
     }
 
     /**
@@ -340,11 +339,7 @@ trait RendersButtons
      */
     protected function addRowButton(string $button, GenericButton $instance)
     {
-        $this->buttons = array_merge_recursive($this->buttons, [
-            'rows' => [
-                $button => $instance->setType('row'),
-            ]
-        ]);
+        $this->addButton('rows', strtolower($button), $instance);
     }
 
     /**
@@ -406,6 +401,8 @@ trait RendersButtons
     protected function editToolbarButton(string $button, array $properties)
     {
         $instance = $this->buttons['toolbar'][$button];
+
+        $this->ensureButtonInstanceValidity($instance);
 
         foreach ($properties as $k => $v) {
             $instance->{$k} = $v;
