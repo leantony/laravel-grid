@@ -371,8 +371,8 @@ class GenerateGrid extends Command
      */
     protected function makeDirectory($path)
     {
-        if (!$this->filesystem->isDirectory(dirname($path))) {
-            $this->filesystem->makeDirectory(dirname($path), 0777, true, true);
+        if (!$this->filesystem->isDirectory($path)) {
+            $this->filesystem->makeDirectory($path, 0777, true, true);
         }
 
         return $path;
