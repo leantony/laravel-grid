@@ -347,7 +347,7 @@ class GenerateGrid extends Command
 
         if ($this->filesystem->exists($dumpPath)) {
 
-            if (($this->confirm(sprintf('Overwrite file at %ss ? [yes|no]', $dumpPath), 'no'))) {
+            if (($this->confirm(sprintf('Overwrite file at %s ? [yes|no]', $dumpPath), 'no'))) {
 
                 $this->filesystem->put($dumpPath, $contents);
 
