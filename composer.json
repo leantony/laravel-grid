@@ -40,6 +40,9 @@
     "orchestra/testbench": "~3.0"
   },
   "autoload": {
+    "classmap": [
+      "tests/factories"
+    ],
     "psr-4": {
       "Leantony\\Grid\\": "src/",
       "Leantony\\Grid\\Buttons\\": "src/buttons",
@@ -47,7 +50,8 @@
       "Leantony\\Grid\\Commands\\": "src/commands",
       "Leantony\\Grid\\Filters\\": "src/filters",
       "Leantony\\Grid\\Providers\\": "src/providers",
-      "Leantony\\Grid\\Routing\\": "src/routing"
+      "Leantony\\Grid\\Routing\\": "src/routing",
+      "Leantony\\Grid\\Test\\Models\\": "tests/models"
     }
   },
   "extra": {
