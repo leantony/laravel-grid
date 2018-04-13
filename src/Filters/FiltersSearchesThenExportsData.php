@@ -260,7 +260,7 @@ trait FiltersSearchesThenExportsData
      *
      * @return int
      */
-    protected function getPageSize(): int
+    protected function getPageSize()
     {
         return config('grids.pagination_limit');
     }
