@@ -498,15 +498,30 @@ var _grids = _grids || {};
     /**
      * Initialize stuff
      */
-    _grids.init = function () {
+    _grids.init = function (config) {
+        config = config || {};
+        var dateRangePickerConfig = config.datePicker || {};
+        var gridLinksConfig = config.gridLinks || {};
+
         // tooltip
         $('[data-toggle="tooltip"]').tooltip();
-        // date picker
-        $('.grid-datepicker').datepicker();
+        if (typeof daterangepicker !== 'function') {
+            console.warn('date range picker library not found. Please use https://github.com/dangrossman/bootstrap-daterangepicker.git');
+        } else {
+            // date picker
+            var picker = $('.grid-datepicker');
+            picker.daterangepicker(dateRangePickerConfig || {
+                "singleDatePicker": true,
+                "showDropdowns": true,
+                "startDate": picker.data('start-date'),
+                "endDate": picker.data('end-date')
+            });
+        }
+
         // initialize modal js
         _grids.modal.init({});
         // table links
-        _grids.utils.tableLinks({element: '.linkable', navigationDelay: 100});
+        _grids.utils.tableLinks(gridLinksConfig || {element: '.linkable', navigationDelay: 100});
         // setup ajax listeners
         _grids.utils.handleAjaxRequest($('.data-remote'), 'click');
         _grids.utils.handleAjaxRequest($('form[data-remote]'), 'submit');
