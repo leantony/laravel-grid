@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2018.
+ * @author Antony [leantony] Chacha
+ */
 
 use Faker\Generator as Faker;
 use Leantony\Grid\Test\Models\Role;

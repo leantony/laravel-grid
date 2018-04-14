@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2018.
+ * @author Antony [leantony] Chacha
+ */
 
 class TestCase extends Orchestra\Testbench\TestCase
 {
@@ -14,6 +18,8 @@ class TestCase extends Orchestra\Testbench\TestCase
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         $this->withFactories(__DIR__.'/factories');
+
+        $this->artisan('migrate', ['--database' => 'sqlite']);
     }
 
     /**
@@ -24,8 +30,8 @@ class TestCase extends Orchestra\Testbench\TestCase
      */
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('database.default', 'test');
-        $app['config']->set('database.connections.test', [
+        $app['config']->set('database.default', 'sqlite');
+        $app['config']->set('database.connections.sqlite', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',

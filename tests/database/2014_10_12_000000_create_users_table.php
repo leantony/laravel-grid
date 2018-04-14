@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2018.
+ * @author Antony [leantony] Chacha
+ */
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
