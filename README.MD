@@ -27,7 +27,7 @@ The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box.
 + Jquery (required by bootstrap and the package's javascript)
 + Jquery pjax (quickly view data without having to reload the page)
 + [Block UI](https://github.com/malsup/blockui) (optional - to 'block' the UI when doing an AJAX request that might presumably take a while).
-+ [Date picker](https://github.com/uxsolutions/bootstrap-datepicker.git) (optional - for the date filters)
++ [Date picker](https://github.com/dangrossman/bootstrap-daterangepicker.git) (optional - for the single date & date range filters)
 
 
 ## Installation

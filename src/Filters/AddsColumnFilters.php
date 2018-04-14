@@ -2,6 +2,7 @@
 
 namespace Leantony\Grid\Filters;
 
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
@@ -31,6 +32,7 @@ trait AddsColumnFilters
                     break;
                 }
                 case 'daterange': {
+                    // uses https://github.com/dangrossman/bootstrap-daterangepicker.git
                     $filterInstance = $this->addTextFilter(
                         $filterEnabled, $columnName, $filterClass . ' date-range'
                     );
@@ -58,7 +60,7 @@ trait AddsColumnFilters
     }
 
     /**
-     * Add a date picker filter. Uses https://github.com/uxsolutions/bootstrap-datepicker.git
+     * Add a date picker filter. Uses https://github.com/dangrossman/bootstrap-daterangepicker.git
      *
      * @param $enabled
      * @param string $elementId the id of the html element
@@ -82,11 +84,7 @@ trait AddsColumnFilters
             'class' => 'form-control grid-datepicker grid-filter ' . $elementClass,
             'type' => 'text', // just use text, since its text input
             'title' => 'filter by ' . $elementId,
-            'dataAttributes' => [
-                'date-format' => $filterDataAttributes['format'] ?? 'yyyy-mm-dd',
-                'date-start-date' => $filterDataAttributes['start'] ?? '-100y',
-                'date-end-date' => $filterDataAttributes['end'] ?? '+100y'
-            ]
+            'dataAttributes' => $filterDataAttributes
         ]);
         return $filter;
     }

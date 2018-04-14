@@ -64,10 +64,21 @@ trait FiltersData
             } else {
                 $value = $userInput;
             }
-            if (isset($data['date']) && $data['date'] === true) {
-                // skip invalid dates
-                if (strtotime($value)) {
-                    $this->getQuery()->whereDate($columnName, $operator, $value, $this->filterType);
+
+            if ($filter['type'] === 'daterange' && $filter['enabled'] === true) {
+                // check for date range values
+                $exploded = explode(' - ', $value, 2);
+                if(count($exploded) > 1) {
+                    // skip invalid dates
+                    if (strtotime($exploded[0]) && strtotime($exploded[1])) {
+                        $this->getQuery()->whereBetween($columnName, $exploded, $this->filterType);
+                    }
+                } else {
+                    // not a date range
+                    // skip invalid dates
+                    if (strtotime($value)) {
+                        $this->getQuery()->whereDate($columnName, $operator, $value, $this->filterType);
+                    }
                 }
             } else {
                 $this->getQuery()->where($columnName, $operator, $value, $this->filterType);
