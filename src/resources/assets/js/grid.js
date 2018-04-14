@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2018.
+ * @author Antony [leantony] Chacha
+ */
+
 var _grids = _grids || {};
 
 (function ($) {

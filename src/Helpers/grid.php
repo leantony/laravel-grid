@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2018.
+ * @author Antony [leantony] Chacha
+ */
 
 if (!function_exists('add_query_param')) {
 
