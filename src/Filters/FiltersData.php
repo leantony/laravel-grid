@@ -65,7 +65,7 @@ trait FiltersData
                 $value = $userInput;
             }
 
-            if ($filter['type'] === 'daterange' && $filter['enabled'] === true) {
+            if (isset($filter['type']) && ($filter['type'] === 'daterange' && $filter['enabled'] === true)) {
                 // check for date range values
                 $exploded = explode(' - ', $value, 2);
                 if(count($exploded) > 1) {
