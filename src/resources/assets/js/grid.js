@@ -214,12 +214,41 @@ var _grids = _grids || {};
          */
         grid.prototype.setupPjax = function (container, target, afterPjax, options) {
             // global timeout
+            var $this = this;
             $.pjax.defaults.timeout = options.timeout || 3000;
             $(document).pjax(target, container, options);
             $(document).on('ready pjax:end', function (event) {
                 afterPjax($(event.target));
+                // internal calls
+                setupDateRangePicker($this);
             })
         };
+
+        /**
+         * Setup date range picker
+         *
+         * @param $this
+         */
+        function setupDateRangePicker($this) {
+            if ($this.opts.dateRangeSelector) {
+                if (typeof daterangepicker !== 'function') {
+                    console.warn('date range picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')
+                } else {
+                    var start = moment().subtract(30, 'days');
+                    var end = moment();
+
+                    $($this.opts.dateRangeSelector).daterangepicker({
+                        "showDropdowns": true,
+                        "autoApply": true,
+                        "startDate": start,
+                        "endDate": end,
+                        "locale": {
+                            "format": "YYYY-MM-DD"
+                        }
+                    });
+                }
+            }
+        }
 
         /**
          * Initialize pjax functionality
@@ -233,16 +262,7 @@ var _grids = _grids || {};
                 $this.opts.pjax.pjaxOptions
             );
 
-            if ($this.opts.dateRangeSelector) {
-                if (typeof moment !== 'function') {
-                    console.warn('date range picker option requires moment.js');
-                } else {
-                    var start = moment().subtract(29, 'days');
-                    var end = moment();
-
-                    $($this.opts.dateRangeSelector).daterangepicker({startDate: start, endDate: end});
-                }
-            }
+            setupDateRangePicker($this);
         };
 
         /**
@@ -502,7 +522,19 @@ var _grids = _grids || {};
         // tooltip
         $('[data-toggle="tooltip"]').tooltip();
         // date picker
-        $('.grid-datepicker').datepicker();
+        if(typeof daterangepicker !== 'function') {
+            console.warn('date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')
+        } else {
+            $('.grid-datepicker').daterangepicker({
+                "showDropdowns": true,
+                "autoApply": true,
+                "singleDatePicker": true,
+                "startDate": moment(),
+                "locale": {
+                    "format": "YYYY-MM-DD"
+                }
+            });
+        }
         // initialize modal js
         _grids.modal.init({});
         // table links
