@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2018.
+ * @author Antony [leantony] Chacha
+ */
 
 namespace Leantony\Grid\Columns;
 
@@ -94,6 +98,8 @@ trait CreatesColumns
             // data
             $data = $this->fetchColumnData($columnName, $columnData)['data'];
 
+            $sort = $this->fetchSortStrategy($columnName, $columnData);
+
             // once we are done, push to columns array
             array_push($columns, new Column([
                 'name' => $label,
@@ -102,7 +108,8 @@ trait CreatesColumns
                 'searchable' => $searchable,
                 'rowClass' => $rowClass,
                 'columnClass' => $columnClass,
-                'sortable' => $columnData['sort'] ?? true,
+                'sortable' => $sort['sortEnabled'],
+                'sortQuery' => $sort['sortQuery'],
                 'filter' => $filter,
                 'raw' => $columnData['raw'] ?? false,
                 'export' => $columnData['export'] ?? true,
@@ -153,6 +160,29 @@ trait CreatesColumns
         }
 
         return compact('columnClass', 'rowClass');
+    }
+
+    /**
+     * Fetch sort params
+     *
+     * @param $columnName
+     * @param $columnData
+     * @return array
+     */
+    public function fetchSortStrategy($columnName, $columnData)
+    {
+        if (isset($columnData['sort'])) {
+            // not an array
+            $sort = $columnData['sort'];
+            if (!is_array($sort)) {
+                return compact(['enabled' => true, 'sortQuery' => null]);
+            }
+            // array
+            $sortEnabled = $sort['enabled'] ?? true;
+            $sortQuery = $sort['query'] ?? null;
+            return compact('sortEnabled', 'sortQuery');
+        }
+        return compact(['sortEnabled' => true, 'sortQuery' => null]);
     }
 
     /**
