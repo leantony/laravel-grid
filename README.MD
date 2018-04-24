@@ -118,7 +118,7 @@ Otherwise, you can also instantiate the grid class like any other class then inj
     public function index(Request $request)
     {
         $user = $request->user();
-        return (new UsersGrid(['user' => $user)) // you can then use it as $user within the class. It's set implicitly using the __set() call
+        return (new UsersGrid(['user' => $user])) // you can then use it as $user within the class. It's set implicitly using the __set() call
                     ->create(['query' => User::query(), 'request' => $request])
                     ->renderOn('welcome');
     }
