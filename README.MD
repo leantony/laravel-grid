@@ -1,4 +1,4 @@
-# Laravel grid (laravel 5.6+)
+# Laravel grid (laravel 5.5+)
 
 [![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
 
