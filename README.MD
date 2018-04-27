@@ -1,4 +1,4 @@
-# Laravel grid (laravel 5.5+)
+# Laravel grid (laravel 5.6+)
 
 [![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
 
@@ -22,7 +22,8 @@ This package allows rendering of data via a tabular format (grid). The grid uses
 ## Requirements
 The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware.](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 
-+ Bootstrap 3 (for the styling)
++ Bootstrap (for the styling)
+> version 1.0.* supports bootstrap 3, while version 2.0.* (upcoming release) supports bootstrap 4.
 + Font awesome (for icons)
 + Jquery (required by bootstrap and the package's javascript)
 + Jquery pjax (quickly view data without having to reload the page)
