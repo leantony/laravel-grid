@@ -1,4 +1,4 @@
-# Laravel grid (laravel 5.6+)
+# Laravel grid
 
 [![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
 
@@ -22,8 +22,8 @@ This package allows rendering of data via a tabular format (grid). The grid uses
 ## Requirements
 The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware.](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 
-+ Bootstrap (for the styling)
-> version 1.0.* supports bootstrap 3, while version 2.0.* (upcoming release) supports bootstrap 4.
++ Laravel 5.5 and above
++ Bootstrap 3|4 (for the styling) - see installation section below
 + Font awesome (for icons)
 + Jquery (required by bootstrap and the package's javascript)
 + Jquery pjax (quickly view data without having to reload the page)
@@ -32,16 +32,24 @@ The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box.
 
 
 ## Installation
-The package is available on packagist. Just run;
+The package is available on packagist. If you need bootstrap 3 support, please run;
 ```php
-composer install leantony/laravel-grid
+composer install leantony/laravel-grid ~1.0
 ```
-You can then publish the resources (views) and assets (css & js), incase you need to customize them. The css and js will be copied to `public/vendor/leantony/grid`
+For `bootstrap 4`, please run
+```php
+composer install leantony/laravel-grid "2.0.x-dev"
+```
+> Bootstrap 4 support on this package is currently unstable though (still in development), so use with caution.
+
+You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid is styled appropiately.
 
 ```php
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
-> You can publish the assets and views separately by passing the `--tag` argument to the command. For the argument values, try `assets`, `views` or `config` for js|css assets, views and config respectively.
+The css and js will be copied to `public/vendor/leantony/grid`, while the resources will be copied to `resources/vendor/leantony/grid`.
+
+> You can publish the assets and views separately by passing the `--tag` argument to the command. For the argument values, try `assets`, `views` for js|css assets, views respectively.
 
 You can also run `php artisan vendor:publish` and select the provider index by the name `Leantony\Grid\Providers\ServiceProvider`
 
@@ -119,7 +127,7 @@ Otherwise, you can also instantiate the grid class like any other class then inj
     public function index(Request $request)
     {
         $user = $request->user();
-        return (new UsersGrid(['user' => $user])) // you can then use it as $user within the class. It's set implicitly using the __set() call
+        return (new UsersGrid(['user' => $user])) // you can then use it as $this->user within the class. It's set implicitly using the __set() call
                     ->create(['query' => User::query(), 'request' => $request])
                     ->renderOn('welcome');
     }
@@ -146,7 +154,7 @@ If you need to pass extra data to the view specified, you just need to pass the 
 ```
 
 
-For eloquent relationships, its basically the same approach. Just ensure that you pass in an instance of the query builder. Like this;
+For eloquent relationships, its basically the same approach. **Just ensure that you pass in an instance of the query builder**. Like this;
 ```php
 class UsersController extends Controller
 {
