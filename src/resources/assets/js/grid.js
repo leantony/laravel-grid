@@ -39,7 +39,9 @@ var _grids = _grids || {};
             // since our refs are data-remote or class with data-remote, we need to loop
             element.each(function (i, obj) {
                 obj = $(obj);
-                var confirmation = obj.data('confirm');
+                // confirmation
+                var confirmation = obj.data('trigger-confirm');
+                var confirmationMessage = obj.data('confirmation-msg') || 'Are you sure?';
                 // check if we need to refresh any pjax container
                 var pjaxContainer = obj.data('pjax-target');
                 // check if we need to force a page refresh. will override shouldPjax
@@ -55,7 +57,7 @@ var _grids = _grids || {};
                     e.preventDefault();
                     // check for a confirmation message
                     if (confirmation) {
-                        if (!confirm(confirmation)) {
+                        if (!confirm(confirmationMessage)) {
                             return;
                         }
                     }
