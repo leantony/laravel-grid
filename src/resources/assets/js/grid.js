@@ -243,12 +243,18 @@ var _grids = _grids || {};
                     var end = moment();
 
                     $($this.opts.dateRangeSelector).daterangepicker({
-                        "showDropdowns": true,
-                        "autoApply": false,
-                        "startDate": start,
-                        "endDate": end,
-                        "locale": {
-                            "format": "YYYY-MM-DD"
+                        startDate: start,
+                        endDate: end,
+                        ranges: {
+                            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                            'This Month': [moment().startOf('month'), moment().endOf('month')],
+                            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                        },
+                        autoApply: true,
+                        locale: {
+                            format: "YYYY-MM-DD",
+                            cancelLabel: 'Clear'
                         }
                     });
                 }
@@ -531,12 +537,11 @@ var _grids = _grids || {};
             console.warn('date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')
         } else {
             $('.grid-datepicker').daterangepicker({
-                "showDropdowns": true,
-                "autoApply": false,
-                "singleDatePicker": true,
-                "startDate": moment(),
-                "locale": {
-                    "format": "YYYY-MM-DD"
+                singleDatePicker: true,
+                showDropdowns: true,
+                minYear: 1901,
+                locale: {
+                    format: "YYYY-MM-DD"
                 }
             });
         }
