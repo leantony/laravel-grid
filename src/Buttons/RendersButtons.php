@@ -226,7 +226,7 @@ trait RendersButtons
             'pjaxEnabled' => false,
             'dataAttributes' => [
                 'method' => 'DELETE',
-                'confirm' => 'Sure?',
+                'trigger-confirm' => true,
                 'pjax-target' => '#' . $this->id
             ],
             'url' => function ($gridName, $item) {
