@@ -244,7 +244,7 @@ var _grids = _grids || {};
 
                     $($this.opts.dateRangeSelector).daterangepicker({
                         "showDropdowns": true,
-                        "autoApply": true,
+                        "autoApply": false,
                         "startDate": start,
                         "endDate": end,
                         "locale": {
@@ -532,7 +532,7 @@ var _grids = _grids || {};
         } else {
             $('.grid-datepicker').daterangepicker({
                 "showDropdowns": true,
-                "autoApply": true,
+                "autoApply": false,
                 "singleDatePicker": true,
                 "startDate": moment(),
                 "locale": {
