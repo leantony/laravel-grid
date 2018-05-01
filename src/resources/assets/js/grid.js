@@ -239,7 +239,7 @@ var _grids = _grids || {};
                 if (typeof daterangepicker !== 'function') {
                     console.warn('date range picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')
                 } else {
-                    var start = moment().subtract(30, 'days');
+                    var start = moment().subtract(29, 'days');
                     var end = moment();
 
                     $($this.opts.dateRangeSelector).daterangepicker({
