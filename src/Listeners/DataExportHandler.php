@@ -4,15 +4,34 @@
  * @author Antony [leantony] Chacha
  */
 
-namespace Leantony\Grid\Filters;
+namespace Leantony\Grid\Listeners;
 
 use Excel;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Leantony\Grid\GridInterface;
+use Leantony\Grid\GridResources;
 
-trait ExportsData
+class DataExportHandler
 {
+    use GridResources;
+
+    /**
+     * Export param option
+     *
+     * @var string
+     */
+    protected $exportParam = 'export';
+
+    /**
+     * Allowed document exports
+     *
+     * @var array
+     */
+    protected $allowedExportTypes = ['pdf', 'xlsx', 'xls', 'csv'];
+
     /**
      * Max export rows. More = slower export process
      *
@@ -42,6 +61,40 @@ trait ExportsData
     protected $availableColumnsForExport = null;
 
     /**
+     * DataExportHandler constructor.
+     * @param GridInterface $grid
+     * @param Request $request
+     * @param $builder
+     * @param $validTableColumns
+     * @param $args
+     */
+    public function __construct(GridInterface $grid, Request $request, $builder, $validTableColumns, $args)
+    {
+        $this->grid = $grid;
+        $this->request = $request;
+        $this->query = $builder;
+        $this->validGridColumns = $validTableColumns;
+        $this->args = $args;
+    }
+
+    /**
+     * Export the data
+     *
+     * @return Response
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function export()
+    {
+        if ($this->wantsToExport()) {
+            $param = $this->request->get($this->exportParam);
+            if (in_array($param, $this->allowedExportTypes)) {
+                return $this->exportAs($param);
+            }
+        }
+    }
+
+    /**
      * Download export data
      *
      * @param string $type any of xlsx, xls, csv or pdf
@@ -51,7 +104,7 @@ trait ExportsData
     public function exportAs($type = 'xlsx')
     {
         $e = new DefaultExport(
-            sprintf('%s report', $this->shortSingularGridName()),
+            sprintf('%s report', $this->getGrid()->shortSingularGridName()),
             $this->getExportableColumns()[1], // columns are at index 1
             $this->getExportData()->toArray()
         );
@@ -98,7 +151,7 @@ trait ExportsData
      */
     public function getColumnsToExport(): array
     {
-        return $this->getProcessedColumns();
+        return $this->args['processedColumns'];
     }
 
     /**
@@ -108,7 +161,7 @@ trait ExportsData
      */
     public function getFileNameForExport(): string
     {
-        $this->exportFilename = Str::slug($this->getName()) . '-' . time();
+        $this->exportFilename = Str::slug($this->getGrid()->getName()) . '-' . time();
         return $this->exportFilename;
     }
 
@@ -119,7 +172,7 @@ trait ExportsData
      */
     protected function wantsToExport(): bool
     {
-        return $this->request->has($this->exportParam) && $this->allowsExporting;
+        return $this->getRequest()->has($this->exportParam) && $this->allowsExporting;
     }
 
     /**

@@ -4,13 +4,13 @@
           data-{{ $k }}={{ $v }}
             @endforeach
     >
-        <div id="custom-search-input">
+        <div class="row">
             <div class="input-group col-md-12">
                 <input type="text" class="form-control" name="{{ $name }}"
                        placeholder="{{ $placeholder }}" value="{{ request($name) }}" required="required"/>
                 <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">
-                            <i class="glyphicon glyphicon-search"></i>
+                        <button class="btn btn-secondary" type="submit">
+                            <i class="fa fa-search"></i>
                         </button>
                     </span>
             </div>

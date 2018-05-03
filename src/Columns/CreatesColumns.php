@@ -54,6 +54,7 @@ trait CreatesColumns
      * Get the processed columns
      *
      * @return array
+     * @throws \Exception
      */
     public function getProcessedColumns(): array
     {
@@ -64,6 +65,7 @@ trait CreatesColumns
      * Process the columns that were supplied
      *
      * @return array
+     * @throws \Exception
      */
     public function processColumns()
     {
@@ -149,7 +151,7 @@ trait CreatesColumns
         // css
         if (isset($columnData['styles'])) {
             $classAttributes = $columnData['styles'];
-            $columnClass = $classAttributes['column'] ?? 'col-md-2';
+            $columnClass = $classAttributes['column'] ?? 'w-25';
             $rowClass = $classAttributes['row'] ?? '';
         } else {
             $columnClass = '';

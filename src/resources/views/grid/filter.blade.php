@@ -12,7 +12,8 @@
         <th>
             <div class="pull-right">
                 <button type="submit"
-                        class="btn btn-default"
+                        class="btn btn-outline-primary grid-filter-button"
+                        data-toggle="tooltip"
                         title="filter data"
                         form="{{ $formId }}">Filter&nbsp;<i class="fa fa-filter"></i>
                 </button>

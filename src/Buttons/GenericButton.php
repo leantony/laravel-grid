@@ -62,7 +62,7 @@ class GenericButton implements Htmlable
      *
      * @var string
      */
-    public $class = 'btn btn-default';
+    public $class = 'btn btn-info';
 
     /**
      * The icon to be displayed, if any

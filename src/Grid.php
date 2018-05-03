@@ -9,29 +9,29 @@ namespace Leantony\Grid;
 use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Leantony\Grid\Buttons\GridButtonsInterface;
 use Leantony\Grid\Buttons\RendersButtons;
 use Leantony\Grid\Columns\CreatesColumns;
 use Leantony\Grid\Columns\GridColumnsInterface;
+use Leantony\Grid\Events\UserActionRequested;
 use Leantony\Grid\Filters\AddsColumnFilters;
-use Leantony\Grid\Filters\FiltersSearchesThenExportsData;
-use Leantony\Grid\Filters\GridDataExportInterface;
 use Leantony\Grid\Filters\GridFilterInterface;
+use Leantony\Grid\Listeners\DataExportHandler;
 use Leantony\Grid\Routing\ConfiguresRoutes;
 use Leantony\Grid\Routing\GridRoutesInterface;
 
-abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, GridFilterInterface, GridDataExportInterface, GridColumnsInterface, GridRoutesInterface
+abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, GridFilterInterface, GridColumnsInterface, GridRoutesInterface
 {
-    use CreatesColumns,
+    use GridResources,
+        CreatesColumns,
         ConfiguresRoutes,
         AddsColumnFilters,
-        RendersButtons,
-        FiltersSearchesThenExportsData;
+        RendersButtons;
 
     /**
      * Specify if the rows on the table should be clicked to navigate to the record
@@ -83,6 +83,13 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $data;
 
     /**
+     * An exporter instance to be used for export functionality
+     *
+     * @var DataExportHandler
+     */
+    protected $exportHandler = null;
+
+    /**
      * The toolbar size. 6 columns on the right and 6 on the left
      * Left holds the search bar, while the right part holds the buttons
      *
@@ -110,6 +117,24 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * @var string
      */
     protected $shortGridIdentifier;
+
+    /**
+     * Existing columns in the DB, to be used for validation of user requests
+     *
+     * @var array
+     */
+    protected $tableColumns = [];
+
+    /**
+     * Skip/ignore these columns when filtering, when supposedly passed in the query parameters
+     *
+     * @var array
+     */
+    protected $columnsToSkipOnFilter = [
+        'password',
+        'remember_token',
+        'activation_code'
+    ];
 
     /**
      * Create the grid
@@ -150,9 +175,49 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         // user defined columns
         $this->setColumns();
         // data filters
-        $this->executeFilters();
-        // get filtered data
-        $this->data = $this->getFilteredData();
+        $result = event(new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->getTableColumns(), [
+            'processedColumns' => $this->getProcessedColumns(),
+            'unprocessedColumns' => $this->getColumns(),
+            'searchRoute' => $this->getSearchRoute()
+        ]));
+        $data = data_get($result, 0);
+        if (is_array($data)) {
+            // an export has been triggered
+            $this->data = $data['data'];
+            $this->exportHandler = $data['exporter'];
+        } else {
+            $this->data = $data;
+        }
+    }
+
+    /**
+     * The table name that is matched to the grid
+     *
+     * @return \Closure
+     */
+    public function getGridDatabaseTable()
+    {
+        $gridName = $this->name;
+        return function () use ($gridName) {
+            return Str::plural(Str::slug($gridName, '_'));
+        };
+    }
+
+    /**
+     * Get valid columns in the table
+     *
+     * @return array
+     */
+    public function getTableColumns()
+    {
+        if (empty($this->tableColumns)) {
+            $cols = Schema::getColumnListing(call_user_func($this->getGridDatabaseTable()));
+            $rejects = $this->columnsToSkipOnFilter;
+            $this->tableColumns = collect($cols)->reject(function ($v) use ($rejects) {
+                return in_array($v, $rejects);
+            })->toArray();
+        }
+        return $this->tableColumns;
     }
 
     /**
@@ -160,12 +225,61 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      *
      * @return string
      */
-    protected function shortSingularGridName(): string
+    public function shortSingularGridName(): string
     {
         if ($this->shortSingularName === null) {
             $this->shortSingularName = strtolower(Str::singular($this->getName()));
         }
         return $this->shortSingularName;
+    }
+
+    /**
+     * Render the search form on the grid
+     *
+     * @return string
+     * @throws \Throwable
+     */
+    public function renderSearchForm()
+    {
+        $params = func_get_args();
+        $data = [
+            'colSize' => $this->getToolbarSize()[0], // size
+            'action' => $this->getSearchRoute(),
+            'id' => $this->getSearchFormId(),
+            'name' => $this->getSearchParam(),
+            'dataAttributes' => [],
+            'placeholder' => $this->getSearchPlaceholder(),
+        ];
+
+        return view($this->getSearchView(), array_merge($data, $params))->render();
+    }
+
+    /**
+     * Get the form id used for search
+     *
+     * @return string
+     */
+    public function getSearchFormId(): string
+    {
+        return 'search' . '-' . $this->getId();
+    }
+
+    /**
+     * Get the placeholder to use on the search form
+     *
+     * @return string
+     */
+    private function getSearchPlaceholder()
+    {
+        if (empty($this->searchableColumns)) {
+            $placeholder = Str::plural(Str::slug($this->getName()));
+
+            return sprintf('search %s ...', $placeholder);
+        }
+
+        $placeholder = collect($this->searchableColumns)->implode(',');
+
+        return sprintf('search %s by their %s ...', Str::lower($this->getName()), $placeholder);
     }
 
     /**
@@ -268,20 +382,11 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Get the view to be used when rendering the grid
-     *
-     * @return string
-     */
-    protected function getGridView(): string
-    {
-        return 'leantony::grid.grid';
-    }
-
-    /**
      * Specify the data to be sent to the view
      *
      * @param array $params
      * @return array
+     * @throws \Exception
      */
     protected function compactData($params = [])
     {
@@ -409,26 +514,9 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function renderOn(string $viewName, $data = [])
     {
-        if ($this->wantsToExport()) {
-            return $this->export();
+        if ($this->getRequest()->has($this->getExportParam())) {
+            return $this->exportHandler->export();
         }
         return view($viewName, array_merge($data, ['grid' => $this]));
-    }
-
-    /**
-     * Check parameters
-     *
-     * @return void
-     */
-    protected function checkParameters()
-    {
-        if (!$this->getQuery() instanceof \Illuminate\Database\Query\Builder
-            || !$this->getQuery() instanceof \Illuminate\Database\Eloquent\Builder) {
-            throw new InvalidArgumentException("The object of type query is invalid. 
-            You need to pass an instance of Illuminate\\Database\\Eloquent\\Builder or Illuminate\\Database\\Query\\Builder");
-        }
-        if (!$this->request instanceof Request) {
-            throw new InvalidArgumentException("The object of type request is invalid. You need to pass an instance of Illuminate\\Http\\Request");
-        }
     }
 }

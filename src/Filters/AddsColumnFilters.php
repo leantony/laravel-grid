@@ -13,6 +13,16 @@ use InvalidArgumentException;
 trait AddsColumnFilters
 {
     /**
+     * Get id for the filter form
+     *
+     * @return string
+     */
+    public function getFilterFormId()
+    {
+        return $this->getId() . '-' . 'filter';
+    }
+
+    /**
      * Add a filter to the column. It will be rendered just below the column name, as a type defined below
      *
      * @param string $columnName the column to be filtered

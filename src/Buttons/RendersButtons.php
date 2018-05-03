@@ -166,7 +166,7 @@ trait RendersButtons
         return (new ExportButton([
             'name' => 'Export',
             'icon' => 'fa-download',
-            'class' => 'btn btn-default',
+            'class' => 'btn btn-secondary',
             'title' => 'export data',
             'renderCustom' => function ($data) {
                 return view('leantony::grid.buttons.export', $data)->render();
@@ -176,7 +176,7 @@ trait RendersButtons
             'exportRoute' => $this->getIndexRouteLink(),
             'renderIf' => function () {
                 // only render the export button if `$allowsExporting` is set to true
-                return in_array('export', $this->buttonsToGenerate) || $this->allowsExporting;
+                return in_array('export', $this->buttonsToGenerate);
             }
         ]));
     }
@@ -193,7 +193,7 @@ trait RendersButtons
             'name' => 'View',
             'icon' => 'fa-eye',
             'position' => 1,
-            'class' => 'btn btn-primary btn-xs',
+            'class' => 'btn btn-outline-primary btn-sm',
             'showModal' => true,
             'gridId' => $this->id,
             'type' => 'row',
@@ -219,7 +219,7 @@ trait RendersButtons
             'gridId' => $this->id,
             'name' => 'Delete',
             'position' => 2,
-            'class' => 'data-remote btn btn-danger btn-xs btn-grid-row',
+            'class' => 'data-remote btn btn-outline-danger btn-sm',
             'icon' => 'fa-trash',
             'type' => 'row',
             'title' => 'delete record',
@@ -288,16 +288,6 @@ trait RendersButtons
         }
         // no buttons on section
         return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
-    }
-
-    /**
-     * Return the view used to display the search form
-     *
-     * @return string
-     */
-    public function getSearchView(): string
-    {
-        return 'leantony::grid.search';
     }
 
     /**

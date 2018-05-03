@@ -4,12 +4,64 @@
  * @author Antony [leantony] Chacha
  */
 
-namespace Leantony\Grid\Filters;
+namespace Leantony\Grid\Listeners;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Leantony\Grid\GridInterface;
+use Leantony\Grid\GridResources;
 
-trait SearchesData
+class SearchDataHandler
 {
+    use GridResources;
+
+    /**
+     * The search type. AND, OR, NOT, etc
+     *
+     * @var string
+     */
+    protected $searchType = 'or';
+
+    /**
+     * Columns to be used during row processing, to find
+     * the search form placeholder
+     *
+     * @var array
+     */
+    protected $searchColumns = [];
+
+    /**
+     * @var string
+     */
+    protected $searchParam = 'q';
+
+    /**
+     * SearchDataHandler constructor.
+     * @param GridInterface $grid
+     * @param Request $request
+     * @param $builder
+     * @param $validTableColumns
+     * @param $data
+     */
+    public function __construct(GridInterface $grid, Request $request, $builder, $validTableColumns, $data)
+    {
+        $this->grid = $grid;
+        $this->request = $request;
+        $this->query = $builder;
+        $this->validGridColumns = $validTableColumns;
+        $this->args = $data;
+    }
+
+    /**
+     * Get the search param name
+     *
+     * @return string
+     */
+    public function getSearchParam(): string
+    {
+        return $this->searchParam;
+    }
+
     /**
      * Check if a column can be searched
      *
@@ -90,54 +142,31 @@ trait SearchesData
             }
         }
     }
-
+    
     /**
-     * Render the search form on the grid
+     * Search the rows
      *
-     * @return string
-     * @throws \Throwable
+     * @return void
      */
-    public function renderSearchForm()
+    public function searchRows()
     {
-        $params = func_get_args();
-        $data = [
-            'colSize' => $this->toolbarSize[0], // size
-            'action' => $this->getSearchRoute(),
-            'id' => $this->getSearchFormId(),
-            'name' => $this->getSearchParam(),
-            'dataAttributes' => [],
-            'placeholder' => $this->getSearchPlaceholder(),
-        ];
+        if (!empty($this->getRequest()->query())) {
+            $columns = $this->args['unprocessedColumns'];
 
-        return view($this->getSearchView(), array_merge($data, $params))->render();
-    }
+            foreach ($columns as $columnName => $columnData) {
+                // check searchable
+                if (!$this->canSearchColumn($columnName, $columnData)) {
+                    continue;
+                }
+                // check user input
+                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->searchParam))) {
+                    continue;
+                }
+                // operator
+                $operator = $this->fetchSearchOperator($columnName, $columnData)['operator'];
 
-    /**
-     * Get the form id used for search
-     *
-     * @return string
-     */
-    public function getSearchFormId(): string
-    {
-        return 'search' . '-' . $this->getId();
-    }
-
-    /**
-     * Get the placeholder to use on the search form
-     *
-     * @return string
-     */
-    private function getSearchPlaceholder()
-    {
-        if (empty($this->searchableColumns)) {
-            $placeholder = Str::plural(Str::slug($this->getName()));
-
-            return sprintf('search %s ...', $placeholder);
+                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->searchParam));
+            }
         }
-
-        $placeholder = collect($this->searchableColumns)->implode(',');
-
-        return sprintf('search %s by their %s ...', Str::lower($this->getName()), $placeholder);
     }
-
 }

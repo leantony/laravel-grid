@@ -1,0 +1,66 @@
+<?php
+/**
+ * Copyright (c) 2018.
+ * @author Antony [leantony] Chacha
+ */
+
+namespace Leantony\Grid\Listeners;
+
+use Illuminate\Http\Request;
+use Leantony\Grid\GridResources;
+
+class GridPaginationHandler
+{
+    use GridResources;
+
+    /**
+     * Specify if data should be paginated
+     *
+     * @var bool
+     */
+    protected $shouldPaginate = true;
+
+    /**
+     * GridPaginator constructor.
+     * @param Request $request
+     * @param $builder
+     */
+    public function __construct(Request $request, $builder)
+    {
+        $this->request = $request;
+        $this->query = $builder;
+    }
+
+    /**
+     * Paginate the filtered data
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function paginate()
+    {
+        $pageSize = $this->getPageSize();
+
+        return $this->getQuery()->paginate($pageSize);
+    }
+
+    /**
+     * Get the page size
+     *
+     * @return int
+     */
+    protected function getPageSize()
+    {
+        return config('grids.pagination_limit');
+    }
+
+    /**
+     * Simple paginate
+     *
+     * @return \Illuminate\Contracts\Pagination\Paginator
+     */
+    public function simplePaginate()
+    {
+        $pageSize = $this->getPageSize();
+        return $this->getQuery()->simplePaginate($pageSize);
+    }
+}

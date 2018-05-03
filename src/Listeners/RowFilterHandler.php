@@ -4,10 +4,40 @@
  * @author Antony [leantony] Chacha
  */
 
-namespace Leantony\Grid\Filters;
+namespace Leantony\Grid\Listeners;
 
-trait FiltersData
+use Illuminate\Http\Request;
+use Leantony\Grid\GridInterface;
+use Leantony\Grid\GridResources;
+
+class RowFilterHandler
 {
+    use GridResources;
+
+    /**
+     * The filter type. AND, OR, NOT, etc
+     *
+     * @var string
+     */
+    protected $filterType = 'and';
+
+    /**
+     * RowFilterHandler constructor.
+     * @param GridInterface $grid
+     * @param Request $request
+     * @param $builder
+     * @param $validTableColumns
+     * @param $data
+     */
+    public function __construct(GridInterface $grid, Request $request, $builder, $validTableColumns, $data)
+    {
+        $this->grid = $grid;
+        $this->request = $request;
+        $this->query = $builder;
+        $this->validGridColumns = $validTableColumns;
+        $this->args = $data;
+    }
+
     /**
      * Check if filtering can be done
      *
@@ -30,6 +60,21 @@ trait FiltersData
     public function canUseProvidedColumn(string $columnName, array $validColumns)
     {
         return in_array($columnName, $validColumns);
+    }
+
+    /**
+     * Check if provided user input can be used
+     *
+     * @param string|null $userInput
+     * @return bool
+     */
+    public function canUseProvidedUserInput($userInput)
+    {
+        // skip empty requests
+        if ($userInput === null || empty(trim($userInput))) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -91,12 +136,33 @@ trait FiltersData
     }
 
     /**
-     * Get id for the filter form
+     * Filter the grid rows
      *
-     * @return string
+     * @return void
      */
-    public function getFilterFormId()
+    public function filterRows()
     {
-        return $this->getId() . '-' . 'filter';
+        if (!empty($this->request->query())) {
+            $columns = $this->args['unprocessedColumns'];
+            $tableColumns = $this->getValidGridColumns();
+
+            foreach ($columns as $columnName => $columnData) {
+                // skip rows that are not to be filtered
+                if (!$this->canFilter($columnName, $columnData)) {
+                    continue;
+                }
+                // user input check
+                if (!$this->canUseProvidedUserInput($this->getRequest()->get($columnName))) {
+                    continue;
+                }
+                // column check. Since the column data is coming from a user query
+                if (!$this->canUseProvidedColumn($columnName, $tableColumns)) {
+                    continue;
+                }
+                $operator = $this->extractFilterOperator($columnName, $columnData)['operator'];
+
+                $this->doFilter($columnName, $columnData, $operator, $this->getRequest()->get($columnName));
+            }
+        }
     }
 }

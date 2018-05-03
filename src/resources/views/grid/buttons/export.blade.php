@@ -1,11 +1,12 @@
-<a href="{{ is_callable($url) ? $url() : $url }}" class="{{ $class }}" data-toggle="dropdown" title="{{ $title }}">
-    <i class="fa {{ $icon }}"></i>&nbsp;{{ $name }}
-</a>
-<ul class="dropdown-menu" role="menu">
-    @foreach($exportOptions as $k => $v)
-        <li><a href="{{ $v['url'] }}" title="{{ $v['title'] }}">
+<div class="btn-group pull-right grid-export-button" role="group" data-toggle="tooltip" title="{{ $title }}">
+    <button id="export-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa {{ $icon }}"></i>&nbsp;{{ $name }}
+    </button>
+    <div class="dropdown-menu" aria-labelledby="export-button">
+        @foreach($exportOptions as $k => $v)
+            <a href="{{ $v['url'] }}" class="dropdown-item" title="{{ $v['title'] }}">
                 <i class="fa fa-{{ $v['icon'] }}"></i>&nbsp;{{ $k }}
             </a>
-        </li>
-    @endforeach
-</ul>
+        @endforeach
+    </div>
+</div>

@@ -2,7 +2,7 @@
 
     @if(call_user_func($renderIf) === true)
         <a href="{{ is_callable($url) ? $url() : $url }}" data-toggle="tooltip"
-           data-title="{{ $title }}"
+           title="{{ $title }}"
            class="{{ $class }}"
            @foreach($dataAttributes as $k => $v)
            data-{{ $k }}={{ $v }}
@@ -18,7 +18,7 @@
 
     @if(call_user_func($renderIf, $gridName, $gridItem) === true)
         <a href="{{ is_callable($url) ? call_user_func($url, $gridName, $gridItem) : $url }}" data-toggle="tooltip"
-           data-title="{{ $title }}"
+           title="{{ $title }}"
            class="{{ $class }}"
            @foreach($dataAttributes as $k => $v)
            data-{{ $k }}={{ $v }}
