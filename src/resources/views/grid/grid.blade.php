@@ -6,28 +6,8 @@
                     <h4 class="grid-title">{{ $grid->getName() }}</h4>
                 </div>
                 <!-- pagination info -->
-                @if($grid->wantsPagination() && !$grid->needsSimplePagination())
-                    <div class="pull-right">
-                        <b>
-                            @if($grid->getData()->total() <= $grid->getData()->perpage())
-                                Showing {{ ($grid->getData()->currentpage() -1 ) * $grid->getData()->perpage() + 1 }}
-                                to {{ $grid->getData()->total() }}
-                                of {{ $grid->getData()->total() }} entries.
-                            @else
-                                Showing {{ ($grid->getData()->currentpage() -1 ) * $grid->getData()->perpage() + 1 }}
-                                to {{ $grid->getData()->currentpage() * $grid->getData()->perpage() }}
-                                of {{ $grid->getData()->total() }} entries.
-                            @endif
-                        </b>
-                    </div>
-                @else
-                    <div class="pull-right">
-                        <b>
-                            Showing {{ $grid->getData()->count() }} records for this page.
-                        </b>
-                    </div>
-            @endif
-            <!-- end pagination info -->
+                @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'right'])
+                <!-- end pagination info -->
             </div>
             <div class="card-body">
                 <!-- search form -->
@@ -187,12 +167,13 @@
                 <!-- end grid contents -->
             </div>
             <div class="card-footer">
+                @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'left'])
                 <!-- pagination -->
                 @if($grid->wantsPagination())
                     <div class="pull-right">
                         {{ $grid->getData()->appends(request()->query())->links($grid->getPaginationView(), ['pjaxTarget' => $grid->getId()]) }}
                     </div><!-- /.center -->
-            @endif
+                @endif
             <!-- end pagination -->
             </div>
         </div>
