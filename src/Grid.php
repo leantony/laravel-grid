@@ -70,7 +70,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     /**
      * Data that will be sent to the view
      *
-     * @var LengthAwarePaginator|Collection|array
+     * @var Paginator|Collection
      */
     protected $data;
 
@@ -279,7 +279,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     /**
      * Get the data to be rendered on the grid
      *
-     * @return Paginator|LengthAwarePaginator|Collection|array
+     * @return Paginator|Collection
      */
     public function getData()
     {
