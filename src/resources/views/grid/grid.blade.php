@@ -23,7 +23,7 @@
                 @else
                     <div class="pull-right">
                         <b>
-                            showing {{ $grid->getData()->count() }} records for this page.
+                            Showing {{ $grid->getData()->count() }} records for this page.
                         </b>
                     </div>
             @endif
