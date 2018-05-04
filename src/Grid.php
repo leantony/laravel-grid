@@ -41,13 +41,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $linkableRows = false;
 
     /**
-     * css class for the grid
-     *
-     * @var string
-     */
-    protected $class = 'table table-bordered table-hover';
-
-    /**
      * The id of the grid. Many grids can exist on the same page, but the ID has to be unique
      *
      * @var string
@@ -90,14 +83,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $exportHandler = null;
 
     /**
-     * The toolbar size. 6 columns on the right and 6 on the left
-     * Left holds the search bar, while the right part holds the buttons
-     *
-     * @var array
-     */
-    protected $toolbarSize = [6, 6];
-
-    /**
      * Buttons for the grid
      *
      * @var array
@@ -124,17 +109,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * @var array
      */
     protected $tableColumns = [];
-
-    /**
-     * Skip/ignore these columns when filtering, when supposedly passed in the query parameters
-     *
-     * @var array
-     */
-    protected $columnsToSkipOnFilter = [
-        'password',
-        'remember_token',
-        'activation_code'
-    ];
 
     /**
      * Create the grid
@@ -175,11 +149,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         // user defined columns
         $this->setColumns();
         // data filters
-        $result = event(new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->getTableColumns(), [
-            'processedColumns' => $this->getProcessedColumns(),
-            'unprocessedColumns' => $this->getColumns(),
-            'searchRoute' => $this->getSearchRoute()
-        ]));
+        $result = event(new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->getTableColumns()));
         $data = data_get($result, 0);
         if (is_array($data)) {
             // an export has been triggered
@@ -481,16 +451,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function warnIfEmpty()
     {
         return $this->warnIfEmpty;
-    }
-
-    /**
-     * Return the number of columns (bootstrap) that the grid should use
-     *
-     * @return array
-     */
-    public function getToolbarSize(): array
-    {
-        return $this->toolbarSize;
     }
 
     /**

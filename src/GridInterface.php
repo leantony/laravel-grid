@@ -10,8 +10,9 @@ use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Leantony\Grid\Config\GridConfigurationInterface;
 
-interface GridInterface
+interface GridInterface extends GridConfigurationInterface
 {
     /**
      * Create the grid

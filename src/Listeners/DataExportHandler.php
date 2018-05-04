@@ -11,33 +11,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Leantony\Grid\Filters\DefaultExport;
 use Leantony\Grid\GridInterface;
 use Leantony\Grid\GridResources;
 
 class DataExportHandler
 {
     use GridResources;
-
-    /**
-     * Export param option
-     *
-     * @var string
-     */
-    protected $exportParam = 'export';
-
-    /**
-     * Allowed document exports
-     *
-     * @var array
-     */
-    protected $allowedExportTypes = ['pdf', 'xlsx', 'xls', 'csv'];
-
-    /**
-     * Max export rows. More = slower export process
-     *
-     * @var int
-     */
-    protected $maxExportRows = 50000;
 
     /**
      * Quick toggle to specify if the grid allows exporting of records
@@ -87,8 +67,8 @@ class DataExportHandler
     public function export()
     {
         if ($this->wantsToExport()) {
-            $param = $this->request->get($this->exportParam);
-            if (in_array($param, $this->allowedExportTypes)) {
+            $param = $this->request->get($this->getGrid()->getExportParam());
+            if (in_array($param, $this->getGrid()->getGridExportTypes())) {
                 return $this->exportAs($param);
             }
         }
@@ -122,7 +102,7 @@ class DataExportHandler
         list($pinch, $columns) = $this->getExportableColumns();
 
         // works on the underlying query instance
-        $values = $this->getQuery()->take($this->maxExportRows)->get();
+        $values = $this->getQuery()->take($this->getGrid()->getMaxRowsForExport())->get();
 
         // customize the results
         $data = $values->map(function ($v) use ($columns) {
@@ -151,7 +131,7 @@ class DataExportHandler
      */
     public function getColumnsToExport(): array
     {
-        return $this->args['processedColumns'];
+        return $this->getGrid()->getColumns();
     }
 
     /**
@@ -172,7 +152,7 @@ class DataExportHandler
      */
     protected function wantsToExport(): bool
     {
-        return $this->getRequest()->has($this->exportParam) && $this->allowsExporting;
+        return $this->getRequest()->has($this->getGrid()->getExportParam()) && $this->allowsExporting;
     }
 
     /**

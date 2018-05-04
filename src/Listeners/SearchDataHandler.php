@@ -16,24 +16,12 @@ class SearchDataHandler
     use GridResources;
 
     /**
-     * The search type. AND, OR, NOT, etc
-     *
-     * @var string
-     */
-    protected $searchType = 'or';
-
-    /**
      * Columns to be used during row processing, to find
      * the search form placeholder
      *
      * @var array
      */
     protected $searchColumns = [];
-
-    /**
-     * @var string
-     */
-    protected $searchParam = 'q';
 
     /**
      * SearchDataHandler constructor.
@@ -50,16 +38,6 @@ class SearchDataHandler
         $this->query = $builder;
         $this->validGridColumns = $validTableColumns;
         $this->args = $data;
-    }
-
-    /**
-     * Get the search param name
-     *
-     * @return string
-     */
-    public function getSearchParam(): string
-    {
-        return $this->searchParam;
     }
 
     /**
@@ -138,7 +116,7 @@ class SearchDataHandler
                     $value = $userInput;
                 }
 
-                $this->getQuery()->where($columnName, $operator, $value, $this->searchType);
+                $this->getQuery()->where($columnName, $operator, $value, $this->getGrid()->getGridSearchQueryType());
             }
         }
     }
@@ -151,7 +129,7 @@ class SearchDataHandler
     public function searchRows()
     {
         if (!empty($this->getRequest()->query())) {
-            $columns = $this->args['unprocessedColumns'];
+            $columns = $this->getGrid()->getProcessedColumns();
 
             foreach ($columns as $columnName => $columnData) {
                 // check searchable
@@ -159,13 +137,13 @@ class SearchDataHandler
                     continue;
                 }
                 // check user input
-                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->searchParam))) {
+                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->getGrid()->getGridSearchQueryType()))) {
                     continue;
                 }
                 // operator
                 $operator = $this->fetchSearchOperator($columnName, $columnData)['operator'];
 
-                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->searchParam));
+                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->getGrid()->getGridSearchQueryType()));
             }
         }
     }

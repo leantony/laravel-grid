@@ -15,13 +15,6 @@ class RowFilterHandler
     use GridResources;
 
     /**
-     * The filter type. AND, OR, NOT, etc
-     *
-     * @var string
-     */
-    protected $filterType = 'and';
-
-    /**
      * RowFilterHandler constructor.
      * @param GridInterface $grid
      * @param Request $request
@@ -120,17 +113,17 @@ class RowFilterHandler
                 if(count($exploded) > 1) {
                     // skip invalid dates
                     if (strtotime($exploded[0]) && strtotime($exploded[1])) {
-                        $this->getQuery()->whereBetween($columnName, $exploded, $this->filterType);
+                        $this->getQuery()->whereBetween($columnName, $exploded, $this->getGrid()->getGridFilterQueryType());
                     }
                 } else {
                     // not a date range
                     // skip invalid dates
                     if (strtotime($value)) {
-                        $this->getQuery()->whereDate($columnName, $operator, $value, $this->filterType);
+                        $this->getQuery()->whereDate($columnName, $operator, $value, $this->getGrid()->getGridFilterQueryType());
                     }
                 }
             } else {
-                $this->getQuery()->where($columnName, $operator, $value, $this->filterType);
+                $this->getQuery()->where($columnName, $operator, $value, $this->getGrid()->getGridFilterQueryType());
             }
         }
     }
@@ -143,7 +136,7 @@ class RowFilterHandler
     public function filterRows()
     {
         if (!empty($this->request->query())) {
-            $columns = $this->args['unprocessedColumns'];
+            $columns = $this->getGrid()->getProcessedColumns();
             $tableColumns = $this->getValidGridColumns();
 
             foreach ($columns as $columnName => $columnData) {

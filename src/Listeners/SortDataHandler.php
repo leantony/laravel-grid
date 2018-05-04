@@ -16,34 +16,6 @@ class SortDataHandler
     use GridResources;
 
     /**
-     * Sort directions
-     *
-     * @var array
-     */
-    protected $valid_directions = ['asc', 'desc'];
-
-    /**
-     * The table to be sorted
-     *
-     * @var string
-     */
-    protected $sortTable = null;
-
-    /**
-     * Sort column name
-     *
-     * @var string
-     */
-    protected $sortParam = 'sort_by';
-
-    /**
-     * Sort direction
-     *
-     * @var string
-     */
-    protected $sortDirParam = 'sort_dir';
-
-    /**
      * SortDataHandler constructor.
      * @param GridInterface $grid
      * @param Request $request
@@ -91,8 +63,8 @@ class SortDataHandler
      */
     public function checkAndReturnSortParam()
     {
-        if ($this->getRequest()->has($this->sortParam)) {
-            $value = $this->request->get($this->sortParam);
+        if ($this->getRequest()->has($this->getGrid()->getSortParam())) {
+            $value = $this->request->get($this->getGrid()->getSortParam());
 
             if (in_array($value, $this->getValidGridColumns())) {
                 return $value;
@@ -108,11 +80,11 @@ class SortDataHandler
      */
     public function getSortDirection()
     {
-        if ($dir = $this->getRequest()->has($this->sortDirParam)) {
-            if (in_array($dir, $this->valid_directions)) {
+        if ($dir = $this->getRequest()->has($this->getGrid()->getSortDirParam())) {
+            if (in_array($dir, $this->getGrid()->getSortDirections())) {
                 return $dir;
             }
         }
-        return $this->valid_directions[0];
+        return $this->getGrid()->getSortDirections()[0];
     }
 }

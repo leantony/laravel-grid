@@ -7,6 +7,7 @@
 namespace Leantony\Grid\Listeners;
 
 use Illuminate\Http\Request;
+use Leantony\Grid\GridInterface;
 use Leantony\Grid\GridResources;
 
 class GridPaginationHandler
@@ -22,11 +23,13 @@ class GridPaginationHandler
 
     /**
      * GridPaginator constructor.
+     * @param GridInterface $grid
      * @param Request $request
      * @param $builder
      */
-    public function __construct(Request $request, $builder)
+    public function __construct(GridInterface $grid, Request $request, $builder)
     {
+        $this->grid = $grid;
         $this->request = $request;
         $this->query = $builder;
     }
@@ -34,23 +37,17 @@ class GridPaginationHandler
     /**
      * Paginate the filtered data
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\Paginator
      */
     public function paginate()
     {
-        $pageSize = $this->getPageSize();
+        if($this->getGrid()->getPaginationFunction() === 'simple') {
+
+            return $this->simplePaginate();
+        }
+        $pageSize = $this->getGrid()->getPaginationPageSize();
 
         return $this->getQuery()->paginate($pageSize);
-    }
-
-    /**
-     * Get the page size
-     *
-     * @return int
-     */
-    protected function getPageSize()
-    {
-        return config('grids.pagination_limit');
     }
 
     /**
@@ -60,7 +57,8 @@ class GridPaginationHandler
      */
     public function simplePaginate()
     {
-        $pageSize = $this->getPageSize();
+        $pageSize = $this->getGrid()->getPaginationPageSize();
+
         return $this->getQuery()->simplePaginate($pageSize);
     }
 }

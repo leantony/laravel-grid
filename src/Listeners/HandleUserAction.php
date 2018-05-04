@@ -7,8 +7,6 @@
 namespace Leantony\Grid\Listeners;
 
 use Leantony\Grid\Events\UserActionRequested;
-use Leantony\Grid\Filters\SearchDataHandler;
-use Leantony\Grid\Filters\SortDataHandler;
 
 class HandleUserAction
 {
@@ -54,6 +52,8 @@ class HandleUserAction
             ))->sort();
         }
 
+        $paginator = (new GridPaginationHandler($event->grid, $event->request, $event->builder));
+
         // export
         if ($event->request->has($event->grid->getExportParam())) {
             // do not export at this point
@@ -62,10 +62,10 @@ class HandleUserAction
                     $event->grid, $event->request,
                     $event->builder, $event->validTableColumns, $event->args
                 )),
-                'data' => (new GridPaginationHandler($event->request, $event->builder))->paginate()
+                'data' => $paginator->paginate()
             ];
         }
         // paginate
-        return (new GridPaginationHandler($event->request, $event->builder))->paginate();
+        return $paginator->paginate();
     }
 }
