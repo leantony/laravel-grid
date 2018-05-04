@@ -87,6 +87,7 @@ class GenerateGrid extends Command
      *
      * @return mixed
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \Exception
      */
     public function handle()
     {
@@ -193,7 +194,8 @@ class GenerateGrid extends Command
                             'operator' => '='
                         ],
                         'styles' => [
-                            'column' => 'col-md-2',
+                            // will apply a column width class of 10 percent
+                            'column' => 'grid-w-10',
                         ]
                     ],
                 ];

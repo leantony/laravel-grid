@@ -42,6 +42,10 @@ class GridToolbarSearch implements Htmlable
         }
     }
 
+    /**
+     * @return string
+     * @throws \Throwable
+     */
     public function __toString()
     {
         return $this->toHtml();
@@ -51,6 +55,7 @@ class GridToolbarSearch implements Htmlable
      * Get content as a string of HTML.
      *
      * @return string
+     * @throws \Throwable
      */
     public function toHtml()
     {
@@ -59,6 +64,7 @@ class GridToolbarSearch implements Htmlable
 
     /**
      * @return string
+     * @throws \Throwable
      */
     public function render()
     {

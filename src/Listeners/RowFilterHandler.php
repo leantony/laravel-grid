@@ -136,7 +136,7 @@ class RowFilterHandler
     public function filterRows()
     {
         if (!empty($this->request->query())) {
-            $columns = $this->getGrid()->getProcessedColumns();
+            $columns = $this->getGrid()->getColumns();
             $tableColumns = $this->getValidGridColumns();
 
             foreach ($columns as $columnName => $columnData) {

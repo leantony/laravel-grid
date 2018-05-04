@@ -8,6 +8,7 @@ namespace Leantony\Grid\Providers;
 
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Leantony\Grid\Commands\GenerateGrid;
+use Event;
 
 class ServiceProvider extends LaravelServiceProvider
 {
@@ -33,6 +34,9 @@ class ServiceProvider extends LaravelServiceProvider
         $this->publishes([
             __DIR__ . '/../resources/assets' => base_path('public/vendor/leantony/grid')
         ], 'assets');
+
+        // events
+        Event::listen('grid.fetch_data', 'Leantony\\Grid\\Listeners\\HandleUserAction@handle');
     }
 
     /**

@@ -131,7 +131,7 @@ class DataExportHandler
      */
     public function getColumnsToExport(): array
     {
-        return $this->getGrid()->getColumns();
+        return $this->getGrid()->getProcessedColumns();
     }
 
     /**

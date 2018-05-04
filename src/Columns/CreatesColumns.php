@@ -26,14 +26,6 @@ trait CreatesColumns
     protected $processedColumns = [];
 
     /**
-     * The pattern to be used to format the column names that will appear on the UI
-     * All symbols and invalid characters that match the pattern would be ignored and replaced with a space
-     *
-     * @var string
-     */
-    protected $labelNamePattern = "/[^a-z0-9 -]+/";
-
-    /**
      * Columns to be used as search
      *
      * @var array
@@ -151,7 +143,7 @@ trait CreatesColumns
         // css
         if (isset($columnData['styles'])) {
             $classAttributes = $columnData['styles'];
-            $columnClass = $classAttributes['column'] ?? 'w-25';
+            $columnClass = $classAttributes['column'] ?? '';
             $rowClass = $classAttributes['row'] ?? '';
         } else {
             $columnClass = '';
@@ -173,7 +165,7 @@ trait CreatesColumns
         if (isset($columnData['label'])) {
             $label = $columnData['label'];
         } else {
-            $label = ucwords(preg_replace($this->labelNamePattern, ' ', $columnName));
+            $label = ucwords(preg_replace($this->getLabelNamePattern(), ' ', $columnName));
         }
 
         return compact('label');

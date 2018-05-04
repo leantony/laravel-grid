@@ -129,7 +129,7 @@ class SearchDataHandler
     public function searchRows()
     {
         if (!empty($this->getRequest()->query())) {
-            $columns = $this->getGrid()->getProcessedColumns();
+            $columns = $this->getGrid()->getColumns();
 
             foreach ($columns as $columnName => $columnData) {
                 // check searchable
@@ -137,13 +137,13 @@ class SearchDataHandler
                     continue;
                 }
                 // check user input
-                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->getGrid()->getGridSearchQueryType()))) {
+                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->getGrid()->getSearchParam()))) {
                     continue;
                 }
                 // operator
                 $operator = $this->fetchSearchOperator($columnName, $columnData)['operator'];
 
-                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->getGrid()->getGridSearchQueryType()));
+                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->getGrid()->getSearchParam()));
             }
         }
     }

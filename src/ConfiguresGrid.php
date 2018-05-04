@@ -14,107 +14,120 @@ trait ConfiguresGrid
      *
      * @var array
      */
-    protected $toolbarSize;
+    private $toolbarSize;
 
     /**
      * Skip/ignore these columns when filtering, when supposedly passed in the query parameters
      *
      * @var array
      */
-    protected $columnsToSkipOnFilter;
+    private $columnsToSkipOnFilter;
 
     /**
      * css class for the grid
      *
      * @var string
      */
-    protected $class;
+    private $class;
 
     /**
      * @var string
      */
-    protected $gridView;
+    private $gridView;
 
     /**
      * @var string
      */
-    protected $sortParam;
+    private $sortParam;
 
     /**
      * @var string
      */
-    protected $sortDirParam;
+    private $sortDirParam;
 
     /**
      * @var array
      */
-    protected $sortDirections;
+    private $sortDirections;
 
     /**
      * @var string
      */
-    protected $searchParam;
+    private $searchParam;
 
     /**
      * @var string
      */
-    protected $searchType;
+    private $searchType;
 
     /**
      * @var string
      */
-    protected $searchView;
+    private $searchView;
 
     /**
      * @var string
      */
-    protected $filterType;
+    private $filterType;
 
     /**
      * Export param option
      *
      * @var string
      */
-    protected $exportParam;
+    private $exportParam;
 
     /**
      * Allowed document exports
      *
      * @var array
      */
-    protected $allowedExportTypes;
+    private $allowedExportTypes;
 
     /**
      * Max export rows. More = slower export process
      *
      * @var int
      */
-    protected $maxExportRows;
+    private $maxExportRows;
 
     /**
      * @var string
      */
-    protected $labelNamePattern;
+    private $labelNamePattern;
 
     /**
      * @var boolean
      */
-    protected $shouldWarnIfEmpty;
+    private $shouldWarnIfEmpty;
 
     /**
      * @var string
      */
-    protected $paginationView;
+    private $paginationView;
 
     /**
      * @var string
      */
-    protected $paginationType;
+    private $paginationType;
 
     /**
      * @var int
      */
-    protected $paginationSize;
+    private $paginationSize;
+
+    /**
+     * @var string
+     */
+    private $filterFieldColumnClass;
+
+    public function getFilterFieldColumnClass()
+    {
+        if ($this->filterFieldColumnClass === null) {
+            $this->filterFieldColumnClass = config('grid.columns.filter_field_class', 'grid-w-15');
+        }
+        return $this->filterFieldColumnClass;
+    }
 
     public function getGridView(): string
     {
@@ -207,11 +220,16 @@ trait ConfiguresGrid
     public function getPaginationView(): string
     {
         if ($this->paginationView === null) {
-            $this->paginationView = $this->getPaginationFunction() === 'default'
+            $this->paginationView = !$this->needsSimplePagination()
                 ? config('grid.pagination.default', 'leantony::grid.pagination.default')
                 : config('grid.pagination.simple', 'leantony::grid.pagination.simple');
         }
         return $this->paginationView;
+    }
+
+    public function needsSimplePagination()
+    {
+        return $this->getPaginationFunction() === 'simple';
     }
 
     public function getPaginationPageSize(): int
@@ -225,7 +243,7 @@ trait ConfiguresGrid
     public function getPaginationFunction(): string
     {
         if ($this->paginationType === null) {
-            $this->paginationType = config('grids.pagination.type', 'default');
+            $this->paginationType = config('grids.pagination.type', 'simple');
         }
         return $this->paginationType;
     }

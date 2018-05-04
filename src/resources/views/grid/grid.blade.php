@@ -6,7 +6,7 @@
                     <h4 class="grid-title">{{ $grid->getName() }}</h4>
                 </div>
                 <!-- pagination info -->
-                @if($grid->wantsPagination())
+                @if($grid->wantsPagination() && !$grid->needsSimplePagination())
                     <div class="pull-right">
                         <b>
                             @if($grid->getData()->total() <= $grid->getData()->perpage())
@@ -23,7 +23,7 @@
                 @else
                     <div class="pull-right">
                         <b>
-                            showing {{ $grid->getData()->count() }} records.
+                            showing {{ $grid->getData()->count() }} records for this page.
                         </b>
                     </div>
             @endif

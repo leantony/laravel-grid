@@ -9,7 +9,6 @@ namespace Leantony\Grid;
 use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -123,6 +122,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
             $this->__set($k, $v);
         }
         $this->init();
+        $this->fetchGridData();
         return $this;
     }
 
@@ -140,6 +140,8 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         $this->shortSingularName = $this->shortSingularGridName();
         // short grid identifier
         $this->shortGridIdentifier = $this->transformName();
+        // table cols
+        $this->tableColumns = $this->getTableColumns();
         // any links defined
         $this->setRoutes();
         // default buttons on the grid
@@ -148,16 +150,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         $this->configureButtons();
         // user defined columns
         $this->setColumns();
-        // data filters
-        $result = event(new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->getTableColumns()));
-        $data = data_get($result, 0);
-        if (is_array($data)) {
-            // an export has been triggered
-            $this->data = $data['data'];
-            $this->exportHandler = $data['exporter'];
-        } else {
-            $this->data = $data;
-        }
     }
 
     /**
@@ -182,7 +174,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         if (empty($this->tableColumns)) {
             $cols = Schema::getColumnListing(call_user_func($this->getGridDatabaseTable()));
-            $rejects = $this->columnsToSkipOnFilter;
+            $rejects = $this->getColumnsToSkipOnFilter();
             $this->tableColumns = collect($cols)->reject(function ($v) use ($rejects) {
                 return in_array($v, $rejects);
             })->toArray();
@@ -440,7 +432,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function wantsPagination()
     {
-        return $this->data instanceof LengthAwarePaginator;
+        return $this->data instanceof Paginator;
     }
 
     /**
@@ -450,7 +442,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function warnIfEmpty()
     {
-        return $this->warnIfEmpty;
+        return $this->shouldWarnIfEmpty();
     }
 
     /**
@@ -460,7 +452,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function getClass(): string
     {
-        return $this->class;
+        return $this->getGridDefaultClass();
     }
 
     /**
@@ -478,5 +470,40 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
             return $this->exportHandler->export();
         }
         return view($viewName, array_merge($data, ['grid' => $this]));
+    }
+
+    /**
+     * Main execution path. This fires an event which calls listeners that do searching, sorting, filtering, exporting, pagination
+     * The listeners are only executed if a user requests for that corresponding action
+     *
+     * @return void
+     */
+    protected function fetchGridData(): void
+    {
+        // do filter, export, paginate, search
+        $result = event('grid.fetch_data', new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->tableColumns));
+        $this->setDataFromEventResult($result);
+    }
+
+    /**
+     * Set data variables from event result
+     *
+     * @param $result
+     */
+    protected function setDataFromEventResult($result): void
+    {
+        $data = data_get($result, 0);
+        if (is_array($data)) {
+            // an export has been triggered
+            $this->data = $data['data'];
+            $this->exportHandler = $data['exporter'];
+        } else {
+            if ($data === null) {
+                // revert to empty collection
+                $this->data = collect([]);
+            } else {
+                $this->data = $data;
+            }
+        }
     }
 }
