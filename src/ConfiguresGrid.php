@@ -243,7 +243,7 @@ trait ConfiguresGrid
     public function getPaginationFunction(): string
     {
         if ($this->paginationType === null) {
-            $this->paginationType = config('grids.pagination.type', 'simple');
+            $this->paginationType = config('grids.pagination.type', 'default');
         }
         return $this->paginationType;
     }
