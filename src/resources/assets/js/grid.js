@@ -314,6 +314,129 @@ var _grids = _grids || {};
         };
     })(jQuery);
 
+    _grids.formUtils = {
+        /**
+         * Return html that can be used to render a bootstrap alert on the form
+         *
+         * @param type
+         * @param response
+         * @returns {string}
+         */
+        renderAlert: function (type, response) {
+            var validTypes = ['success', 'error', 'notice'], html = '';
+            if (typeof type === 'undefined' || ($.inArray(type, validTypes) < 0)) {
+                type = validTypes[0];
+            }
+            if (type === 'success') {
+                html += '<div class="alert alert-success">';
+            }
+            else if (type === 'error') {
+                html += '<div class="alert alert-danger">';
+            } else {
+                html += '<div class="alert alert-warning">';
+            }
+            html += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+            // add a heading
+            if (type === 'error') {
+                html += response.message || 'Please fix the following errors';
+                html = "<strong>" + html + "</strong>";
+                var errs = this.getValidationErrors(response.errors || {});
+                return html + errs + '</div>';
+            } else {
+                return html + response + '</div>'
+            }
+        },
+
+        /**
+         * process validation errors from json to html
+         * @param response
+         * @returns {string}
+         */
+        getValidationErrors: function (response) {
+            var errorsHtml = '';
+            $.each(response, function (key, value) {
+                errorsHtml += '<li>' + value + '</li>';
+            });
+            return errorsHtml;
+        },
+
+        /**
+         * Form submission from a modal dialog
+         *
+         * @param formId
+         * @param modal
+         */
+        handleFormSubmission: function (formId, modal) {
+            var form = $('#' + formId);
+            var submitButton = form.find(':submit');
+            var data = form.serialize();
+            var action = form.attr('action');
+            var method = form.attr('method') || 'POST';
+            var originalButtonHtml = $(submitButton).html();
+            var pjaxTarget = form.data('pjax-target');
+            var notification = form.data('notification-el') || 'modal-notification';
+            var $this = this;
+
+            $.ajax({
+                type: method,
+                url: action,
+                data: data,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        var message = '<i class=\"fa fa-check\"></i> ';
+                        message += response.message;
+                        $('#' + notification).html($this.renderAlert('success', message));
+                        // if a redirect is required...
+                        if (response.redirectTo) {
+                            setTimeout(function () {
+                                window.location = response.redirectTo;
+                            }, response.redirectTimeout || 500);
+                        } else {
+                            // hide the modal after 1000 ms
+                            setTimeout(function () {
+                                modal.modal('hide');
+                                if (pjaxTarget) {
+                                    // reload a pjax container
+                                    $.pjax.reload({container: pjaxTarget})
+                                }
+                            }, 500);
+                        }
+                    }
+                    else {
+                        // display message and hide modal
+                        var el = $(notification);
+                        el.html($this.renderAlert('error', response.message));
+                        setTimeout(function () {
+                            modal.modal('hide');
+                        }, 500);
+                    }
+                },
+                beforeSend: function () {
+                    $(submitButton).attr('disabled', 'disabled').html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
+                },
+                complete: function () {
+                    $(submitButton).html(originalButtonHtml).removeAttr('disabled');
+                },
+                error: function (data) {
+                    var msg;
+                    // error handling
+                    switch (data.status) {
+                        case 500:
+                            msg = 'A server error occurred...';
+                            break;
+                        default:
+                            msg = $this.renderAlert('error', data.responseJSON);
+                            break;
+                    }
+                    // display errors
+                    var el = $('#' + notification);
+                    el.html(msg);
+                }
+            });
+        }
+    };
+
     /**
      * The global modal object
      *
@@ -324,19 +447,46 @@ var _grids = _grids || {};
 
     (function ($) {
         'use strict';
+
         var modal = function (options) {
             var defaultOptions = {};
             this.options = $.extend({}, defaultOptions, options || {});
         };
 
-        modal.prototype.show = function(options) {
+        /**
+         * Show a modal dialog dynamically
+         */
+        modal.prototype.show = function () {
             $('.show_modal_form').on('click', function (e) {
                 e.preventDefault();
+                var btn = $(this);
+                var btnHtml = btn.html();
+                var modalDialog = $('#bootstrap_modal');
+                // show spinner as soon as user click is triggered
+                btn.attr('disabled', 'disabled').html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
+
+                // load the modal into the container put on the html
                 $('.modal-content').load($(this).attr("href") || $(this).data('href'), function () {
                     $('#bootstrap_modal').modal({show: true});
                 });
+
+                // revert button to original content, once the modal is shown
+                modalDialog.on('shown.bs.modal', function (e) {
+                    $(btn).html(btnHtml).removeAttr('disabled');
+                });
+
+                // destroy the modal
+                modalDialog.on('hidden.bs.modal', function (e) {
+                    $(this).modal('dispose');
+                });
             });
         };
+
+        $('#bootstrap_modal').on("click", '#' + 'modal_form' + ' button[type="submit"]', function (e) {
+            e.preventDefault();
+            // process forms on the modal
+            _grids.formUtils.handleFormSubmission('modal_form', $('#bootstrap_modal'));
+        });
 
         _grids.modal.init = function (options) {
             var obj = new modal(options);
