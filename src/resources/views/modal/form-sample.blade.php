@@ -6,10 +6,13 @@
 
 <!-- Modal body -->
 <form accept-charset="UTF-8" action="{{ $route }}" id="modal_form"
-      data-pjax-target="#{{ $pjaxContainer ?? 'add-a-pjax-container-here' }}" method="{{ $method ?? 'POST' }}">
+      data-pjax-target="#{{ $pjaxContainer ?? 'add-a-pjax-container-here' }}" method="POST">
     <div class="modal-body">
         <div id="modal-notification"></div>
         {!! csrf_field() !!}
+        @if(isset($method) && $method != 'post')
+            <input type="hidden" name="_method" value="{{ $method }}">
+        @endif
         <div class="form-group row">
             <label for="input_key" class="col-sm-2 col-form-label">Input name</label>
             <div class="col-sm-10">
