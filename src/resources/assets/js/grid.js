@@ -323,13 +323,25 @@ var _grids = _grids || {};
     _grids.modal = {};
 
     (function ($) {
+        'use strict';
+        var modal = function (options) {
+            var defaultOptions = {};
+            this.options = $.extend({}, defaultOptions, options || {});
+        };
 
-        $('.show_modal_form').on('click', function (e) {
-            e.preventDefault();
-            $('.modal-content').load($(this).attr("href"), function () {
-                $('#bootstrap_modal').modal({show: true});
+        modal.prototype.show = function(options) {
+            $('.show_modal_form').on('click', function (e) {
+                e.preventDefault();
+                $('.modal-content').load($(this).attr("href") || $(this).data('href'), function () {
+                    $('#bootstrap_modal').modal({show: true});
+                });
             });
-        });
+        };
+
+        _grids.modal.init = function (options) {
+            var obj = new modal(options);
+            obj.show();
+        };
 
     }(jQuery));
 
@@ -363,3 +375,5 @@ var _grids = _grids || {};
 
     return _grids;
 })(jQuery);
+
+_grids.init();
