@@ -145,6 +145,7 @@ trait RendersButtons
             'pjaxEnabled' => true,
             'position' => 2,
             'icon' => 'fa-refresh',
+            'class' => 'btn btn-primary',
             'gridId' => $this->id,
             'url' => $this->getIndexRouteLink(),
             'type' => 'toolbar',
