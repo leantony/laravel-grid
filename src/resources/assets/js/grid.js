@@ -499,8 +499,6 @@ var _grids = _grids || {};
      * Initialize stuff
      */
     _grids.init = function () {
-        // tooltip
-        $('[data-toggle="tooltip"]').tooltip();
         // date picker
         if (typeof daterangepicker !== 'function') {
             console.warn('date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')

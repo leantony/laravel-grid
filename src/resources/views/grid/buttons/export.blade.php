@@ -1,4 +1,4 @@
-<div class="btn-group pull-right grid-export-button" role="group" data-toggle="tooltip" title="{{ $title }}">
+<div class="btn-group pull-right grid-export-button" role="group" title="{{ $title }}">
     <button id="export-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fa {{ $icon }}"></i>&nbsp;{{ $name }}
     </button>
