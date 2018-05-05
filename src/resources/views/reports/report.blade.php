@@ -46,15 +46,6 @@
         @endforeach
     </tr>
     </thead>
-    <tfoot>
-    <tr>
-        <td>foot1</td>
-        <td>foot2</td>
-        <td>foot3</td>
-        <td>foot4</td>
-        <td>foot5</td>
-    </tr>
-    </tfoot>
     <tbody>
     @foreach($data as $k => $v)
         <tr>
