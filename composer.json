@@ -46,7 +46,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Leantony\\Grid\\Providers\\ServiceProvider"
+        "Leantony\\Grid\\Providers\\GridServiceProvider"
       ]
     }
   },

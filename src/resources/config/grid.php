@@ -54,10 +54,9 @@ return [
          * Allowed export types
          */
         'allowed_types' => [
-            'pdf',
-            'xlsx',
-            'xls',
-            'csv'
+            // 'pdf',
+            'xlsx', // excel
+            'csv' // csv
         ],
 
         /**
@@ -148,5 +147,24 @@ return [
          * The view used to render simple pagination.
          */
         'simple' => 'leantony::grid.pagination.simple'
+    ],
+
+    /**
+     * Configuration related to grid generation via the provided artisan command
+     */
+    'generation' => [
+
+        /**
+         * Namespace for the generated grid
+         */
+        'namespace' => 'App\\Grids',
+
+        /**
+         * Columns to skip on generation of the grid
+         */
+        'columns_to_skip' => [
+            'password',
+            'password_hash',
+        ]
     ]
 ];
