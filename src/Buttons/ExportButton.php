@@ -6,8 +6,12 @@
 
 namespace Leantony\Grid\Buttons;
 
+use Leantony\Grid\HasGridConfigurations;
+
 class ExportButton extends GenericButton
 {
+    use HasGridConfigurations;
+
     public $position = 3;
 
     /**
@@ -24,25 +28,34 @@ class ExportButton extends GenericButton
      */
     public function getExtraParams()
     {
-        return [
-            'exportOptions' => [
-                'excel' => [
-                    'url' => $this->generateExportUrl('xlsx'),
-                    'icon' => 'file-excel-o',
-                    'title' => 'export to excel'
-                ],
-                'csv' => [
-                    'url' => $this->generateExportUrl('csv'),
-                    'icon' => 'file',
-                    'title' => 'export to csv'
-                ],
-                'pdf' => [
-                    'url' => $this->generateExportUrl('pdf'),
-                    'icon' => 'file-pdf-o',
-                    'title' => 'export to pdf'
-                ]
+        $availableExportOptions = $this->getGridExportTypes();
+
+        $createdOptions = [
+            'xlsx' => [
+                'name' => 'excel',
+                'url' => $this->generateExportUrl('xlsx'),
+                'icon' => 'file-excel-o',
+                'title' => 'export to excel'
+            ],
+            'csv' => [
+                'name' => 'csv',
+                'url' => $this->generateExportUrl('csv'),
+                'icon' => 'file',
+                'title' => 'export to csv'
+            ],
+            'pdf' => [
+                'name' => 'pdf',
+                'url' => $this->generateExportUrl('pdf'),
+                'icon' => 'file-pdf-o',
+                'title' => 'export to pdf'
             ]
         ];
+
+        $exportOptions = collect($createdOptions)->reject(function ($option, $key) use ($availableExportOptions) {
+            return !in_array($key, $availableExportOptions);
+        })->toArray();
+
+        return compact('exportOptions');
     }
 
     /**
