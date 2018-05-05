@@ -136,13 +136,13 @@ class SearchDataHandler
                     continue;
                 }
                 // check user input
-                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->getGrid()->getSearchParam()))) {
+                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->getGrid()->getGridSearchParam()))) {
                     continue;
                 }
                 // operator
                 $operator = $this->fetchSearchOperator($columnName, $columnData)['operator'];
 
-                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->getGrid()->getSearchParam()));
+                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->getGrid()->getGridSearchParam()));
             }
         }
     }

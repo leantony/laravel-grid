@@ -41,11 +41,11 @@ class GridPaginationHandler
      */
     public function paginate()
     {
-        if($this->getGrid()->needsSimplePagination()) {
+        if($this->getGrid()->gridNeedsSimplePagination()) {
 
             return $this->simplePaginate();
         }
-        $pageSize = $this->getGrid()->getPaginationPageSize();
+        $pageSize = $this->getGrid()->getGridPaginationPageSize();
 
         return $this->getQuery()->paginate($pageSize);
     }
@@ -57,7 +57,7 @@ class GridPaginationHandler
      */
     public function simplePaginate()
     {
-        $pageSize = $this->getGrid()->getPaginationPageSize();
+        $pageSize = $this->getGrid()->getGridPaginationPageSize();
 
         return $this->getQuery()->simplePaginate($pageSize);
     }

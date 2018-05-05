@@ -1,4 +1,4 @@
-@if($grid->wantsPagination() && !$grid->needsSimplePagination())
+@if($grid->wantsPagination() && !$grid->gridNeedsSimplePagination())
     <div class="pull-{{ $direction }}">
         <b>
             @if($grid->getData()->total() <= $grid->getData()->perpage())

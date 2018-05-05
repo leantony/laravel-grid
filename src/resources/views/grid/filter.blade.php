@@ -4,12 +4,12 @@
     @elseif(!$row->filter->enabled)
         <th></th>
     @else
-        <th class="">
+        <th>
             {!! $row->filter !!}
         </th>
     @endif
     @if($loop->last)
-        <th class="{{ $grid->getFilterFieldColumnClass() }}">
+        <th class="{{ $grid->getGridFilterFieldColumnClass() }}">
             <div class="pull-right">
                 <button type="submit"
                         class="btn btn-outline-primary grid-filter-button"

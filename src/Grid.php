@@ -122,7 +122,13 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
             $this->__set($k, $v);
         }
         $this->init();
-        $this->fetchGridData();
+        // do filter, export, paginate, search = main user actions
+        $result = event(
+            'grid.fetch_data',
+            new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->tableColumns)
+        );
+        $this->setGridDataItems($result);
+
         return $this;
     }
 
@@ -174,7 +180,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         if (empty($this->tableColumns)) {
             $cols = Schema::getColumnListing(call_user_func($this->getGridDatabaseTable()));
-            $rejects = $this->getColumnsToSkipOnFilter();
+            $rejects = $this->getGridColumnsToSkipOnFilter();
             $this->tableColumns = collect($cols)->reject(function ($v) use ($rejects) {
                 return in_array($v, $rejects);
             })->toArray();
@@ -205,15 +211,15 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     {
         $params = func_get_args();
         $data = [
-            'colSize' => $this->getToolbarSize()[0], // size
+            'colSize' => $this->getGridToolbarSize()[0], // size
             'action' => $this->getSearchRoute(),
             'id' => $this->getSearchFormId(),
-            'name' => $this->getSearchParam(),
+            'name' => $this->getGridSearchParam(),
             'dataAttributes' => [],
             'placeholder' => $this->getSearchPlaceholder(),
         ];
 
-        return view($this->getSearchView(), array_merge($data, $params))->render();
+        return view($this->getGridSearchView(), array_merge($data, $params))->render();
     }
 
     /**
@@ -442,7 +448,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function warnIfEmpty()
     {
-        return $this->shouldWarnIfEmpty();
+        return $this->gridShouldWarnIfEmpty();
     }
 
     /**
@@ -466,31 +472,20 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      */
     public function renderOn(string $viewName, $data = [])
     {
-        if ($this->getRequest()->has($this->getExportParam())) {
+        if ($this->getRequest()->has($this->getGridExportParam())) {
             return $this->exportHandler->export();
         }
         return view($viewName, array_merge($data, ['grid' => $this]));
     }
 
     /**
-     * Main execution path. This fires an event which calls listeners that do searching, sorting, filtering, exporting, pagination
-     * The listeners are only executed if a user requests for that corresponding action
+     * Set data variables for the grid
+     * This will need to be passed on the the grid view so that they are displayed
      *
+     * @param array $result
      * @return void
      */
-    protected function fetchGridData(): void
-    {
-        // do filter, export, paginate, search
-        $result = event('grid.fetch_data', new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->tableColumns));
-        $this->setDataFromEventResult($result);
-    }
-
-    /**
-     * Set data variables from event result
-     *
-     * @param $result
-     */
-    protected function setDataFromEventResult($result): void
+    protected function setGridDataItems(array $result): void
     {
         $data = data_get($result, 0);
         if (is_array($data)) {

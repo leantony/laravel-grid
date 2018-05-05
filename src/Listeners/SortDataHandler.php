@@ -63,8 +63,8 @@ class SortDataHandler
      */
     public function checkAndReturnSortParam()
     {
-        if ($this->getRequest()->has($this->getGrid()->getSortParam())) {
-            $value = $this->request->get($this->getGrid()->getSortParam());
+        if ($this->getRequest()->has($this->getGrid()->getGridSortParam())) {
+            $value = $this->request->get($this->getGrid()->getGridSortParam());
 
             if (in_array($value, $this->getValidGridColumns())) {
                 return $value;
@@ -80,11 +80,12 @@ class SortDataHandler
      */
     public function getSortDirection()
     {
-        if ($dir = $this->getRequest()->has($this->getGrid()->getSortDirParam())) {
-            if (in_array($dir, $this->getGrid()->getSortDirections())) {
+        if ($dir = $this->getRequest()->has($this->getGrid()->getGridSortDirParam())) {
+            if (in_array($dir, $this->getGrid()->getGridSortDirections())) {
                 return $dir;
             }
         }
-        return $this->getGrid()->getSortDirections()[0];
+        // default to the first sort option
+        return $this->getGrid()->getGridSortDirections()[0];
     }
 }

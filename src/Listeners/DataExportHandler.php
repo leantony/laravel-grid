@@ -67,7 +67,7 @@ class DataExportHandler
     public function export()
     {
         if ($this->wantsToExport()) {
-            $param = $this->request->get($this->getGrid()->getExportParam());
+            $param = $this->request->get($this->getGrid()->getGridExportParam());
             if (in_array($param, $this->getGrid()->getGridExportTypes())) {
                 return $this->exportAs($param);
             }
@@ -83,6 +83,10 @@ class DataExportHandler
      */
     public function exportAs($type = 'xlsx')
     {
+        // prevent export of unknown types
+        if(!in_array($type, $this->getGridExportTypes())) {
+            throw new \InvalidArgumentException("unknown export type of " . $type . ". Valid types are " . json_encode($this->getGridExportTypes()));
+        }
         $e = new DefaultExport(
             sprintf('%s report', $this->getGrid()->shortSingularGridName()),
             $this->getExportableColumns()[1], // columns are at index 1
@@ -96,13 +100,14 @@ class DataExportHandler
      * Get the data to be exported
      *
      * @return Collection
+     * @throws \Exception
      */
     public function getExportData(): Collection
     {
         list($pinch, $columns) = $this->getExportableColumns();
 
         // works on the underlying query instance
-        $values = $this->getQuery()->take($this->getGrid()->getMaxRowsForExport())->get();
+        $values = $this->getQuery()->take($this->getGrid()->getGridMaxExportRows())->get();
 
         // customize the results
         $data = $values->map(function ($v) use ($columns) {
@@ -128,6 +133,7 @@ class DataExportHandler
      * Gets the columns to be exported
      *
      * @return array
+     * @throws \Exception
      */
     public function getColumnsToExport(): array
     {
@@ -152,13 +158,14 @@ class DataExportHandler
      */
     protected function wantsToExport(): bool
     {
-        return $this->getRequest()->has($this->getGrid()->getExportParam()) && $this->allowsExporting;
+        return $this->getRequest()->has($this->getGrid()->getGridExportParam()) && $this->allowsExporting;
     }
 
     /**
      * Get exportable columns by skipping the ones that were not requested
      *
      * @return array
+     * @throws \Exception
      */
     protected function getExportableColumns(): array
     {

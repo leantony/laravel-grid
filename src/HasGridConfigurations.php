@@ -6,7 +6,7 @@
 
 namespace Leantony\Grid;
 
-trait ConfiguresGrid
+trait HasGridConfigurations
 {
     /**
      * The toolbar size. 6 columns on the right and 6 on the left
@@ -28,7 +28,7 @@ trait ConfiguresGrid
      *
      * @var string
      */
-    private $class;
+    private $gridClass;
 
     /**
      * @var string
@@ -121,7 +121,17 @@ trait ConfiguresGrid
      */
     private $filterFieldColumnClass;
 
-    public function getFilterFieldColumnClass()
+    /**
+     * @var array
+     */
+    private $columnsToSkipOnGeneratingGrid;
+
+    /**
+     * @var string
+     */
+    private $gridNamespace;
+
+    public function getGridFilterFieldColumnClass()
     {
         if ($this->filterFieldColumnClass === null) {
             $this->filterFieldColumnClass = config('grid.columns.filter_field_class', 'grid-w-15');
@@ -137,7 +147,7 @@ trait ConfiguresGrid
         return $this->gridView;
     }
 
-    public function getSortParam(): string
+    public function getGridSortParam(): string
     {
         if ($this->sortParam === null) {
             $this->sortParam = config('grid.sort.param', 'sort_by');
@@ -145,7 +155,7 @@ trait ConfiguresGrid
         return $this->sortParam;
     }
 
-    public function getSortDirections(): array
+    public function getGridSortDirections(): array
     {
         if ($this->sortDirections === null) {
             $this->sortDirections = config('grid.sort.valid_directions', ['asc', 'desc']);
@@ -154,7 +164,7 @@ trait ConfiguresGrid
     }
 
 
-    public function getLabelNamePattern(): string
+    public function getGridLabelNamePattern(): string
     {
         if ($this->labelNamePattern === null) {
             $this->labelNamePattern = config('grid.columns.label_pattern', "/[^a-z0-9 -]+/");
@@ -162,7 +172,7 @@ trait ConfiguresGrid
         return $this->labelNamePattern;
     }
 
-    public function getToolbarSize(): array
+    public function getGridToolbarSize(): array
     {
         if ($this->toolbarSize === null) {
             $this->toolbarSize = config('grid.toolbar_size', [6, 6]);
@@ -170,7 +180,7 @@ trait ConfiguresGrid
         return $this->toolbarSize;
     }
 
-    public function shouldWarnIfEmpty(): bool
+    public function gridShouldWarnIfEmpty(): bool
     {
         if ($this->shouldWarnIfEmpty === null) {
             $this->shouldWarnIfEmpty = config('grid.warn_when_empty', true);
@@ -180,13 +190,13 @@ trait ConfiguresGrid
 
     public function getGridDefaultClass(): string
     {
-        if ($this->class === null) {
-            $this->class = config('grid.default_class', 'table table-bordered table-hover');
+        if ($this->gridClass === null) {
+            $this->gridClass = config('grid.default_class', 'table table-bordered table-hover');
         }
-        return $this->class;
+        return $this->gridClass;
     }
 
-    public function getColumnsToSkipOnFilter(): array
+    public function getGridColumnsToSkipOnFilter(): array
     {
         if ($this->columnsToSkipOnFilter === null) {
             $this->columnsToSkipOnFilter = config('grid.filter.columns_to_skip', [
@@ -201,7 +211,7 @@ trait ConfiguresGrid
     /**
      * @return string
      */
-    public function getSortDirParam(): string
+    public function getGridSortDirParam(): string
     {
         if ($this->sortDirParam === null) {
             $this->sortDirParam = config('grid.sort.dir_param', 'sort_dir');
@@ -209,7 +219,7 @@ trait ConfiguresGrid
         return $this->sortDirParam;
     }
 
-    public function getExportParam(): string
+    public function getGridExportParam(): string
     {
         if ($this->exportParam === null) {
             $this->exportParam = config('grid.export.param', 'export');
@@ -217,22 +227,22 @@ trait ConfiguresGrid
         return $this->exportParam;
     }
 
-    public function getPaginationView(): string
+    public function getGridPaginationView(): string
     {
         if ($this->paginationView === null) {
-            $this->paginationView = !$this->needsSimplePagination()
+            $this->paginationView = !$this->gridNeedsSimplePagination()
                 ? config('grid.pagination.default', 'leantony::grid.pagination.default')
                 : config('grid.pagination.simple', 'leantony::grid.pagination.simple');
         }
         return $this->paginationView;
     }
 
-    public function needsSimplePagination()
+    public function gridNeedsSimplePagination()
     {
-        return $this->getPaginationFunction() === 'simple';
+        return $this->getGridPaginationFunction() === 'simple';
     }
 
-    public function getPaginationPageSize(): int
+    public function getGridPaginationPageSize(): int
     {
         if ($this->paginationSize === null) {
             $this->paginationSize = config('grids.pagination.default_size', 15);
@@ -240,7 +250,7 @@ trait ConfiguresGrid
         return $this->paginationSize;
     }
 
-    public function getPaginationFunction(): string
+    public function getGridPaginationFunction(): string
     {
         if ($this->paginationType === null) {
             $this->paginationType = config('grids.pagination.type', 'default');
@@ -248,7 +258,7 @@ trait ConfiguresGrid
         return $this->paginationType;
     }
 
-    public function getSearchParam(): string
+    public function getGridSearchParam(): string
     {
         if ($this->searchParam === null) {
             $this->searchParam = config('grid.search.param', 'q');
@@ -261,7 +271,7 @@ trait ConfiguresGrid
      *
      * @return string
      */
-    public function getSearchView(): string
+    public function getGridSearchView(): string
     {
         if ($this->searchView === null) {
             $this->searchView = config('grid.search.view', 'leantony::grid.search');
@@ -288,16 +298,33 @@ trait ConfiguresGrid
     public function getGridExportTypes(): array
     {
         if ($this->allowedExportTypes === null) {
-            $this->allowedExportTypes = config('grid.export.allowed_types', ['pdf', 'xlsx', 'xls', 'csv']);
+            $this->allowedExportTypes = config('grid.export.allowed_types', ['xlsx', 'csv']);
         }
         return $this->allowedExportTypes;
     }
 
-    public function getMaxRowsForExport(): int
+    public function getGridMaxExportRows(): int
     {
         if ($this->maxExportRows === null) {
             $this->maxExportRows = config('grid.export.max_rows', 5000);
         }
         return $this->maxExportRows;
+    }
+
+    public function getGridColumnsToSkipOnGeneration() {
+        if($this->columnsToSkipOnGeneratingGrid === null) {
+            $this->columnsToSkipOnGeneratingGrid = config('grid.generation.columns_to_skip', [
+                'password',
+                'password_hash',
+            ]);
+        }
+        return $this->columnsToSkipOnGeneratingGrid;
+    }
+
+    public function getGridNamespace() {
+        if($this->gridNamespace === null) {
+            $this->gridNamespace = config('grid.generation.namespace', "App\\Grids");
+        }
+        return $this->gridNamespace;
     }
 }

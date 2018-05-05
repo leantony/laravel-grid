@@ -30,7 +30,7 @@ class HandleUserAction
     {
         if(!empty($event->request->query())) {
 
-            if ($event->request->has($event->grid->getSearchParam())) {
+            if ($event->request->has($event->grid->getGridSearchParam())) {
                 // search
                 (new SearchDataHandler(
                     $event->grid, $event->request,
@@ -55,7 +55,7 @@ class HandleUserAction
         $paginator = (new GridPaginationHandler($event->grid, $event->request, $event->builder));
 
         // export
-        if ($event->request->has($event->grid->getExportParam())) {
+        if ($event->request->has($event->grid->getGridExportParam())) {
             // do not export at this point
             return [
                 'exporter' => (new DataExportHandler(

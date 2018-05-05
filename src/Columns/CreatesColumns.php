@@ -165,7 +165,7 @@ trait CreatesColumns
         if (isset($columnData['label'])) {
             $label = $columnData['label'];
         } else {
-            $label = ucwords(preg_replace($this->getLabelNamePattern(), ' ', $columnName));
+            $label = ucwords(preg_replace($this->getGridLabelNamePattern(), ' ', $columnName));
         }
 
         return compact('label');

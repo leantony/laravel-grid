@@ -10,9 +10,12 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
+use Leantony\Grid\HasGridConfigurations;
 
 class GenerateGrid extends Command
 {
+    use HasGridConfigurations;
+
     /**
      * The name and signature of the console command.
      *
@@ -32,7 +35,7 @@ class GenerateGrid extends Command
      *
      * @var string
      */
-    protected $namespaceFormat = "App\\Grids";
+    protected $namespaceFormat = null;
 
     /**
      * Items to look for in the stub
@@ -54,10 +57,7 @@ class GenerateGrid extends Command
      *
      * @var array
      */
-    protected $excludedColumns = [
-        'password',
-        'password_hash',
-    ];
+    protected $excludedColumns = [];
 
     /**
      * Filesystem
@@ -80,6 +80,8 @@ class GenerateGrid extends Command
         parent::__construct();
 
         $this->filesystem = $filesystem;
+        $this->excludedColumns = $this->getGridColumnsToSkipOnGeneration();
+        $this->namespaceFormat = $this->getGridNamespace();
     }
 
     /**

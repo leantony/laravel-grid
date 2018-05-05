@@ -7,6 +7,7 @@
 namespace Leantony\Grid\Events;
 
 use Illuminate\Http\Request;
+use Leantony\Grid\Grid;
 use Leantony\Grid\GridInterface;
 
 class UserActionRequested
@@ -22,7 +23,7 @@ class UserActionRequested
     public $builder;
 
     /**
-     * @var GridInterface
+     * @var Grid|GridInterface
      */
     public $grid;
 

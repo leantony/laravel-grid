@@ -6,8 +6,8 @@
                     <h4 class="grid-title">{{ $grid->getName() }}</h4>
                 </div>
                 <!-- pagination info -->
-                @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'right'])
-                <!-- end pagination info -->
+            @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'right'])
+            <!-- end pagination info -->
             </div>
             <div class="card-body">
                 <!-- search form -->
@@ -15,7 +15,7 @@
                 {!! $grid->renderSearchForm() !!}
                 <!-- toolbar buttons -->
                     @if($grid->hasButtons('toolbar'))
-                        <div class="col-md-{{ $grid->getToolbarSize()[1] }}">
+                        <div class="col-md-{{ $grid->getGridToolbarSize()[1] }}">
                             <div class="pull-right">
                                 @foreach($grid->getButtons('toolbar') as $button)
                                     {!! $button->render() !!}
@@ -167,13 +167,13 @@
                 <!-- end grid contents -->
             </div>
             <div class="card-footer">
-                @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'left'])
-                <!-- pagination -->
+            @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'left'])
+            <!-- pagination -->
                 @if($grid->wantsPagination())
                     <div class="pull-right">
-                        {{ $grid->getData()->appends(request()->query())->links($grid->getPaginationView(), ['pjaxTarget' => $grid->getId()]) }}
+                        {{ $grid->getData()->appends(request()->query())->links($grid->getGridPaginationView(), ['pjaxTarget' => $grid->getId()]) }}
                     </div><!-- /.center -->
-                @endif
+            @endif
             <!-- end pagination -->
             </div>
         </div>

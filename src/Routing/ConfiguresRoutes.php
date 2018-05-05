@@ -76,7 +76,7 @@ trait ConfiguresRoutes
     public function getSortUrl()
     {
         return function ($key) {
-            return route($this->sortRouteName, add_query_param([$this->getSortParam() => $key]));
+            return route($this->sortRouteName, add_query_param([$this->getGridSortParam() => $key]));
         };
     }
 

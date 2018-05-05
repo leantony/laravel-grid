@@ -7,11 +7,10 @@
 namespace Leantony\Grid;
 
 use Illuminate\Http\Request;
-use InvalidArgumentException;
 
 trait GridResources
 {
-    use ConfiguresGrid;
+    use HasGridConfigurations;
     
     /**
      * A query builder instance
@@ -30,7 +29,7 @@ trait GridResources
     /**
      * The grid instance
      *
-     * @var GridInterface
+     * @var Grid|GridInterface
      */
     protected $grid;
 
@@ -65,9 +64,9 @@ trait GridResources
     /**
      * The grid instance
      *
-     * @return GridInterface
+     * @return Grid
      */
-    public function getGrid(): GridInterface
+    public function getGrid(): Grid
     {
         return $this->grid;
     }
