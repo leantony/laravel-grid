@@ -1,46 +1,8 @@
-<style>
-    table.minimalistBlack {
-        border: 3px solid #000000;
-        width: 100%;
-        text-align: left;
-        border-collapse: collapse;
-    }
-    table.minimalistBlack td, table.minimalistBlack th {
-        border: 1px solid #000000;
-        padding: 5px 4px;
-    }
-    table.minimalistBlack tbody td {
-        font-size: 13px;
-    }
-    table.minimalistBlack thead {
-        background: #CFCFCF;
-        background: -moz-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
-        background: -webkit-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
-        background: linear-gradient(to bottom, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
-        border-bottom: 3px solid #000000;
-    }
-    table.minimalistBlack thead th {
-        font-size: 15px;
-        font-weight: bold;
-        color: #000000;
-        text-align: left;
-    }
-    table.minimalistBlack tfoot {
-        font-size: 14px;
-        font-weight: bold;
-        color: #000000;
-        border-top: 3px solid #000000;
-    }
-    table.minimalistBlack tfoot td {
-        font-size: 14px;
-    }
-</style>
-
-<table class="minimalistBlack">
-    <thead>
+<table class="minimalistBlack" style="border-width:3px;border-style:solid;border-color:#000000;width:100%;text-align:left;border-collapse:collapse;" >
+    <thead style="background-color:#dbdbdb;background-image:none;background-repeat:repeat;background-position:bottom;background-attachment:scroll;border-bottom-width:3px;border-bottom-style:solid;border-bottom-color:#000000;" >
     <tr>
         @foreach($columns as $column)
-            <th>
+            <th style="border-width:1px;border-style:solid;border-color:#000000;padding-top:5px;padding-bottom:5px;padding-right:4px;padding-left:4px;font-size:15px;font-weight:bold;color:#000000;text-align:left;" >
                 {{ $column->name }}
             </th>
         @endforeach
@@ -50,7 +12,7 @@
     @foreach($data as $k => $v)
         <tr>
             @foreach($v as $c)
-                <td>
+                <td style="border-width:1px;border-style:solid;border-color:#000000;padding-top:5px;padding-bottom:5px;padding-right:4px;padding-left:4px;font-size:13px;" >
                     {!! $c !!}
                 </td>
             @endforeach
