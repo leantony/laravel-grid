@@ -40,6 +40,33 @@ class SearchDataHandler
     }
 
     /**
+     * Search the rows
+     *
+     * @return void
+     */
+    public function searchRows()
+    {
+        if (!empty($this->getRequest()->query())) {
+            $columns = $this->getGrid()->getColumns();
+
+            foreach ($columns as $columnName => $columnData) {
+                // check searchable
+                if (!$this->canSearchColumn($columnName, $columnData)) {
+                    continue;
+                }
+                // check user input
+                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->getGrid()->getGridSearchParam()))) {
+                    continue;
+                }
+                // operator
+                $operator = $this->fetchSearchOperator($columnName, $columnData)['operator'];
+
+                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->getGrid()->getGridSearchParam()));
+            }
+        }
+    }
+
+    /**
      * Check if a column can be searched
      *
      * @param string $columnName
@@ -49,19 +76,6 @@ class SearchDataHandler
     public function canSearchColumn(string $columnName, array $columnData)
     {
         return isset($columnData['search']) && $columnData['search']['enabled'] ?? false;
-    }
-
-    /**
-     * Get the search operator
-     *
-     * @param string $columnName
-     * @param array $columnData
-     * @return array
-     */
-    public function fetchSearchOperator(string $columnName, array $columnData)
-    {
-        $operator = $columnData['search']['operator'] ?? 'like';
-        return compact('operator');
     }
 
     /**
@@ -77,6 +91,19 @@ class SearchDataHandler
             return false;
         }
         return true;
+    }
+
+    /**
+     * Get the search operator
+     *
+     * @param string $columnName
+     * @param array $columnData
+     * @return array
+     */
+    public function fetchSearchOperator(string $columnName, array $columnData)
+    {
+        $operator = $columnData['search']['operator'] ?? 'like';
+        return compact('operator');
     }
 
     /**
@@ -116,33 +143,6 @@ class SearchDataHandler
                 }
 
                 $this->getQuery()->where($columnName, $operator, $value, $this->getGrid()->getGridSearchQueryType());
-            }
-        }
-    }
-    
-    /**
-     * Search the rows
-     *
-     * @return void
-     */
-    public function searchRows()
-    {
-        if (!empty($this->getRequest()->query())) {
-            $columns = $this->getGrid()->getColumns();
-
-            foreach ($columns as $columnName => $columnData) {
-                // check searchable
-                if (!$this->canSearchColumn($columnName, $columnData)) {
-                    continue;
-                }
-                // check user input
-                if (!$this->canUseProvidedUserInput($this->getRequest()->get($this->getGrid()->getGridSearchParam()))) {
-                    continue;
-                }
-                // operator
-                $operator = $this->fetchSearchOperator($columnName, $columnData)['operator'];
-
-                $this->doSearch($columnName, $columnData, $operator, $this->getRequest()->get($this->getGrid()->getGridSearchParam()));
             }
         }
     }

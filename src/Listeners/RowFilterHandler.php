@@ -32,6 +32,37 @@ class RowFilterHandler
     }
 
     /**
+     * Filter the grid rows
+     *
+     * @return void
+     */
+    public function filterRows()
+    {
+        if (!empty($this->request->query())) {
+            $columns = $this->getGrid()->getColumns();
+            $tableColumns = $this->getValidGridColumns();
+
+            foreach ($columns as $columnName => $columnData) {
+                // skip rows that are not to be filtered
+                if (!$this->canFilter($columnName, $columnData)) {
+                    continue;
+                }
+                // user input check
+                if (!$this->canUseProvidedUserInput($this->getRequest()->get($columnName))) {
+                    continue;
+                }
+                // column check. Since the column data is coming from a user query
+                if (!$this->canUseProvidedColumn($columnName, $tableColumns)) {
+                    continue;
+                }
+                $operator = $this->extractFilterOperator($columnName, $columnData)['operator'];
+
+                $this->doFilter($columnName, $columnData, $operator, $this->getRequest()->get($columnName));
+            }
+        }
+    }
+
+    /**
      * Check if filtering can be done
      *
      * @param string $columnName
@@ -41,18 +72,6 @@ class RowFilterHandler
     public function canFilter(string $columnName, array $columnData)
     {
         return isset($columnData['filter']) && $columnData['filter']['enabled'] ?? false;
-    }
-
-    /**
-     * Check if the provided column can be used
-     *
-     * @param $columnName
-     * @param $validColumns
-     * @return bool
-     */
-    public function canUseProvidedColumn(string $columnName, array $validColumns)
-    {
-        return in_array($columnName, $validColumns);
     }
 
     /**
@@ -68,6 +87,18 @@ class RowFilterHandler
             return false;
         }
         return true;
+    }
+
+    /**
+     * Check if the provided column can be used
+     *
+     * @param $columnName
+     * @param $validColumns
+     * @return bool
+     */
+    public function canUseProvidedColumn(string $columnName, array $validColumns)
+    {
+        return in_array($columnName, $validColumns);
     }
 
     /**
@@ -110,7 +141,7 @@ class RowFilterHandler
             if (isset($filter['type']) && ($filter['type'] === 'daterange' && $filter['enabled'] === true)) {
                 // check for date range values
                 $exploded = explode(' - ', $value, 2);
-                if(count($exploded) > 1) {
+                if (count($exploded) > 1) {
                     // skip invalid dates
                     if (strtotime($exploded[0]) && strtotime($exploded[1])) {
                         $this->getQuery()->whereBetween($columnName, $exploded, $this->getGrid()->getGridFilterQueryType());
@@ -124,37 +155,6 @@ class RowFilterHandler
                 }
             } else {
                 $this->getQuery()->where($columnName, $operator, $value, $this->getGrid()->getGridFilterQueryType());
-            }
-        }
-    }
-
-    /**
-     * Filter the grid rows
-     *
-     * @return void
-     */
-    public function filterRows()
-    {
-        if (!empty($this->request->query())) {
-            $columns = $this->getGrid()->getColumns();
-            $tableColumns = $this->getValidGridColumns();
-
-            foreach ($columns as $columnName => $columnData) {
-                // skip rows that are not to be filtered
-                if (!$this->canFilter($columnName, $columnData)) {
-                    continue;
-                }
-                // user input check
-                if (!$this->canUseProvidedUserInput($this->getRequest()->get($columnName))) {
-                    continue;
-                }
-                // column check. Since the column data is coming from a user query
-                if (!$this->canUseProvidedColumn($columnName, $tableColumns)) {
-                    continue;
-                }
-                $operator = $this->extractFilterOperator($columnName, $columnData)['operator'];
-
-                $this->doFilter($columnName, $columnData, $operator, $this->getRequest()->get($columnName));
             }
         }
     }

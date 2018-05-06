@@ -54,27 +54,6 @@ trait RendersButtons
     abstract public function configureButtons();
 
     /**
-     * Add a button to the grid
-     *
-     * @param $target string the location where the button will be rendered. Needs to be among the `$buttonTargets`
-     * @param $button string the button name. Can be any name
-     * @param $instance GenericButton the button instance
-     *
-     * @return void
-     */
-    public function addButton(string $target, string $button, GenericButton $instance)
-    {
-        if (!in_array($target, $this->buttonTargets)) {
-            throw new InvalidArgumentException("Invalid target supplied. Expects either of => " . json_encode($this->buttonTargets));
-        }
-        $this->buttons = array_merge_recursive($this->buttons, [
-            $target => [
-                $button => $instance,
-            ]
-        ]);
-    }
-
-    /**
      * Sets an array of buttons that would be rendered to the grid
      *
      * @return void
@@ -255,6 +234,22 @@ trait RendersButtons
     }
 
     /**
+     * Check if the grid has any buttons
+     *
+     * @param string $section
+     * @return bool
+     */
+    public function hasButtons(string $section = 'toolbar')
+    {
+        if (!$this->renderButtons) {
+            // rendering disabled
+            return false;
+        }
+        // no buttons on section
+        return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
+    }
+
+    /**
      * Clear the buttons on a specific section
      *
      * @param string $section
@@ -273,22 +268,6 @@ trait RendersButtons
     protected function clearAllButtons()
     {
         $this->buttons = [];
-    }
-
-    /**
-     * Check if the grid has any buttons
-     *
-     * @param string $section
-     * @return bool
-     */
-    public function hasButtons(string $section = 'toolbar')
-    {
-        if (!$this->renderButtons) {
-            // rendering disabled
-            return false;
-        }
-        // no buttons on section
-        return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
     }
 
     /**
@@ -322,6 +301,27 @@ trait RendersButtons
     protected function addToolbarButton(string $button, GenericButton $instance)
     {
         $this->addButton('toolbar', strtolower($button), $instance);
+    }
+
+    /**
+     * Add a button to the grid
+     *
+     * @param $target string the location where the button will be rendered. Needs to be among the `$buttonTargets`
+     * @param $button string the button name. Can be any name
+     * @param $instance GenericButton the button instance
+     *
+     * @return void
+     */
+    public function addButton(string $target, string $button, GenericButton $instance)
+    {
+        if (!in_array($target, $this->buttonTargets)) {
+            throw new InvalidArgumentException("Invalid target supplied. Expects either of => " . json_encode($this->buttonTargets));
+        }
+        $this->buttons = array_merge_recursive($this->buttons, [
+            $target => [
+                $button => $instance,
+            ]
+        ]);
     }
 
     /**

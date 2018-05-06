@@ -48,6 +48,18 @@ class ExportButton extends GenericButton
                 'url' => $this->generateExportUrl('pdf'),
                 'icon' => 'file-pdf-o',
                 'title' => 'export to pdf'
+            ],
+            'html' => [
+                'name' => 'html',
+                'url' => $this->generateExportUrl('html'),
+                'icon' => 'html5',
+                'title' => 'export to html'
+            ],
+            'json' => [
+                'name' => 'json',
+                'url' => $this->generateExportUrl('json'),
+                'icon' => 'file-o',
+                'title' => 'export to json'
             ]
         ];
 

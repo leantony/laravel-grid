@@ -28,7 +28,7 @@ class HandleUserAction
      */
     public function handle(UserActionRequested $event)
     {
-        if(!empty($event->request->query())) {
+        if (!empty($event->request->query())) {
 
             if ($event->request->has($event->grid->getGridSearchParam())) {
                 // search

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 trait GridResources
 {
     use HasGridConfigurations;
-    
+
     /**
      * A query builder instance
      *

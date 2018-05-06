@@ -41,7 +41,7 @@ class GridPaginationHandler
      */
     public function paginate()
     {
-        if($this->getGrid()->gridNeedsSimplePagination()) {
+        if ($this->getGrid()->gridNeedsSimplePagination()) {
 
             return $this->simplePaginate();
         }

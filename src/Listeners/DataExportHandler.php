@@ -11,7 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Leantony\Grid\Filters\DefaultExport;
+use Leantony\Grid\Export\ExcelExport;
+use Leantony\Grid\Export\HtmlExport;
+use Leantony\Grid\Export\JsonExport;
 use Leantony\Grid\GridInterface;
 use Leantony\Grid\GridResources;
 
@@ -75,83 +77,6 @@ class DataExportHandler
     }
 
     /**
-     * Download export data
-     *
-     * @param string $type any of xlsx, xls, csv or pdf
-     * @return Response
-     * @throws \Throwable
-     */
-    public function exportAs($type = 'xlsx')
-    {
-        // prevent export of unknown types
-        if(!in_array($type, $this->getGridExportTypes())) {
-            throw new \InvalidArgumentException("unknown export type of " . $type . ". Valid types are " . json_encode($this->getGridExportTypes()));
-        }
-        $e = new DefaultExport(
-            sprintf('%s report', $this->getGrid()->shortSingularGridName()),
-            $this->getExportableColumns()[1], // columns are at index 1
-            $this->getExportData()->toArray()
-        );
-
-        return Excel::download($e, $this->getFileNameForExport() . '.' . $type);
-    }
-
-    /**
-     * Get the data to be exported
-     *
-     * @return Collection
-     * @throws \Exception
-     */
-    public function getExportData(): Collection
-    {
-        list($pinch, $columns) = $this->getExportableColumns();
-
-        // works on the underlying query instance
-        $values = $this->getQuery()->take($this->getGrid()->getGridMaxExportRows())->get();
-
-        // customize the results
-        $data = $values->map(function ($v) use ($columns) {
-            $data = [];
-            foreach ($columns as $column) {
-                // render as per requested on each column
-                // `processColumns()` would have already taken care of processing the callbacks
-                // so here, we only pass the required arguments
-                if (is_callable($column->data)) {
-                    array_push($data, [$column->name => call_user_func($column->data, $v, $column->key)]);
-                } else {
-                    array_push($data, [$column->name => $v->{$column->key}]);
-                }
-            }
-            // collapse the data by a single level
-            return collect($data)->collapse()->toArray();
-        });
-
-        return $data;
-    }
-
-    /**
-     * Gets the columns to be exported
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public function getColumnsToExport(): array
-    {
-        return $this->getGrid()->getProcessedColumns();
-    }
-
-    /**
-     * Filename for export
-     *
-     * @return string
-     */
-    public function getFileNameForExport(): string
-    {
-        $this->exportFilename = Str::slug($this->getGrid()->getName()) . '-' . time();
-        return $this->exportFilename;
-    }
-
-    /**
      * Check if the user wants to export data
      *
      * @return bool
@@ -159,6 +84,50 @@ class DataExportHandler
     protected function wantsToExport(): bool
     {
         return $this->getRequest()->has($this->getGrid()->getGridExportParam()) && $this->allowsExporting;
+    }
+
+    /**
+     * Download export data
+     *
+     * @param string $type any of an allowed type in configuration
+     * @return Response
+     * @throws \Throwable
+     */
+    public function exportAs($type = 'xlsx')
+    {
+        switch ($type) {
+            case 'pdf':
+            case 'csv':
+            case 'xlsx':
+                {
+                    list($pinch, $columns) = $this->getExportableColumns();
+                    // headings
+                    $headings = $columns->map(function ($col) {
+                        return $col->name;
+                    })->toArray();
+
+                    $exporter = new ExcelExport($this->getQuery(), $pinch, $columns->toArray(), $headings, 'report', function ($data, $columns) {
+                        return call_user_func([$this, 'dataFormatter'], $data, $columns, false);
+                    });
+                    return $exporter->download($this->getFileNameForExport() . '.' . $type);
+                }
+            case 'html':
+                {
+                    return (new HtmlExport())->export($this->getExportData(), [
+                        'exportableColumns' => $this->getExportableColumns()[1],
+                        'fileName' => $this->getFileNameForExport(),
+                        'exportView' => $this->getGridExportView(),
+                    ]);
+                }
+            case 'json':
+                {
+                    return (new JsonExport())->export($this->getExportData(['doNotFormatKeys' => true]), [
+                        'fileName' => $this->getFileNameForExport(),
+                    ]);
+                }
+            default:
+                throw new \InvalidArgumentException("unknown export type");
+        }
     }
 
     /**
@@ -186,5 +155,82 @@ class DataExportHandler
         });
         $this->availableColumnsForExport = [$pinch, $columns];
         return $this->availableColumnsForExport;
+    }
+
+    /**
+     * Gets the columns to be exported
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getColumnsToExport(): array
+    {
+        return $this->getGrid()->getProcessedColumns();
+    }
+
+    /**
+     * Filename for export
+     *
+     * @return string
+     */
+    public function getFileNameForExport(): string
+    {
+        $this->exportFilename = Str::slug($this->getGrid()->getName()) . '-' . time();
+        return $this->exportFilename;
+    }
+
+    /**
+     * Get the data to be exported
+     *
+     * @param array $params
+     * @return Collection
+     * @throws \Exception
+     */
+    public function getExportData(array $params = []): Collection
+    {
+        $useUnformattedKeys = $params['doNotFormatKeys'] ?? false;
+
+        list($pinch, $columns) = $this->getExportableColumns();
+
+        // works on the underlying query instance
+        $values = $this->getQuery()->take($this->getGrid()->getGridMaxExportRows())->get();
+
+        // customize the results
+        $columns = $columns->toArray();
+
+        $data = $values->map(function ($v) use ($columns, $params, $useUnformattedKeys) {
+            return call_user_func([$this, 'dataFormatter'], $v, $columns, $useUnformattedKeys);
+        });
+
+        return $data;
+    }
+
+    /**
+     * Format data for export
+     *
+     * @param mixed $item
+     * @param array $columns
+     * @param boolean $useUnformattedKeys
+     * @return array
+     */
+    protected function dataFormatter($item, array $columns, bool $useUnformattedKeys): array
+    {
+        $data = [];
+        foreach ($columns as $column) {
+            // render as per requested on each column
+            // `processColumns()` would have already taken care of processing the callbacks
+            // so here, we only pass the required arguments
+            if (is_callable($column->data)) {
+                array_push($data, [
+                    $useUnformattedKeys ? $column->key : $column->name => call_user_func($column->data, $item, $column->key)
+                ]);
+            } else {
+                array_push($data, [
+                    $useUnformattedKeys ? $column->key : $column->name => $item->{$column->key}
+                ]);
+            }
+        }
+        // collapse the data by a single level
+        return collect($data)->collapse()->toArray();
     }
 }

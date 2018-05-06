@@ -159,16 +159,40 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * The table name that is matched to the grid
+     * Return a short name for the grid that can be used as a route identifier
      *
-     * @return \Closure
+     * @return string
      */
-    public function getGridDatabaseTable()
+    public function shortSingularGridName(): string
     {
-        $gridName = $this->name;
-        return function () use ($gridName) {
-            return Str::plural(Str::slug($gridName, '_'));
-        };
+        if ($this->shortSingularName === null) {
+            $this->shortSingularName = strtolower(Str::singular($this->getName()));
+        }
+        return $this->shortSingularName;
+    }
+
+    /**
+     * Get the name of the grid. Can be the table name
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Transform the name of the grid, to a short, identifier
+     * Useful for route param names
+     *
+     * @return string
+     */
+    public function transformName()
+    {
+        if ($this->shortGridIdentifier === null) {
+            return Str::slug(Str::singular($this->getName()), '_');
+        }
+        return $this->shortGridIdentifier;
     }
 
     /**
@@ -189,16 +213,48 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Return a short name for the grid that can be used as a route identifier
+     * The table name that is matched to the grid
      *
-     * @return string
+     * @return \Closure
      */
-    public function shortSingularGridName(): string
+    public function getGridDatabaseTable()
     {
-        if ($this->shortSingularName === null) {
-            $this->shortSingularName = strtolower(Str::singular($this->getName()));
+        $gridName = $this->name;
+        return function () use ($gridName) {
+            return Str::plural(Str::slug($gridName, '_'));
+        };
+    }
+
+    /**
+     * Set the columns to be displayed, along with their data
+     *
+     * @return void
+     * @throws \Exception
+     */
+    abstract public function setColumns();
+
+    /**
+     * Set data variables for the grid
+     * This will need to be passed on the the grid view so that they are displayed
+     *
+     * @param array $result
+     * @return void
+     */
+    protected function setGridDataItems(array $result): void
+    {
+        $data = data_get($result, 0);
+        if (is_array($data)) {
+            // an export has been triggered
+            $this->data = $data['data'];
+            $this->exportHandler = $data['exporter'];
+        } else {
+            if ($data === null) {
+                // revert to empty collection
+                $this->data = collect([]);
+            } else {
+                $this->data = $data;
+            }
         }
-        return $this->shortSingularName;
     }
 
     /**
@@ -233,6 +289,16 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
+     * Return the ID of the grid
+     *
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
      * Get the placeholder to use on the search form
      *
      * @return string
@@ -249,38 +315,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
 
         return sprintf('search %s by their %s ...', Str::lower($this->getName()), $placeholder);
     }
-
-    /**
-     * Get the name of the grid. Can be the table name
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Transform the name of the grid, to a short, identifier
-     * Useful for route param names
-     *
-     * @return string
-     */
-    public function transformName()
-    {
-        if ($this->shortGridIdentifier === null) {
-            return Str::slug(Str::singular($this->getName()), '_');
-        }
-        return $this->shortGridIdentifier;
-    }
-
-    /**
-     * Set the columns to be displayed, along with their data
-     *
-     * @return void
-     * @throws \Exception
-     */
-    abstract public function setColumns();
 
     /**
      * Get the data to be rendered on the grid
@@ -378,16 +412,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Return the ID of the grid
-     *
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
      * Override this method and return a callback so that linkable rows are applied
      *
      * @return Closure
@@ -476,29 +500,5 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
             return $this->exportHandler->export();
         }
         return view($viewName, array_merge($data, ['grid' => $this]));
-    }
-
-    /**
-     * Set data variables for the grid
-     * This will need to be passed on the the grid view so that they are displayed
-     *
-     * @param array $result
-     * @return void
-     */
-    protected function setGridDataItems(array $result): void
-    {
-        $data = data_get($result, 0);
-        if (is_array($data)) {
-            // an export has been triggered
-            $this->data = $data['data'];
-            $this->exportHandler = $data['exporter'];
-        } else {
-            if ($data === null) {
-                // revert to empty collection
-                $this->data = collect([]);
-            } else {
-                $this->data = $data;
-            }
-        }
     }
 }
