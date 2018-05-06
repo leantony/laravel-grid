@@ -62,7 +62,7 @@ return [
         ],
 
         /**
-         * Max allowed export rows. The export currently happens in 1 call, so more = slow process
+         * Max allowed export rows. Will apply to json and html export options
          */
         'max_rows' => 5000
     ],
