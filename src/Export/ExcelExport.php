@@ -52,6 +52,7 @@ class ExcelExport implements FromQuery, WithTitle, WithHeadings, WithMapping
      * @param Builder $builder
      * @param array $pinch
      * @param array $columns
+     * @param array $headings
      * @param string $title
      * @param callable $mapperFunction
      */

@@ -148,7 +148,7 @@ class DataExportHandler
             // reject all columns that have been set as not exportable
             $canBeSkipped = !$v->export;
             if (!$canBeSkipped) {
-                // add this to an array to be used below for granular selection
+                // add this to an array to be used for granular filtering of the query
                 $pinch[] = $v->key;
             }
             return $canBeSkipped;

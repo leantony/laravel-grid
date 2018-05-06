@@ -25,12 +25,11 @@
                 @endif
                 <!-- end toolbar buttons -->
                 </div>
-                <hr>
                 <!-- end search form -->
                 <!-- filter form declaration -->
                 <form action="{{ $grid->getSearchRoute() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
                 <!-- grid contents -->
-                <div class="table-responsive">
+                <div class="table-responsive grid-wrapper">
                     <table class="{{ $grid->getClass() }}">
                         <thead>
                         <!-- headers -->
@@ -170,7 +169,7 @@
                 <!-- end grid contents -->
             </div>
             <div class="card-footer">
-            @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'left'])
+            @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'left', 'atFooter' => true])
             <!-- pagination -->
                 @if($grid->wantsPagination())
                     <div class="pull-right">
