@@ -7,35 +7,87 @@
 namespace Leantony\Grid\Export;
 
 use Excel;
-use Illuminate\Support\Collection;
-use Leantony\Grid\Filters\DefaultExport;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ExcelExport implements GridExportInterface
+class ExcelExport implements FromQuery, WithTitle, WithHeadings, WithMapping
 {
-    public function __construct()
+    use Exportable;
+
+    /**
+     * @var Builder
+     */
+    private $query;
+
+    /**
+     * @var array
+     */
+    private $pinch;
+
+    /**
+     * @var array
+     */
+    private $columns;
+
+    /**
+     * @var string
+     */
+    private $title;
+    /**
+     * @var callable
+     */
+    private $mapperFunction;
+
+    /**
+     * @var array
+     */
+    private $headings;
+
+    /**
+     * ExcelExport constructor.
+     * @param Builder $builder
+     * @param array $pinch
+     * @param array $columns
+     * @param string $title
+     * @param callable $mapperFunction
+     */
+    public function __construct($builder, array $pinch, array $columns, array $headings, string $title, callable $mapperFunction)
     {
+        $this->query = $builder;
+        $this->pinch = $pinch;
+        $this->columns = $columns;
+        $this->headings = $headings;
+        $this->title = $title;
+        $this->mapperFunction = $mapperFunction;
+    }
+
+    public function query()
+    {
+        return $this->query->select($this->pinch);
+    }
+
+    public function map($data): array
+    {
+        return call_user_func($this->mapperFunction, $data, $this->columns, false);
     }
 
     /**
-     * Export data from the grid
-     *
-     * @param Collection $data
-     * @param array $args
-     * @return mixed
+     * @return string
      */
-    public function export($data, array $args)
+    public function title(): string
     {
-        $fileName = $args['fileName'];
-        $gridName = $args['gridShortName'];
-        $exportableColumns = $args['exportableColumns'];
-        $type = $args['exportType'];
+        return $this->title;
+    }
 
-        $exporter = new DefaultExport(
-            sprintf('%s report', $gridName),
-            $exportableColumns,
-            $data->toArray()
-        );
-
-        return Excel::download($exporter, $fileName . '.' . $type);
+    /**
+     * @return array
+     */
+    public function headings(): array
+    {
+        return $this->headings;
     }
 }

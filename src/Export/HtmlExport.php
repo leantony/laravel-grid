@@ -7,7 +7,6 @@
 namespace Leantony\Grid\Export;
 
 use Illuminate\Support\Collection;
-use Leantony\Grid\HasGridConfigurations;
 
 class HtmlExport implements GridExportInterface
 {

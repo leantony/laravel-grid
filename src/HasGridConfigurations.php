@@ -78,6 +78,11 @@ trait HasGridConfigurations
     private $exportParam;
 
     /**
+     * @var string
+     */
+    private $exportView;
+
+    /**
      * Allowed document exports
      *
      * @var array
@@ -242,20 +247,20 @@ trait HasGridConfigurations
         return $this->getGridPaginationFunction() === 'simple';
     }
 
-    public function getGridPaginationPageSize(): int
-    {
-        if ($this->paginationSize === null) {
-            $this->paginationSize = config('grids.pagination.default_size', 15);
-        }
-        return $this->paginationSize;
-    }
-
     public function getGridPaginationFunction(): string
     {
         if ($this->paginationType === null) {
             $this->paginationType = config('grids.pagination.type', 'default');
         }
         return $this->paginationType;
+    }
+
+    public function getGridPaginationPageSize(): int
+    {
+        if ($this->paginationSize === null) {
+            $this->paginationSize = config('grids.pagination.default_size', 15);
+        }
+        return $this->paginationSize;
     }
 
     public function getGridSearchParam(): string
@@ -303,6 +308,14 @@ trait HasGridConfigurations
         return $this->allowedExportTypes;
     }
 
+    public function getGridExportView(): string
+    {
+        if ($this->exportView === null) {
+            $this->exportView = config('grid.export.view', 'leantony::reports.report');
+        }
+        return $this->exportView;
+    }
+
     public function getGridMaxExportRows(): int
     {
         if ($this->maxExportRows === null) {
@@ -311,8 +324,9 @@ trait HasGridConfigurations
         return $this->maxExportRows;
     }
 
-    public function getGridColumnsToSkipOnGeneration() {
-        if($this->columnsToSkipOnGeneratingGrid === null) {
+    public function getGridColumnsToSkipOnGeneration()
+    {
+        if ($this->columnsToSkipOnGeneratingGrid === null) {
             $this->columnsToSkipOnGeneratingGrid = config('grid.generation.columns_to_skip', [
                 'password',
                 'password_hash',
@@ -321,8 +335,9 @@ trait HasGridConfigurations
         return $this->columnsToSkipOnGeneratingGrid;
     }
 
-    public function getGridNamespace() {
-        if($this->gridNamespace === null) {
+    public function getGridNamespace()
+    {
+        if ($this->gridNamespace === null) {
             $this->gridNamespace = config('grid.generation.namespace', "App\\Grids");
         }
         return $this->gridNamespace;
