@@ -31,7 +31,8 @@
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <li class="page-item"><a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next" data-trigger-pjax="1"
+            <li class="page-item"><a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next"
+                                     data-trigger-pjax="1"
                                      data-pjax-target="#{{ $pjaxTarget }}">&rsaquo;</a></li>
         @else
             <li class="page-item disabled"><span class="page-link">&rsaquo;</span></li>

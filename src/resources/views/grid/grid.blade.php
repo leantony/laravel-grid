@@ -41,7 +41,8 @@
 
                                     @if($sort = $column->sortable)
                                         @if(is_callable($grid->getSortUrl()))
-                                            <th scope="col" class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
+                                            <th scope="col"
+                                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                                 title="click to sort by {{ $column->key }}">
                                                 <a data-trigger-pjax="1" class="data-sort"
                                                    href="{{ call_user_func($grid->getSortUrl(), $column->key) }}">
@@ -49,7 +50,8 @@
                                                 </a>
                                             </th>
                                         @else
-                                            <th scope="col" class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
+                                            <th scope="col"
+                                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                                 title="click to sort by {{ $column->key }}">
                                                 <a data-trigger-pjax="1" class="data-sort"
                                                    href="{{ route($grid->getSortUrl(), add_query_param([$this->getSortParam() => $column->key])) }}">
@@ -82,7 +84,8 @@
                                             </th>
                                         @endif
                                     @else
-                                        <th scope="col" class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
+                                        <th scope="col"
+                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             {{ $column->name }}
                                         </th>
                                     @endif

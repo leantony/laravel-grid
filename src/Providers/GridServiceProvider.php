@@ -6,9 +6,9 @@
 
 namespace Leantony\Grid\Providers;
 
+use Event;
 use Illuminate\Support\ServiceProvider;
 use Leantony\Grid\Commands\GenerateGrid;
-use Event;
 
 class GridServiceProvider extends ServiceProvider
 {

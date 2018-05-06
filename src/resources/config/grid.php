@@ -54,9 +54,11 @@ return [
          * Allowed export types
          */
         'allowed_types' => [
-            // 'pdf',
+            'pdf',
             'xlsx', // excel
-            'csv' // csv
+            'csv', // csv
+            'json',
+            'html',
         ],
 
         /**
