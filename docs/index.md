@@ -9,7 +9,7 @@ This laravel package allows rendering of data via a tabular format (grid). The g
 + [Date picker](https://github.com/dangrossman/daterangepicker)
 > The one above supports bootstrap 3 or 4 and comes with a wide range of functionality which you'll find handy
 + Font awesome
-+ Pjax middleware. E.g https://gist.github.com/JeffreyWay/8526696b6f29201c4e33
++ Pjax middleware. E.g [this one](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 > You can also use [this package](https://github.com/spatie/laravel-pjax)
 + [Block UI](https://github.com/malsup/blockui)
 
