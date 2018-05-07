@@ -40,18 +40,17 @@ For `bootstrap 4`, please run
 ```php
 composer install leantony/laravel-grid "2.0.x-dev"
 ```
-> Bootstrap 4 support on this package is currently unstable though (still in development), so use with caution.
 
-You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid is styled appropiately.
+You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid is styled appropriately.
 
 ```php
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
 The css and js will be copied to `public/vendor/leantony/grid`, while the resources will be copied to `resources/vendor/leantony/grid`.
 
-> You can publish the assets and views separately by passing the `--tag` argument to the command. For the argument values, try `assets`, `views` for js|css assets, views respectively.
+> You can publish the assets and views separately by passing the `--tag` argument to the command. 
+For the argument values, try `assets`, `views`, `config` for js|css assets, views and config respectively.
 
-You can also run `php artisan vendor:publish` and select the provider index by the name `Leantony\Grid\Providers\ServiceProvider`
 
 When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
 ```php
@@ -211,14 +210,6 @@ To enable javascript utilities such as Pjax, ensure that you have their dependen
 ```
 
 To customize the grid, check out [the customization section](https://github.com/leantony/laravel-grid/wiki/Customization). Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new).
-
-# TODO's
-+ Add unit tests (in progress. The `passing` badge was triggered by running a dummy unit test actually. Real tests will soon be added).
-+ Completion of documentation (in progress).
-+ Add more customization options to published config file. Stuff like pagination, filters, buttons, etc
-+ Toggle between sorting in ascending and descending order.
-+ Add ability to culminate grid rows. E.g displaying a total of some sort.
-+ Add ability to have a checkbox that can be used to select multiple items, after which an action can be done. E.g deleting mutiple items.
 
 # More docs
 For more docs, please checkout the [wiki](https://github.com/leantony/laravel-grid/wiki).
