@@ -4,21 +4,6 @@
 
 This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
 
-# Features
-+ Grid generation via a laravel command.
-+ Full export functionality - (to pdf, csv, and excel. Relies on the `maatwebsite/excel` package)
-+ Bootstrap modal support
-+ Customizable column filters (supports text, date, date-range, dropdowns)
-+ Adding of dynamic column names (that do not exist on the actual eloquent models)
-+ Raw HTML support for the column data
-+ Customizable global search
-+ Attribute sorting
-+ Dynamic addition, removal and disabling of buttons
-+ Dynamic manipulation of row and column HTML classes
-+ pjax support
-+ Pagination
-
-
 ## Requirements
 The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware.](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 
@@ -41,12 +26,11 @@ For `bootstrap 4`, please run
 composer install leantony/laravel-grid "2.0.x-dev"
 ```
 
-You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid is styled appropriately.
+You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid works appropriately.
 
 ```php
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
-The css and js will be copied to `public/vendor/leantony/grid`, while the resources will be copied to `resources/vendor/leantony/grid`.
 
 > You can publish the assets and views separately by passing the `--tag` argument to the command. 
 For the argument values, try `assets`, `views`, `config` for js|css assets, views and config respectively.
@@ -103,6 +87,8 @@ class UsersController extends Controller
     }
 }
 ```
+Just make sure that you do not call `->get()` on the query.
+
 > If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
 ```php
      /**
@@ -115,7 +101,6 @@ class UsersController extends Controller
         $this->app->bind(UsersGridInterface::class, UsersGrid::class);
     }
 ```
-
 
 Otherwise, you can also instantiate the grid class like any other class then inject any constructor dependencies you might need.
 ```php
@@ -154,8 +139,7 @@ If you need to pass extra data to the view specified, you just need to pass the 
     }
 ```
 
-
-For eloquent relationships, its basically the same approach. **Just ensure that you pass in an instance of the query builder**. Like this;
+For eloquent relationships, its basically the same approach. Like this;
 ```php
 class UsersController extends Controller
 {
@@ -176,9 +160,10 @@ class UsersController extends Controller
     }
 }
 ```
+And once again, just make sure that you do not call `->get()` on the query.
 
 ### Adding assets
-Be sure to also include the grid's javascript and css assets on your layout. An example is as shown below;
+Be sure to also include the necessary javascript and css assets on your layout. An example layout is as shown below;
 ```html
 <!-- sample laravel layout -->
 <!doctype html>
@@ -191,7 +176,7 @@ Be sure to also include the grid's javascript and css assets on your layout. An 
     <title>My application</title>
     <!-- font awesome (required) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
-    <!-- progress bar (not required) -->
+    <!-- progress bar (not required, but cool) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.css" />
     <!-- bootstrap (required) -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" />
@@ -238,14 +223,14 @@ Be sure to also include the grid's javascript and css assets on your layout. An 
 <!-- required to supply js functionality for the grid -->
 <script src="{{ asset('vendor/leantony/grid/js/grid.js') }}"></script>
 <script>
-    // setup ajax
+    // send csrf token (see https://laravel.com/docs/5.6/csrf#csrf-x-csrf-token) - this is required
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    // for the progress bar
+    // for the progress bar (required for progress bar functionality)
     $(document).on('pjax:start', function () {
         NProgress.start();
     });
@@ -253,7 +238,7 @@ Be sure to also include the grid's javascript and css assets on your layout. An 
         NProgress.done();
     });
 </script>
-<!-- entry point for all scripts injected by the generated grids -->
+<!-- entry point for all scripts injected by the generated grids (required) -->
 @stack('grid_js')
 </body>
 </html>
