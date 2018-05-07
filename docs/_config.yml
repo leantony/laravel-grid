@@ -1,1 +1,3 @@
 theme: jekyll-theme-cayman
+title: laravel grid - A grid view for laravel, inspired by the yii2 grid widget
+description: Simple, customizable, pjax ready bootstrap styled grid view for the laravel framework, inspired by the yii2 gridview widget. For laravel 5.5 and above.
