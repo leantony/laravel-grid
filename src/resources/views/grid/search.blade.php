@@ -4,15 +4,12 @@
           data-{{ $k }}={{ $v }}
             @endforeach
     >
-        <div id="custom-search-input">
-            <div class="input-group col-md-12">
-                <input type="text" class="form-control" name="{{ $name }}"
-                       placeholder="{{ $placeholder }}" value="{{ request($name) }}" required="required"/>
-                <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">
-                            <i class="glyphicon glyphicon-search"></i>
-                        </button>
-                    </span>
+        <div class="input-group mb-12">
+            <input type="text" class="form-control" name="{{ $name }}"
+                   placeholder="{{ $placeholder }}" value="{{ request($name) }}" required="required"
+                   aria-label="search">
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="submit"><i class="fa fa-search"></i></button>
             </div>
         </div>
     </form>

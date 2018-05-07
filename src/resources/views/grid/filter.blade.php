@@ -9,10 +9,10 @@
         </th>
     @endif
     @if($loop->last)
-        <th>
+        <th class="{{ $grid->getGridFilterFieldColumnClass() }}">
             <div class="pull-right">
                 <button type="submit"
-                        class="btn btn-default"
+                        class="btn btn-outline-primary grid-filter-button"
                         title="filter data"
                         form="{{ $formId }}">Filter&nbsp;<i class="fa fa-filter"></i>
                 </button>

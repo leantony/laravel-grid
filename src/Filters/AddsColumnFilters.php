@@ -6,7 +6,6 @@
 
 namespace Leantony\Grid\Filters;
 
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
@@ -29,32 +28,36 @@ trait AddsColumnFilters
         $filterInstance = null;
         if (!$filterType instanceof GenericFilter) {
             switch ($filterType) {
-                case 'date': {
-                    $filterInstance = $this->addDateFilter(
-                        $filterEnabled, $columnName, $filterDataAttributes, $filterClass
-                    );
-                    break;
-                }
-                case 'daterange': {
-                    // uses https://github.com/dangrossman/bootstrap-daterangepicker.git
-                    $filterInstance = $this->addTextFilter(
-                        $filterEnabled, $columnName, $filterClass . ' date-range'
-                    );
-                    break;
-                }
-                case 'text': {
-                    // use text for any other filter type. E.g a custom one you might need
-                    $filterInstance = $this->addTextFilter(
-                        $filterEnabled, $columnName, $filterClass
-                    );
-                    break;
-                }
-                case 'select': {
-                    $filterInstance = $this->addSelectFilter(
-                        $filterEnabled, $columnName, $columnData['data'] ?? []
-                    );
-                    break;
-                }
+                case 'date':
+                    {
+                        $filterInstance = $this->addDateFilter(
+                            $filterEnabled, $columnName, $filterDataAttributes, $filterClass
+                        );
+                        break;
+                    }
+                case 'daterange':
+                    {
+                        // uses https://github.com/dangrossman/bootstrap-daterangepicker.git
+                        $filterInstance = $this->addTextFilter(
+                            $filterEnabled, $columnName, $filterClass . ' date-range'
+                        );
+                        break;
+                    }
+                case 'text':
+                    {
+                        // use text for any other filter type. E.g a custom one you might need
+                        $filterInstance = $this->addTextFilter(
+                            $filterEnabled, $columnName, $filterClass
+                        );
+                        break;
+                    }
+                case 'select':
+                    {
+                        $filterInstance = $this->addSelectFilter(
+                            $filterEnabled, $columnName, $columnData['data'] ?? []
+                        );
+                        break;
+                    }
                 default:
                     throw new InvalidArgumentException("Unknown filterType type " . $filterType . " for " . $columnName);
             }
@@ -91,6 +94,16 @@ trait AddsColumnFilters
             'dataAttributes' => $filterDataAttributes
         ]);
         return $filter;
+    }
+
+    /**
+     * Get id for the filter form
+     *
+     * @return string
+     */
+    public function getFilterFormId()
+    {
+        return $this->getId() . '-' . 'filter';
     }
 
     /**

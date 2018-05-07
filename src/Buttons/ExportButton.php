@@ -3,10 +3,15 @@
  * Copyright (c) 2018.
  * @author Antony [leantony] Chacha
  */
+
 namespace Leantony\Grid\Buttons;
+
+use Leantony\Grid\HasGridConfigurations;
 
 class ExportButton extends GenericButton
 {
+    use HasGridConfigurations;
+
     public $position = 3;
 
     /**
@@ -23,25 +28,46 @@ class ExportButton extends GenericButton
      */
     public function getExtraParams()
     {
-        return [
-            'exportOptions' => [
-                'excel' => [
-                    'url' => $this->generateExportUrl('xlsx'),
-                    'icon' => 'file-excel-o',
-                    'title' => 'export to excel'
-                ],
-                'csv' => [
-                    'url' => $this->generateExportUrl('csv'),
-                    'icon' => 'file',
-                    'title' => 'export to csv'
-                ],
-                'pdf' => [
-                    'url' => $this->generateExportUrl('pdf'),
-                    'icon' => 'file-pdf-o',
-                    'title' => 'export to pdf'
-                ]
+        $availableExportOptions = $this->getGridExportTypes();
+
+        $createdOptions = [
+            'xlsx' => [
+                'name' => 'excel',
+                'url' => $this->generateExportUrl('xlsx'),
+                'icon' => 'file-excel-o',
+                'title' => 'export to excel'
+            ],
+            'csv' => [
+                'name' => 'csv',
+                'url' => $this->generateExportUrl('csv'),
+                'icon' => 'file',
+                'title' => 'export to csv'
+            ],
+            'pdf' => [
+                'name' => 'pdf',
+                'url' => $this->generateExportUrl('pdf'),
+                'icon' => 'file-pdf-o',
+                'title' => 'export to pdf'
+            ],
+            'html' => [
+                'name' => 'html',
+                'url' => $this->generateExportUrl('html'),
+                'icon' => 'html5',
+                'title' => 'export to html'
+            ],
+            'json' => [
+                'name' => 'json',
+                'url' => $this->generateExportUrl('json'),
+                'icon' => 'file-o',
+                'title' => 'export to json'
             ]
         ];
+
+        $exportOptions = collect($createdOptions)->reject(function ($option, $key) use ($availableExportOptions) {
+            return !in_array($key, $availableExportOptions);
+        })->toArray();
+
+        return compact('exportOptions');
     }
 
     /**

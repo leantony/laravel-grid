@@ -4,21 +4,6 @@
 
 This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
 
-# Features
-+ Grid generation via a laravel command.
-+ Full export functionality - (to pdf, csv, and excel. Relies on the `maatwebsite/excel` package)
-+ Bootstrap modal support
-+ Customizable column filters (supports text, date, date-range, dropdowns)
-+ Adding of dynamic column names (that do not exist on the actual eloquent models)
-+ Raw HTML support for the column data
-+ Customizable global search
-+ Attribute sorting
-+ Dynamic addition, removal and disabling of buttons
-+ Dynamic manipulation of row and column HTML classes
-+ pjax support
-+ Pagination
-
-
 ## Requirements
 The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware.](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 
@@ -40,18 +25,16 @@ For `bootstrap 4`, please run
 ```php
 composer install leantony/laravel-grid "2.0.x-dev"
 ```
-> Bootstrap 4 support on this package is currently unstable though (still in development), so use with caution.
 
-You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid is styled appropiately.
+You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid works appropriately.
 
 ```php
 php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
-The css and js will be copied to `public/vendor/leantony/grid`, while the resources will be copied to `resources/vendor/leantony/grid`.
 
-> You can publish the assets and views separately by passing the `--tag` argument to the command. For the argument values, try `assets`, `views` for js|css assets, views respectively.
+> You can publish the assets and views separately by passing the `--tag` argument to the command. 
+For the argument values, try `assets`, `views`, `config` for js|css assets, views and config respectively.
 
-You can also run `php artisan vendor:publish` and select the provider index by the name `Leantony\Grid\Providers\ServiceProvider`
 
 When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
 ```php
@@ -69,6 +52,8 @@ php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" 
 
 
 ## Usage
+
+### creating the grid
 A laravel command is available to make it easy to create grids. 
 Once installed, just run the command:
 ```php
@@ -102,6 +87,8 @@ class UsersController extends Controller
     }
 }
 ```
+Just make sure that you do not call `->get()` on the query.
+
 > If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
 ```php
      /**
@@ -114,7 +101,6 @@ class UsersController extends Controller
         $this->app->bind(UsersGridInterface::class, UsersGrid::class);
     }
 ```
-
 
 Otherwise, you can also instantiate the grid class like any other class then inject any constructor dependencies you might need.
 ```php
@@ -153,8 +139,7 @@ If you need to pass extra data to the view specified, you just need to pass the 
     }
 ```
 
-
-For eloquent relationships, its basically the same approach. **Just ensure that you pass in an instance of the query builder**. Like this;
+For eloquent relationships, its basically the same approach. Like this;
 ```php
 class UsersController extends Controller
 {
@@ -175,50 +160,100 @@ class UsersController extends Controller
     }
 }
 ```
+And once again, just make sure that you do not call `->get()` on the query.
 
-Then display the grid on your view like this;
+### Adding assets
+Be sure to also include the necessary javascript and css assets on your layout. An example layout is as shown below;
+```html
+<!-- sample laravel layout -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My application</title>
+    <!-- font awesome (required) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+    <!-- progress bar (not required, but cool) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.css" />
+    <!-- bootstrap (required) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" />
+    <!-- date picker (required if you need date picker & date range filters) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <!-- grid's css (required) -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leantony/grid/css/grid.css') }}" />
+</head>
+<body>
+
+<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="navbar-brand" href="/">My appliation</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="container" style="margin-bottom: 100px;">
+    <div class="row">
+        @yield('content')
+    </div>
+</div>
+
+<!-- modal container (required if you need to render dynamic bootstrap modals) -->
+@include('leantony::modal.container')
+
+<!-- progress bar js (not required, but cool) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+<!-- moment js (required by datepicker library) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+<!-- jquery (required) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- popper js (required by bootstrap) -->
+<script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
+<!-- bootstrap js (required) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<!-- pjax js (required) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+<!-- block ui (block ui when doing an ajax request - not required, but cool) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+<!-- datepicker js (required for datepickers) -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<!-- required to supply js functionality for the grid -->
+<script src="{{ asset('vendor/leantony/grid/js/grid.js') }}"></script>
+<script>
+    // send csrf token (see https://laravel.com/docs/5.6/csrf#csrf-x-csrf-token) - this is required
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // for the progress bar (required for progress bar functionality)
+    $(document).on('pjax:start', function () {
+        NProgress.start();
+    });
+    $(document).on('pjax:end', function () {
+        NProgress.done();
+    });
+</script>
+<!-- entry point for all scripts injected by the generated grids (required) -->
+@stack('grid_js')
+</body>
+</html>
+```
+
+### Rendering the grid
+To display your grid, simply add this to your view:
 ```php
 {!! $grid !!}
 ```
 
-You should see something like this (see the image below). Feel free to check out the [sample app](http://laravel-grid.herokuapp.com). Also for reference, its source code is [here](https://github.com/leantony/laravel-grid-app)
-
-
-![sample](docs/sample.png)
-
-
-To enable javascript utilities such as Pjax, ensure that you have their dependencies included on your page/layout. Once you have done that, ensure that you have a `@push('grid_js')` section on your view/layout, just after the required javascript dependencies. This is the point where the grid's javscript will be injected. An example is as shown below;
-```php
-
-    <!-- dependencies e.g jquery, pjax, bootstrap js come here -->
-    
-    <!-- load the grid's javascipt -->
-    <script src="{{ asset('vendor/leantony/grid/js/grid.js') }}"></script>
-    <script>
-        // setup ajax. This is required, so that the CSRF token is sent during AJAX requests
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-    </script>
-    <!-- the initialization javascript for any of the grid(s) you create will be injected here. Having this will ensure that the script is executed after it's dependencies have been loaded. -->
-    @stack('grid_js')
-```
-> Just make sure that the `meta` element with the name `csrf-token` is available on your layout/blade view. E.g
-```html
-<meta name="csrf-token" content="{{ csrf_token() }}">
-```
-
+# Further customizations
 To customize the grid, check out [the customization section](https://github.com/leantony/laravel-grid/wiki/Customization). Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new).
-
-# TODO's
-+ Add unit tests (in progress. The `passing` badge was triggered by running a dummy unit test actually. Real tests will soon be added).
-+ Completion of documentation (in progress).
-+ Add more customization options to published config file. Stuff like pagination, filters, buttons, etc
-+ Toggle between sorting in ascending and descending order.
-+ Add ability to culminate grid rows. E.g displaying a total of some sort.
-+ Add ability to have a checkbox that can be used to select multiple items, after which an action can be done. E.g deleting mutiple items.
 
 # More docs
 For more docs, please checkout the [wiki](https://github.com/leantony/laravel-grid/wiki).
+
+> The docs linked in the wiki may only apply to version 1.0, so please bear with me as I update them progressively.

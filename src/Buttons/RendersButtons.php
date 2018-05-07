@@ -54,27 +54,6 @@ trait RendersButtons
     abstract public function configureButtons();
 
     /**
-     * Add a button to the grid
-     *
-     * @param $target string the location where the button will be rendered. Needs to be among the `$buttonTargets`
-     * @param $button string the button name. Can be any name
-     * @param $instance GenericButton the button instance
-     *
-     * @return void
-     */
-    public function addButton(string $target, string $button, GenericButton $instance)
-    {
-        if (!in_array($target, $this->buttonTargets)) {
-            throw new InvalidArgumentException("Invalid target supplied. Expects either of => " . json_encode($this->buttonTargets));
-        }
-        $this->buttons = array_merge_recursive($this->buttons, [
-            $target => [
-                $button => $instance,
-            ]
-        ]);
-    }
-
-    /**
      * Sets an array of buttons that would be rendered to the grid
      *
      * @return void
@@ -145,6 +124,7 @@ trait RendersButtons
             'pjaxEnabled' => true,
             'position' => 2,
             'icon' => 'fa-refresh',
+            'class' => 'btn btn-primary',
             'gridId' => $this->id,
             'url' => $this->getIndexRouteLink(),
             'type' => 'toolbar',
@@ -166,7 +146,7 @@ trait RendersButtons
         return (new ExportButton([
             'name' => 'Export',
             'icon' => 'fa-download',
-            'class' => 'btn btn-default',
+            'class' => 'btn btn-secondary',
             'title' => 'export data',
             'renderCustom' => function ($data) {
                 return view('leantony::grid.buttons.export', $data)->render();
@@ -176,7 +156,7 @@ trait RendersButtons
             'exportRoute' => $this->getIndexRouteLink(),
             'renderIf' => function () {
                 // only render the export button if `$allowsExporting` is set to true
-                return in_array('export', $this->buttonsToGenerate) || $this->allowsExporting;
+                return in_array('export', $this->buttonsToGenerate);
             }
         ]));
     }
@@ -193,7 +173,7 @@ trait RendersButtons
             'name' => 'View',
             'icon' => 'fa-eye',
             'position' => 1,
-            'class' => 'btn btn-primary btn-xs',
+            'class' => 'btn btn-outline-primary btn-sm grid-row-button',
             'showModal' => true,
             'gridId' => $this->id,
             'type' => 'row',
@@ -219,7 +199,7 @@ trait RendersButtons
             'gridId' => $this->id,
             'name' => 'Delete',
             'position' => 2,
-            'class' => 'data-remote btn btn-danger btn-xs btn-grid-row',
+            'class' => 'data-remote grid-row-button btn btn-outline-danger btn-sm',
             'icon' => 'fa-trash',
             'type' => 'row',
             'title' => 'delete record',
@@ -254,6 +234,22 @@ trait RendersButtons
     }
 
     /**
+     * Check if the grid has any buttons
+     *
+     * @param string $section
+     * @return bool
+     */
+    public function hasButtons(string $section = 'toolbar')
+    {
+        if (!$this->renderButtons) {
+            // rendering disabled
+            return false;
+        }
+        // no buttons on section
+        return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
+    }
+
+    /**
      * Clear the buttons on a specific section
      *
      * @param string $section
@@ -272,32 +268,6 @@ trait RendersButtons
     protected function clearAllButtons()
     {
         $this->buttons = [];
-    }
-
-    /**
-     * Check if the grid has any buttons
-     *
-     * @param string $section
-     * @return bool
-     */
-    public function hasButtons(string $section = 'toolbar')
-    {
-        if (!$this->renderButtons) {
-            // rendering disabled
-            return false;
-        }
-        // no buttons on section
-        return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
-    }
-
-    /**
-     * Return the view used to display the search form
-     *
-     * @return string
-     */
-    public function getSearchView(): string
-    {
-        return 'leantony::grid.search';
     }
 
     /**
@@ -331,6 +301,27 @@ trait RendersButtons
     protected function addToolbarButton(string $button, GenericButton $instance)
     {
         $this->addButton('toolbar', strtolower($button), $instance);
+    }
+
+    /**
+     * Add a button to the grid
+     *
+     * @param $target string the location where the button will be rendered. Needs to be among the `$buttonTargets`
+     * @param $button string the button name. Can be any name
+     * @param $instance GenericButton the button instance
+     *
+     * @return void
+     */
+    public function addButton(string $target, string $button, GenericButton $instance)
+    {
+        if (!in_array($target, $this->buttonTargets)) {
+            throw new InvalidArgumentException("Invalid target supplied. Expects either of => " . json_encode($this->buttonTargets));
+        }
+        $this->buttons = array_merge_recursive($this->buttons, [
+            $target => [
+                $button => $instance,
+            ]
+        ]);
     }
 
     /**

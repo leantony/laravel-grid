@@ -62,7 +62,7 @@ class GenericButton implements Htmlable
      *
      * @var string
      */
-    public $class = 'btn btn-default';
+    public $class = 'btn btn-info';
 
     /**
      * The icon to be displayed, if any
@@ -162,24 +162,6 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @return bool
-     */
-    public function isShowModal(): bool
-    {
-        return $this->showModal;
-    }
-
-    /**
-     * @param bool $showModal
-     * @return GenericButton
-     */
-    public function setShowModal(bool $showModal): GenericButton
-    {
-        $this->showModal = $showModal;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getType(): string
@@ -249,24 +231,6 @@ class GenericButton implements Htmlable
     public function setName(string $name): GenericButton
     {
         $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClass(): string
-    {
-        return $this->class;
-    }
-
-    /**
-     * @param string $class
-     * @return GenericButton
-     */
-    public function setClass(string $class): GenericButton
-    {
-        $this->class = $class;
         return $this;
     }
 
@@ -396,30 +360,6 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * Specify the data to be sent to the view
-     *
-     * @param array $params
-     * @return array
-     */
-    protected function compactData($params)
-    {
-        foreach (array_merge($params, $this->getExtraParams()) as $key => $value) {
-            $this->__set($key, $value);
-        }
-        return get_object_vars($this);
-    }
-
-    /**
-     * Allow extra parameters to be added on this object
-     *
-     * @return array
-     */
-    public function getExtraParams()
-    {
-        return [];
-    }
-
-    /**
      * @return array
      */
     public function getDataAttributes(): array
@@ -460,6 +400,66 @@ class GenericButton implements Htmlable
     {
         $this->gridId = $gridId;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShowModal(): bool
+    {
+        return $this->showModal;
+    }
+
+    /**
+     * @param bool $showModal
+     * @return GenericButton
+     */
+    public function setShowModal(bool $showModal): GenericButton
+    {
+        $this->showModal = $showModal;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClass(): string
+    {
+        return $this->class;
+    }
+
+    /**
+     * @param string $class
+     * @return GenericButton
+     */
+    public function setClass(string $class): GenericButton
+    {
+        $this->class = $class;
+        return $this;
+    }
+
+    /**
+     * Specify the data to be sent to the view
+     *
+     * @param array $params
+     * @return array
+     */
+    protected function compactData($params)
+    {
+        foreach (array_merge($params, $this->getExtraParams()) as $key => $value) {
+            $this->__set($key, $value);
+        }
+        return get_object_vars($this);
+    }
+
+    /**
+     * Allow extra parameters to be added on this object
+     *
+     * @return array
+     */
+    public function getExtraParams()
+    {
+        return [];
     }
 
     /**

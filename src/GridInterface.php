@@ -8,7 +8,6 @@ namespace Leantony\Grid;
 
 use Closure;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface GridInterface
@@ -31,7 +30,7 @@ interface GridInterface
     /**
      * Get the data
      *
-     * @return Paginator|LengthAwarePaginator|Collection|array
+     * @return Paginator|Collection|array
      */
     public function getData();
 
@@ -42,6 +41,14 @@ interface GridInterface
      * @return string
      */
     public function render();
+
+    /**
+     * Render the search form on the grid
+     *
+     * @return string
+     * @throws \Throwable
+     */
+    public function renderSearchForm();
 
     /**
      * Pass the grid on to the user defined view e.g an index page, along with any data that may be required
@@ -88,4 +95,12 @@ interface GridInterface
      * @return string
      */
     public function getClass(): string;
+
+    /**
+     * Returns a closure that will be executed to apply a class for each row on the grid
+     * The closure takes two arguments - `name` of grid, and `item` being iterated upon
+     *
+     * @return Closure
+     */
+    public function getRowCssStyle(): Closure;
 }

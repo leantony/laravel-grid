@@ -31,7 +31,6 @@
     "illuminate/pagination": "~5.5"
   },
   "suggest": {
-    "avengers/bootforms": "For rapid bootstrap form generation",
     "maatwebsite/excel": "For exporting grid data as excel (~3.0)",
     "spatie/laravel-pjax": "For pjax support on the server side"
   },
@@ -47,7 +46,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Leantony\\Grid\\Providers\\ServiceProvider"
+        "Leantony\\Grid\\Providers\\GridServiceProvider"
       ]
     }
   },
