@@ -1,4 +1,4 @@
-Live demo: http://laravel-grid.herokuapp.com/
+Live demo: (here)[http://laravel-grid.herokuapp.com/]
 
 This laravel package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Most of the functionality is inspired by the yii2's framework's gridview widget.
 
