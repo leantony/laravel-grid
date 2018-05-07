@@ -230,7 +230,7 @@ class DataExportHandler
                 ]);
             }
         }
-        // collapse the data by a single level
+        // collapse the data to a 1d array
         return collect($data)->collapse()->toArray();
     }
 }
