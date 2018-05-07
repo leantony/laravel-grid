@@ -255,3 +255,5 @@ To customize the grid, check out [the customization section](https://github.com/
 
 # More docs
 For more docs, please checkout the [wiki](https://github.com/leantony/laravel-grid/wiki).
+
+> The docs linked in the wiki may only apply to version 1.0, so please bear with me as I update them progressively.
