@@ -144,12 +144,12 @@ class DataExportHandler
 
         $pinch = [];
         $availableColumns = $this->getColumnsToExport();
-        $columns = collect($availableColumns)->reject(function ($v) use (&$pinch) {
+        $columns = collect($availableColumns)->reject(function ($column) use (&$pinch) {
             // reject all columns that have been set as not exportable
-            $canBeSkipped = !$v->export;
+            $canBeSkipped = !$column->export;
             if (!$canBeSkipped) {
                 // add this to an array to be used for granular filtering of the query
-                $pinch[] = $v->key;
+                $pinch[] = $column->key;
             }
             return $canBeSkipped;
         });
@@ -198,8 +198,8 @@ class DataExportHandler
         // customize the results
         $columns = $columns->toArray();
 
-        $data = $values->map(function ($v) use ($columns, $params, $useUnformattedKeys) {
-            return call_user_func([$this, 'dataFormatter'], $v, $columns, $useUnformattedKeys);
+        $data = $values->map(function ($value) use ($columns, $params, $useUnformattedKeys) {
+            return call_user_func([$this, 'dataFormatter'], $value, $columns, $useUnformattedKeys);
         });
 
         return $data;
@@ -221,13 +221,13 @@ class DataExportHandler
             // `processColumns()` would have already taken care of processing the callbacks
             // so here, we only pass the required arguments
             if (is_callable($column->data)) {
-                array_push($data, [
-                    $useUnformattedKeys ? $column->key : $column->name => call_user_func($column->data, $item, $column->key)
-                ]);
+                $key = $useUnformattedKeys ? $column->key : $column->name;
+                $value = call_user_func($column->data, $item, $column->key);
+                array_push($data, [$key => $value]);
             } else {
-                array_push($data, [
-                    $useUnformattedKeys ? $column->key : $column->name => $item->{$column->key}
-                ]);
+                $key = $useUnformattedKeys ? $column->key : $column->name;
+                $value = $item->{$column->key};
+                array_push($data, [$key => $value]);
             }
         }
         // collapse the data to a 1d array
