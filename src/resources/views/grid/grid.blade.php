@@ -27,7 +27,7 @@
                 </div>
                 <!-- end search form -->
                 <!-- filter form declaration -->
-                <form action="{{ $grid->getSearchRoute() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
+                <form action="{{ $grid->getSearchUrl() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
                 <!-- grid contents -->
                 <div class="table-responsive grid-wrapper">
                     <table class="{{ $grid->getClass() }}">
@@ -39,25 +39,14 @@
                                 @if($loop->first)
 
                                     @if($sort = $column->sortable)
-                                        @if(is_callable($grid->getSortUrl()))
-                                            <th scope="col"
-                                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
-                                                title="click to sort by {{ $column->key }}">
-                                                <a data-trigger-pjax="1" class="data-sort"
-                                                   href="{{ call_user_func($grid->getSortUrl(), $column->key) }}">
-                                                    {{ $column->name }}
-                                                </a>
-                                            </th>
-                                        @else
-                                            <th scope="col"
-                                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
-                                                title="click to sort by {{ $column->key }}">
-                                                <a data-trigger-pjax="1" class="data-sort"
-                                                   href="{{ route($grid->getSortUrl(), add_query_param([$this->getSortParam() => $column->key])) }}">
-                                                    {{ $column->name }}
-                                                </a>
-                                            </th>
-                                        @endif
+                                        <th scope="col"
+                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
+                                            title="click to sort by {{ $column->key }}">
+                                            <a data-trigger-pjax="1" class="data-sort"
+                                               href="{{ $grid->getSortUrl($column->key) }}">
+                                                {{ $column->name }}
+                                            </a>
+                                        </th>
                                     @else
                                         <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             {{ $column->name }}
@@ -65,23 +54,13 @@
                                     @endif
                                 @else
                                     @if($sort = $column->sortable)
-                                        @if(is_callable($grid->getSortUrl()))
-                                            <th scope="col" title="click to sort by {{ $column->key }}"
-                                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
-                                                <a data-trigger-pjax="1" class="data-sort"
-                                                   href="{{ call_user_func($grid->getSortUrl(), $column->key) }}">
-                                                    {{ $column->name }}
-                                                </a>
-                                            </th>
-                                        @else
-                                            <th scope="col" title="click to sort by {{ $column->key }}"
-                                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
-                                                <a data-trigger-pjax="1" class="data-sort"
-                                                   href="{{ route($grid->getSortUrl(), add_query_param([$this->getSortParam() => $column->key])) }}">
-                                                    {{ $column->name }}
-                                                </a>
-                                            </th>
-                                        @endif
+                                        <th scope="col" title="click to sort by {{ $column->key }}"
+                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
+                                            <a data-trigger-pjax="1" class="data-sort"
+                                               href="{{ $grid->getSortUrl($column->key) }}">
+                                                {{ $column->name }}
+                                            </a>
+                                        </th>
                                     @else
                                         <th scope="col"
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">

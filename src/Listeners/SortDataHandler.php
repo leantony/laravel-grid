@@ -22,12 +22,13 @@ class SortDataHandler
      * @param $builder
      * @param $validTableColumns
      */
-    public function __construct(GridInterface $grid, Request $request, $builder, $validTableColumns)
+    public function __construct(GridInterface $grid, Request $request, $builder, $validTableColumns, $args)
     {
         $this->grid = $grid;
         $this->request = $request;
         $this->query = $builder;
         $this->validGridColumns = $validTableColumns;
+        $this->args = $args;
     }
 
     /**
@@ -53,7 +54,12 @@ class SortDataHandler
     {
         if ($sort = $this->checkAndReturnSortParam()) {
             $this->getQuery()->orderBy($sort, $this->getSortDirection());
+
+            if (isset($this->getArgs()['urlUpdater'])) {
+                call_user_func($this->getArgs()['sortUrlUpdater'], $sort, $this->getSortDirection() === 'asc' ? 'desc' : 'asc');
+            }
         }
+
     }
 
     /**

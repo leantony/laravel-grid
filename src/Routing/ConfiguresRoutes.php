@@ -6,115 +6,158 @@
 
 namespace Leantony\Grid\Routing;
 
-use InvalidArgumentException;
-
 trait ConfiguresRoutes
 {
     /**
-     * The route name used for sorting
-     *
      * @var string
      */
-    protected $sortRouteName = '';
-
-    /**
-     * The search route name
-     *
-     * @var string
-     */
-    protected $searchRoute = '#';
-
-    /**
-     * The index route
-     *
-     * @var string
-     */
-    protected $indexRouteName = '';
-
-    /**
-     * The view route
-     *
-     * @var string
-     */
-    protected $viewRouteName = '';
+    protected $indexRouteName;
 
     /**
      * @var string
      */
-    protected $deleteRouteName = '';
+    protected $createRouteName;
 
     /**
-     * The create route name
-     *
      * @var string
      */
-    protected $createRouteName = '#';
+    protected $viewRouteName;
 
     /**
-     * Set the links/routes to be used on the grid for the buttons and forms (filter and search)
-     * Use route names for simplicity
-     *
-     * @return void
+     * @var string
      */
-    abstract public function setRoutes();
+    protected $updateRouteName;
 
     /**
-     * The search route to be used for the search form
-     *
-     * @return string
+     * @var string
      */
-    public function getSearchRoute(): string
+    protected $deleteRouteName;
+
+    protected $sortUrl;
+
+    /**
+     * @return mixed
+     */
+    public function getIndexRouteName(): string
     {
-        return route($this->searchRoute);
+        return $this->indexRouteName;
+    }
+
+    public function getIndexUrl(array $params = []): string
+    {
+        return route($this->getIndexRouteName(), add_query_param($params));
     }
 
     /**
-     * Get the url used for sort
-     *
-     * @return string|callable
+     * @param mixed $indexRouteName
      */
-    public function getSortUrl()
+    public function setIndexRouteName(string $indexRouteName): void
     {
-        return function ($key) {
-            return route($this->sortRouteName, add_query_param([$this->getGridSortParam() => $key]));
-        };
+        $this->indexRouteName = $indexRouteName;
     }
 
-    /**
-     * The index route link
-     *
-     * @return string
-     */
-    public function getIndexRouteLink(): string
+    public function getSortUrl(string $key, string $direction = 'asc')
     {
-        return $this->getRouteLinkFor('index');
-    }
-
-    /**
-     * Get the route link for any property named `xxxRouteName`
-     *
-     * @param string $name
-     * @return string
-     */
-    public function getRouteLinkFor(string $name)
-    {
-        $prop = $name . 'RouteName';
-        if (property_exists($this, $prop)) {
-            return route($this->{$prop});
+        if ($this->sortUrl === null) {
+            $this->setSortUrl($key, $direction);
         }
-        throw new InvalidArgumentException("The property with name " . $name . "does not exist on this class. Check the name. It should be " . $name . 'RouteName');
+        return $this->sortUrl;
+    }
+
+    protected function setSortUrl(string $key, string $direction)
+    {
+        $this->sortUrl = route($this->getIndexRouteName(), add_query_param([
+            $this->getGridSortParam() => $key,
+            $this->getGridSortDirParam() => $direction
+        ]));
     }
 
     /**
-     * The create Route
-     *
-     * @return string
+     * @return mixed
      */
     public function getCreateRouteName(): string
     {
-        if ($this->createRouteName == '#' || !$this->createRouteName) {
-            return $this->createRouteName;
-        }
-        return route($this->createRouteName, add_query_param(['ref' => $this->getId()]));
+        return $this->createRouteName;
+    }
+
+    public function getCreateUrl(array $params = []): string
+    {
+        return route($this->getIndexRouteName(), add_query_param($params));
+    }
+
+    public function getSearchUrl(array $params = []): string
+    {
+        return route($this->getIndexRouteName(), add_query_param($params));
+    }
+
+    /**
+     * @param mixed $createRouteName
+     */
+    public function setCreateRouteName(string $createRouteName): void
+    {
+        $this->createRouteName = $createRouteName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getViewRouteName(): string
+    {
+        return $this->viewRouteName;
+    }
+
+    /**
+     * @param mixed $viewRouteName
+     */
+    public function setViewRouteName(string $viewRouteName): void
+    {
+        $this->viewRouteName = $viewRouteName;
+    }
+
+    public function getViewUrl(array $params = []): string
+    {
+        return route($this->getIndexRouteName(), add_query_param($params));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpdateRouteName(): string
+    {
+        return $this->updateRouteName;
+    }
+
+    /**
+     * @param mixed $updateRouteName
+     */
+    public function setUpdateRouteName(string $updateRouteName): void
+    {
+        $this->updateRouteName = $updateRouteName;
+    }
+
+    public function getUpdateUrl(array $params = []): string
+    {
+        return route($this->getIndexRouteName(), add_query_param($params));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDeleteRouteName(): string
+    {
+        return $this->deleteRouteName;
+    }
+
+    public function getDeleteUrl(array $params = []): string
+    {
+        return route($this->getIndexRouteName(), add_query_param($params));
+    }
+
+    /**
+     * @param mixed $deleteRouteName
+     */
+    public function setDeleteRouteName(string $deleteRouteName): void
+    {
+        $this->deleteRouteName = $deleteRouteName;
     }
 }

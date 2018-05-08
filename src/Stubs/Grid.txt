@@ -49,14 +49,12 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     public function setRoutes()
     {
         // searching, sorting and filtering
-        $this->sortRouteName = '{{ routeRoot }}.index';
-        $this->searchRoute = '{{ routeRoot }}.index';
+        $this->setIndexRouteName('{{ routeRoot }}.index');
 
         // crud support
-        $this->indexRouteName = '{{ routeRoot }}.index';
-        $this->createRouteName = '{{ routeRoot }}.create';
-        $this->viewRouteName = '{{ routeRoot }}.show';
-        $this->deleteRouteName = '{{ routeRoot }}.destroy';
+        $this->setCreateRouteName('{{ routeRoot }}.create');
+        $this->setViewRouteName('{{ routeRoot }}.show');
+        $this->setDeleteRouteName('{{ routeRoot }}.destroy');
     }
 
     /**

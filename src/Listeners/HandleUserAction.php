@@ -48,7 +48,7 @@ class HandleUserAction
             // sort
             (new SortDataHandler(
                 $event->grid, $event->request,
-                $event->builder, $event->validTableColumns
+                $event->builder, $event->validTableColumns, $event->args
             ))->sort();
         }
 

@@ -103,7 +103,7 @@ trait RendersButtons
             'showModal' => true,
             'type' => 'toolbar',
             'icon' => 'fa-plus-circle',
-            'url' => $this->getCreateRouteName(),
+            'url' => $this->getCreateUrl(['ref' => $this->getId()]),
             'title' => 'add new ' . $this->shortSingularGridName(),
             'renderIf' => function () {
                 return in_array('create', $this->buttonsToGenerate);
@@ -126,7 +126,7 @@ trait RendersButtons
             'icon' => 'fa-refresh',
             'class' => 'btn btn-primary',
             'gridId' => $this->id,
-            'url' => $this->getIndexRouteLink(),
+            'url' => $this->getIndexUrl(),
             'type' => 'toolbar',
             'title' => 'refresh table for ' . strtolower($this->name),
             'renderIf' => function () {
@@ -153,7 +153,7 @@ trait RendersButtons
             },
             'gridId' => $this->id,
             'type' => 'toolbar',
-            'exportRoute' => $this->getIndexRouteLink(),
+            'exportRoute' => $this->getIndexRouteName(),
             'renderIf' => function () {
                 // only render the export button if `$allowsExporting` is set to true
                 return in_array('export', $this->buttonsToGenerate);
@@ -179,7 +179,7 @@ trait RendersButtons
             'type' => 'row',
             'title' => 'view record',
             'url' => function ($gridName, $item) {
-                return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
+                return $this->getViewUrl([$gridName => $item->id, 'ref' => $this->getId()]);
             },
             'renderIf' => function ($gridName, $item) {
                 return in_array('view', $this->buttonsToGenerate);

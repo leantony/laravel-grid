@@ -125,7 +125,11 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         // do filter, export, paginate, search = main user actions
         $result = event(
             'grid.fetch_data',
-            new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->tableColumns)
+            new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->tableColumns, [
+                'sortUrlUpdater' => function($sortkey, $sortDir) {
+                    return call_user_func([$this, 'setSortUrl'], $sortkey, $sortDir);
+                }
+            ])
         );
         $this->setGridDataItems($result);
 
@@ -268,7 +272,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         $params = func_get_args();
         $data = [
             'colSize' => $this->getGridToolbarSize()[0], // size
-            'action' => $this->getSearchRoute(),
+            'action' => $this->getSearchUrl(),
             'id' => $this->getSearchFormId(),
             'name' => $this->getGridSearchParam(),
             'dataAttributes' => [],
