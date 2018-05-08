@@ -163,7 +163,7 @@ trait ConfiguresRoutes
      */
     public function getUpdateUrl(array $params = []): string
     {
-        return route($this->getIndexRouteName(), add_query_param($params));
+        return route($this->getUpdateRouteName(), add_query_param($params));
     }
 
     /**
