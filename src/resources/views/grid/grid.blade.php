@@ -43,7 +43,7 @@
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                             title="click to sort by {{ $column->key }}">
                                             <a data-trigger-pjax="1" class="data-sort"
-                                               href="{{ $grid->getSortUrl($column->key) }}">
+                                               href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
                                                 {{ $column->name }}
                                             </a>
                                         </th>
@@ -57,7 +57,7 @@
                                         <th scope="col" title="click to sort by {{ $column->key }}"
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"
-                                               href="{{ $grid->getSortUrl($column->key) }}">
+                                               href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
                                                 {{ $column->name }}
                                             </a>
                                         </th>

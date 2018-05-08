@@ -56,11 +56,9 @@ trait ConfiguresRoutes
         $this->indexRouteName = $indexRouteName;
     }
 
-    public function getSortUrl(string $key, string $direction = 'asc')
+    public function getSortUrl(string $key, string $direction)
     {
-        if ($this->sortUrl === null) {
-            $this->setSortUrl($key, $direction);
-        }
+        $this->setSortUrl($key, $direction);
         return $this->sortUrl;
     }
 

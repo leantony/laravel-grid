@@ -125,15 +125,28 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         // do filter, export, paginate, search = main user actions
         $result = event(
             'grid.fetch_data',
-            new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->tableColumns, [
-                'sortUrlUpdater' => function($sortkey, $sortDir) {
-                    return call_user_func([$this, 'setSortUrl'], $sortkey, $sortDir);
-                }
-            ])
+            new UserActionRequested($this, $this->getRequest(), $this->getQuery(), $this->tableColumns)
         );
         $this->setGridDataItems($result);
 
         return $this;
+    }
+
+    /**
+     * Get the selected sort direction
+     *
+     * @param bool $opposite negate current existing parameter to ensure toggling
+     * @return string the sort direction
+     */
+    public function getSelectedSortDirection($opposite = true): string
+    {
+        if ($selected = session('__grid.current_sort_direction')) {
+            if ($opposite) {
+                return $selected === 'asc' ? 'desc' : 'asc';
+            }
+            return $selected;
+        }
+        return 'asc';
     }
 
     /**

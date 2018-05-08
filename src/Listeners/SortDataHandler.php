@@ -54,12 +54,7 @@ class SortDataHandler
     {
         if ($sort = $this->checkAndReturnSortParam()) {
             $this->getQuery()->orderBy($sort, $this->getSortDirection());
-
-            if (isset($this->getArgs()['urlUpdater'])) {
-                call_user_func($this->getArgs()['sortUrlUpdater'], $sort, $this->getSortDirection() === 'asc' ? 'desc' : 'asc');
-            }
         }
-
     }
 
     /**
@@ -80,18 +75,23 @@ class SortDataHandler
     }
 
     /**
-     * The sort direction
+     * Get the sort direction
      *
      * @return string
      */
     public function getSortDirection()
     {
-        if ($dir = $this->getRequest()->has($this->getGrid()->getGridSortDirParam())) {
+        if ($this->getRequest()->has($this->getGrid()->getGridSortDirParam())) {
+            $dir = $this->getRequest()->get($this->getGrid()->getGridSortDirParam());
+
             if (in_array($dir, $this->getGrid()->getGridSortDirections())) {
+                session(['__grid.current_sort_direction' => $dir]);
                 return $dir;
             }
         }
         // default to the first sort option
-        return $this->getGrid()->getGridSortDirections()[0];
+        $dir = $this->getGrid()->getGridSortDirections()[0];
+        session(['__grid.current_sort_direction' => $dir]);
+        return $dir;
     }
 }
