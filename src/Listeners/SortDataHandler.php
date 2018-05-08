@@ -22,12 +22,13 @@ class SortDataHandler
      * @param $builder
      * @param $validTableColumns
      */
-    public function __construct(GridInterface $grid, Request $request, $builder, $validTableColumns)
+    public function __construct(GridInterface $grid, Request $request, $builder, $validTableColumns, $args)
     {
         $this->grid = $grid;
         $this->request = $request;
         $this->query = $builder;
         $this->validGridColumns = $validTableColumns;
+        $this->args = $args;
     }
 
     /**
@@ -74,18 +75,23 @@ class SortDataHandler
     }
 
     /**
-     * The sort direction
+     * Get the sort direction
      *
      * @return string
      */
     public function getSortDirection()
     {
-        if ($dir = $this->getRequest()->has($this->getGrid()->getGridSortDirParam())) {
+        if ($this->getRequest()->has($this->getGrid()->getGridSortDirParam())) {
+            $dir = $this->getRequest()->get($this->getGrid()->getGridSortDirParam());
+
             if (in_array($dir, $this->getGrid()->getGridSortDirections())) {
+                session(['__grid.current_sort_direction' => $dir]);
                 return $dir;
             }
         }
         // default to the first sort option
-        return $this->getGrid()->getGridSortDirections()[0];
+        $dir = $this->getGrid()->getGridSortDirections()[0];
+        session(['__grid.current_sort_direction' => $dir]);
+        return $dir;
     }
 }

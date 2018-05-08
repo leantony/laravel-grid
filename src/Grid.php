@@ -133,6 +133,23 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
+     * Get the selected sort direction
+     *
+     * @param bool $opposite negate current existing parameter to ensure toggling
+     * @return string the sort direction
+     */
+    public function getSelectedSortDirection($opposite = true): string
+    {
+        if ($selected = session('__grid.current_sort_direction')) {
+            if ($opposite) {
+                return $selected === 'asc' ? 'desc' : 'asc';
+            }
+            return $selected;
+        }
+        return 'asc';
+    }
+
+    /**
      * Initialize grid variables
      *
      * @return void
@@ -268,7 +285,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         $params = func_get_args();
         $data = [
             'colSize' => $this->getGridToolbarSize()[0], // size
-            'action' => $this->getSearchRoute(),
+            'action' => $this->getSearchUrl(),
             'id' => $this->getSearchFormId(),
             'name' => $this->getGridSearchParam(),
             'dataAttributes' => [],
