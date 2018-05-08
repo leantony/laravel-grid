@@ -32,10 +32,10 @@ trait ConfiguresRoutes
      * @var string
      */
     protected $deleteRouteName;
-
+    
     /**
-     * @var string
-     */
+    * @var string
+    */
     protected $sortUrl;
 
     /**
