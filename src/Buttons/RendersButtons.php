@@ -126,7 +126,7 @@ trait RendersButtons
             'icon' => 'fa-refresh',
             'class' => 'btn btn-primary',
             'gridId' => $this->id,
-            'url' => $this->getIndexUrl(),
+            'url' => $this->getRefreshUrl(),
             'type' => 'toolbar',
             'title' => 'refresh table for ' . strtolower($this->name),
             'renderIf' => function () {
@@ -210,7 +210,7 @@ trait RendersButtons
                 'pjax-target' => '#' . $this->id
             ],
             'url' => function ($gridName, $item) {
-                return route($this->viewRouteName, [$gridName => $item->id, 'ref' => $this->getId()]);
+                return route($this->getDeleteRouteName(), [$gridName => $item->id, 'ref' => $this->getId()]);
             },
             'renderIf' => function ($gridName, $item) {
                 return in_array('delete', $this->buttonsToGenerate);
