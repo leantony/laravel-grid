@@ -399,20 +399,22 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Render the grid on a user defined view
+     * Pass the grid on to the user defined view e.g an index page, along with any data that may be required
+     * Will dynamically switch between displaying the grid and downloading exported files
      *
-     * @param string $viewName
-     * @param array $data
+     * @param string $viewName the view name
+     * @param array $data any extra data to be sent to the view
+     * @param string $as the variable to be sent to the view, representing the grid
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
-     * @throws \Exception
      * @throws \Throwable
      */
-    public function renderOn(string $viewName, $data = [])
+    public function renderOn(string $viewName, $data = [], $as = 'grid')
     {
         if ($this->wantsToExport()) {
             return $this->export();
         }
-        return view($viewName, array_merge($data, ['grid' => $this]));
+        return view($viewName, array_merge($data, [$as => $this]));
     }
 
     /**
