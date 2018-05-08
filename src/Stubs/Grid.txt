@@ -20,7 +20,11 @@ class {{ model }}Grid extends Grid implements {{ binding }}
      * @var array
      */
     protected $buttonsToGenerate = [
-        'create', 'view', 'delete', 'refresh', 'export'
+        'create',
+        'view',
+        'delete',
+        'refresh',
+        'export'
     ];
 
     /**
@@ -64,10 +68,8 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     */
     public function getLinkableCallback(): Closure
     {
-        $view = $this->viewRouteName;
-
-        return function ($gridName, $item) use ($view) {
-            return route($view, [$gridName => $item->id]);
+        return function ($gridName, $item) {
+            return route($this->getViewRouteName(), [$gridName => $item->id]);
         };
     }
 
