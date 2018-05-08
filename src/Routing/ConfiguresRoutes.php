@@ -32,7 +32,10 @@ trait ConfiguresRoutes
      * @var string
      */
     protected $deleteRouteName;
-
+    
+    /**
+    * @var string
+    */
     protected $sortUrl;
 
     /**
@@ -80,7 +83,7 @@ trait ConfiguresRoutes
 
     public function getCreateUrl(array $params = []): string
     {
-        return route($this->getIndexRouteName(), add_query_param($params));
+        return route($this->getCreateRouteName(), add_query_param($params));
     }
 
     public function getSearchUrl(array $params = []): string
@@ -114,7 +117,7 @@ trait ConfiguresRoutes
 
     public function getViewUrl(array $params = []): string
     {
-        return route($this->getIndexRouteName(), add_query_param($params));
+        return route($this->getViewRouteName(), add_query_param($params));
     }
 
     /**
@@ -148,7 +151,7 @@ trait ConfiguresRoutes
 
     public function getDeleteUrl(array $params = []): string
     {
-        return route($this->getIndexRouteName(), add_query_param($params));
+        return route($this->getDeleteRouteName(), add_query_param($params));
     }
 
     /**
