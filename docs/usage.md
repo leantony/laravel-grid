@@ -200,3 +200,6 @@ To display your grid, simply add this to your view:
 
 # Next up
 [Customizing the grid](customization.md)
+
+# Previous
+[Installing](index.md#Installation)
