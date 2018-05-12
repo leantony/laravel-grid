@@ -245,9 +245,37 @@ Be sure to also include the necessary javascript and css assets on your layout. 
 ```
 
 ### Rendering the grid
-To display your grid, simply add this to your view:
+To display your grid, simply add this to your view. Or any appropiate variable you passed into the `renderOn` method.
 ```php
 {!! $grid !!}
+```
+For a quick demonstration, be sure to check out the demo [here](http://laravel-grid.herokuapp.com/). The demo's source code is also [available on github](https://github.com/leantony/laravel-grid-app).
+
+## Multiple grids on the same page
+Just pass a name argument to the `renderOn` method. Like this
+```php
+class UsersController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @param UsersGridInterface $usersGrid
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(UsersGridInterface $usersGrid, Request $request)
+    {
+        // load relationships
+        $query = User::with(['posts', 'activities'])
+        return $usersGrid
+                    ->create(['query' => $query, 'request' => $request])
+                    ->renderOn('welcome', [], 'users'); // first argument is the viewname, then data, then the name of the variable to be sent to the view representing the grid
+    }
+}
+```
+Then render as;
+```php
+{!! $users !!}
 ```
 
 # Further customizations
