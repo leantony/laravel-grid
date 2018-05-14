@@ -7,6 +7,7 @@
 namespace Leantony\Grid\Providers;
 
 use Event;
+use Blade;
 use Illuminate\Support\ServiceProvider;
 use Leantony\Grid\Commands\GenerateGrid;
 
@@ -35,8 +36,7 @@ class GridServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/assets' => base_path('public/vendor/leantony/grid')
         ], 'assets');
 
-        // events
-        Event::listen('grid.fetch_data', 'Leantony\\Grid\\Listeners\\HandleUserAction@handle');
+        $this->registerCustomEvents();
     }
 
     /**
@@ -58,5 +58,40 @@ class GridServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands(GenerateGrid::class);
+    }
+
+    /**
+     * Register custom blade directives
+     *
+     * @return void
+     */
+    public function registerBladeDirectives()
+    {
+        Blade::directive('modalBegin', function ($data) {
+            $view = 'leantony::modal.modal-partial-start';
+
+            if (!$data || !is_array($data)) {
+                throw new \InvalidArgumentException("data is undefined.");
+            }
+
+            return "<?php echo \$__env->make('{$view}', array_except(get_defined_vars(), ['__data', '__path']))->with{$data}->render(); ?>";
+        });
+
+        Blade::directive('modalEnd', function () {
+            $view = 'leantony::modal.modal-partial-end';
+
+            return "<?php echo \$__env->make('{$view}', array_except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
+        });
+    }
+
+    /**
+     * Register custom events
+     *
+     * @return void
+     */
+    public function registerCustomEvents(): void
+    {
+        // events
+        Event::listen('grid.fetch_data', 'Leantony\\Grid\\Listeners\\HandleUserAction@handle');
     }
 }
