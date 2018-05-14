@@ -9,31 +9,43 @@ namespace Leantony\Grid\Routing;
 trait ConfiguresRoutes
 {
     /**
+     * Route name for the index route. Will also be used for export, search and filtering
+     *
      * @var string
      */
     protected $indexRouteName;
 
     /**
+     * Route name for the create route
+     *
      * @var string
      */
     protected $createRouteName;
 
     /**
+     * Route name for viewing an item
+     *
      * @var string
      */
     protected $viewRouteName;
 
     /**
+     * Route name for updating an item
+     *
      * @var string
      */
     protected $updateRouteName;
 
     /**
+     * Route name for deleting an item
+     *
      * @var string
      */
     protected $deleteRouteName;
 
     /**
+     * Sort url
+     *
      * @var string
      */
     protected $sortUrl;
