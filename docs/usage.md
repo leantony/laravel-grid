@@ -39,51 +39,51 @@ Just make sure that you do not call `->get()` on the query.
 
 > If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
 ```php
-     /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->bind(UsersGridInterface::class, UsersGrid::class);
-    }
+/**
+* Register any application services.
+*
+* @return void
+*/
+public function register()
+{
+    $this->app->bind(UsersGridInterface::class, UsersGrid::class);
+}
 ```
 
 Otherwise, you can also instantiate the grid class like any other class then inject any constructor dependencies you might need.
 ```php
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-        $user = $request->user();
-        return (new UsersGrid(['user' => $user])) // you can then use it as $this->user within the class. It's set implicitly using the __set() call
-                    ->create(['query' => User::query(), 'request' => $request])
-                    ->renderOn('welcome');
-    }
+/**
+* Display a listing of the resource.
+*
+* @param Request $request
+* @return \Illuminate\Http\Response
+*/
+public function index(Request $request)
+{
+    $user = $request->user();
+    return (new UsersGrid(['user' => $user])) // you can then use it as $this->user within the class. It's set implicitly using the __set() call
+               ->create(['query' => User::query(), 'request' => $request])
+               ->renderOn('welcome');
+}
 ```
 > Adding `$user` above as part of the key value pair array on the create method would achieve the same results as above.
 
 
 If you need to pass extra data to the view specified, you just need to pass the data as arguments, just as you do normally on any other laravel controller;
 ```php
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-        $data = 'hello world';
+/**
+* Display a listing of the resource.
+*
+* @param Request $request
+* @return \Illuminate\Http\Response
+*/
+public function index(Request $request)
+{
+    $data = 'hello world';
         
-        return (new UsersGrid())
-                    ->create(['query' => User::query(), 'request' => $request])
-                    ->renderOn('welcome', compact('data'));
+    return (new UsersGrid())
+               ->create(['query' => User::query(), 'request' => $request])
+               ->renderOn('welcome', compact('data'));
     }
 ```
 
