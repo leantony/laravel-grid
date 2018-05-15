@@ -280,7 +280,7 @@ trait RendersButtons
      */
     protected function makeCustomButton(array $properties, $position = null): GenericButton
     {
-        $key = $this->makeButtonKey($properties['name'] ?? 'unknown');
+        $key = $properties['name'] ?? 'unknown';
         $position = $position ?? 'toolbar';
         if ($position === 'toolbar') {
             $this->addToolbarButton($key, new GenericButton(array_merge($properties, ['type' => $position])));
@@ -311,7 +311,7 @@ trait RendersButtons
      */
     protected function addToolbarButton(string $button, GenericButton $instance)
     {
-        $this->addButton('toolbar', strtolower($button), $instance);
+        $this->addButton('toolbar', $button, $instance);
     }
 
     /**
@@ -330,7 +330,7 @@ trait RendersButtons
         }
         $this->buttons = array_merge_recursive($this->buttons, [
             $target => [
-                $button => $instance,
+                $this->makeButtonKey($button) => $instance,
             ]
         ]);
     }
@@ -345,7 +345,7 @@ trait RendersButtons
      */
     protected function addRowButton(string $button, GenericButton $instance)
     {
-        $this->addButton('rows', strtolower($button), $instance);
+        $this->addButton('rows', $button, $instance);
     }
 
     /**
