@@ -6,10 +6,11 @@
 
 namespace Leantony\Grid\Providers;
 
-use Event;
-use Blade;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Leantony\Grid\Commands\GenerateGrid;
+use Leantony\Grid\Modal\ModalRenderer;
 
 class GridServiceProvider extends ServiceProvider
 {
@@ -58,29 +59,18 @@ class GridServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands(GenerateGrid::class);
+        $this->registerServices();
     }
 
     /**
-     * Register custom blade directives
+     * Register app services
      *
      * @return void
      */
-    public function registerBladeDirectives()
+    public function registerServices()
     {
-        Blade::directive('modalBegin', function ($data) {
-            $view = 'leantony::modal.modal-partial-start';
-
-            if (!$data || !is_array($data)) {
-                throw new \InvalidArgumentException("data is undefined.");
-            }
-
-            return "<?php echo \$__env->make('{$view}', array_except(get_defined_vars(), ['__data', '__path']))->with{$data}->render(); ?>";
-        });
-
-        Blade::directive('modalEnd', function () {
-            $view = 'leantony::modal.modal-partial-end';
-
-            return "<?php echo \$__env->make('{$view}', array_except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
+        $this->app->singleton('modal', function ($app) {
+            return new ModalRenderer();
         });
     }
 
@@ -93,5 +83,15 @@ class GridServiceProvider extends ServiceProvider
     {
         // events
         Event::listen('grid.fetch_data', 'Leantony\\Grid\\Listeners\\HandleUserAction@handle');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['modal'];
     }
 }

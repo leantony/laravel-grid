@@ -9,8 +9,6 @@ php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
 ```
 > For this steps, we will be assuming you want a modal displayed when you click on the 'create' button, so that you get a form that will help you create a user. This of course also assumes you already have a grid generated already.
 
-Also ensure that your `button` is set to work with PJAX, when clicked. You can read [this section](https://github.com/leantony/laravel-grid/wiki/Customize-buttons#enabledisable-pjax-on-button-click) to see how this can be achieved.
-
 This are the steps to adding modal functionality;
 
 # Include the grid's JavaScript asset on your page
@@ -48,5 +46,99 @@ This is a simple laravel view that comes with the grid installation. It will ser
 ```
 
 # Create the modal view
-This is identical to creating any laravel view. You may copy the sample included with the package, and this can be found once you publish the resources for the package. The copy can be found at `resources/views/vendor/leantony/modal/form-sample.blade.php`. Feel free to alter it to suit your needs, while avoiding the obvious parts - preset CSS class names and preset HTML id's, etc since they are used in javascript.
+You can use the template below to get started. The `Modal` facade is available to help with rendering repeated boilerplate. All you have to do now is customize the form inputs to match your needs.
+```php
+{!! Modal::start($modal) !!}
+<div class="form-group row">
+    <label for="input_name" class="col-sm-2 col-form-label">Name:</label>
+    <div class="col-sm-10">
+        <input type="text" class="form-control" id="input_name" name="name"
+               placeholder="Enter name" value="{{ isset($user) ? $user->name : old('name')}}">
+    </div>
+</div>
+<div class="form-group row">
+    <label for="input_email" class="col-sm-2 col-form-label">Email:</label>
+    <div class="col-sm-10">
+        <input type="email" class="form-control" id="input_email"
+               name="email" placeholder="Enter email" value="{{ isset($user) ? $user->email : old('email')}}">
+    </div>
+</div>
+{!! Modal::end() !!}
+```
 
+Then name it sth like `users_modal.blade.php`.
+
+# Add a controller method to handle fetching of the modal form
+This is pretty straightforward. You're only writing code to load the form you've created just above and passing in the variables from the controller.
+```php
+/**
+     * Show the form for creating a new resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * @throws \Throwable
+     */
+    public function create(Request $request)
+    {
+        $modal = [
+            'model' => class_basename(User::class),
+            'route' => route('users.store'),
+            'action' => 'create',
+            'pjaxContainer' => $request->get('ref'),
+        ];
+
+        // modal
+        return view('users_modal', compact('modal'))->render();
+    }
+```
+> We use `render()`, so that just the HTML for the form is sent as a string, instead of the layout n etc.
+
+# Add a button to handle rendering of the modal
+By default, the `create` and `view` buttons allow modal popups. For any other button, you just have to customize it as follows;
+```php
+/**
+* Configure rendered buttons, or add your own
+*
+* @return void
+*/
+public function configureButtons()
+{
+    // editing the view button
+    $this->editToolbarButton('create', [
+       'showModal' => true,
+       'dataAttributes => [
+            // to optionally change the size of the modal. see https://getbootstrap.com/docs/4.0/components/modal/#optional-sizes
+           'modal-size' => 'modal-sm'
+       ]
+    ]);
+}
+```
+
+# Add a controller method to handle posting of the user's data
+This should also be pretty straightforward. The major change should be returning `json` instead of redirecting or rendering a view. Any validation errors will be displayed on the modal itself.
+```php
+/**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return JsonResponse|\Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|min:3',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6'
+        ]);
+        User::creating(function ($user) {
+            $user->password = bcrypt($user->password);
+        });
+        $user = User::query()->create($request->all());
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'User with id ' . $user->id . ' has been created.'
+        ]);
+    }
+```
+This should be enough. You can then reload your page, and click on the `create` button on your grid. The modal will be loaded dynamically via AJAX, and it should pop up.
+You can refer to the example application [here](http://laravel-grid.herokuapp.com), for a demo.

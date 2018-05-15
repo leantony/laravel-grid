@@ -6,7 +6,7 @@
 
 <!-- Modal body -->
 <form accept-charset="UTF-8" action="{{ $modal['route'] }}" id="modal_form"
-      data-pjax-target="#{{ $modal['pjaxContainer'] ?? 'add-a-pjax-container-here' }}" method="POST">
+      data-pjax-target="#{{ $modal['pjaxContainer'] ?? null }}" method="POST">
     <div class="modal-body">
         <div id="modal-notification"></div>
         @if(isset($modal['method']) && $modal['method'] != 'post')
