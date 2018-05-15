@@ -9,7 +9,7 @@ var _grids = _grids || {};
 (($ => {
 
   if (typeof $ === 'undefined') {
-    throw new Error("Requires jQuery")
+    throw new Error('Requires jQuery');
   }
 
   /**
@@ -35,7 +35,8 @@ var _grids = _grids || {};
         obj = $(obj);
         // confirmation
         const confirmation = obj.data('trigger-confirm');
-        const confirmationMessage = obj.data('confirmation-msg') || 'Are you sure?';
+        const confirmationMessage = obj.data('confirmation-msg') ||
+            'Are you sure?';
         const pjaxContainer = obj.data('pjax-target');
         const refresh = obj.data('refresh-page');
         const isForm = obj.is('form');
@@ -50,12 +51,14 @@ var _grids = _grids || {};
             }
           }
           $.ajax({
-            method: isForm ? obj.attr('method') : (obj.data('method') || 'POST'),
+            method: isForm ?
+                obj.attr('method') :
+                (obj.data('method') || 'POST'),
             url: isForm ? obj.attr('action') : obj.attr('href'),
             data: isForm ? obj.serialize() : null,
             beforeSend() {
               if (blockUi) {
-                _grids.utils.blockUI(waitingMsg || 'Please wait ...')
+                _grids.utils.blockUI(waitingMsg || 'Please wait ...');
               }
             },
             complete() {
@@ -70,11 +73,11 @@ var _grids = _grids || {};
             },
             error(data) {
               if (typeof toastr !== 'undefined') {
-                toastr.error("An error occurred", "Whoops!");
+                toastr.error('An error occurred', 'Whoops!');
               } else {
-                alert("An error occurred");
+                alert('An error occurred');
               }
-            }
+            },
           });
         });
       });
@@ -88,7 +91,7 @@ var _grids = _grids || {};
       if (typeof message === 'undefined') {
         message = 'Please wait ...';
       }
-      if(typeof blockUI !== 'function') {
+      if (typeof blockUI !== 'function') {
         console.warn('blockUI is undefined!');
       } else {
         const content = `<span id="bui">${message}</span>`;
@@ -101,14 +104,14 @@ var _grids = _grids || {};
             '-webkit-border-radius': '3px',
             '-moz-border-radius': '3px',
             'opacity': 1,
-            'color': '#fff'
+            'color': '#fff',
           },
           overlayCSS: {
             'backgroundColor': '#000',
             'opacity': 0.4,
             'cursor': 'wait',
-            'z-index': 1030
-          }
+            'z-index': 1030,
+          },
         });
       }
     };
@@ -117,7 +120,7 @@ var _grids = _grids || {};
      * Unblock UI
      */
     _grids.utils.unBlockUI = () => {
-      if(typeof blockUI !== 'function') {
+      if (typeof blockUI !== 'function') {
         console.warn('blockUI is undefined!');
       } else {
         $.unblockUI();
@@ -135,7 +138,7 @@ var _grids = _grids || {};
         elements.each((i, obj) => {
           const el = $(obj);
           const link = el.data('url');
-          el.css({'cursor': "pointer"});
+          el.css({'cursor': 'pointer'});
           el.click(e => {
             setTimeout(() => {
               window.location = link;
@@ -197,8 +200,8 @@ var _grids = _grids || {};
              * Something to do once the PJAX request has been finished
              */
             afterPjax(e) {
-            }
-          }
+            },
+          },
         };
         this.opts = $.extend({}, defaults, opts || {});
       }
@@ -219,7 +222,7 @@ var _grids = _grids || {};
           afterPjax($(event.target));
           // internal calls
           setupDateRangePicker(this);
-        })
+        });
       }
 
       /**
@@ -230,7 +233,7 @@ var _grids = _grids || {};
             this.opts.id,
             'a[data-trigger-pjax=1]',
             this.opts.pjax.afterPjax,
-            this.opts.pjax.pjaxOptions
+            this.opts.pjax.pjaxOptions,
         );
 
         setupDateRangePicker(this);
@@ -244,7 +247,7 @@ var _grids = _grids || {};
 
         if (form.length > 0) {
           $(document).on('submit', this.opts.filterForm, event => {
-            $.pjax.submit(event, this.opts.id, this.opts.pjax.pjaxOptions)
+            $.pjax.submit(event, this.opts.id, this.opts.pjax.pjaxOptions);
           });
         }
       }
@@ -257,7 +260,7 @@ var _grids = _grids || {};
 
         if (form.length > 0) {
           $(document).on('submit', this.opts.searchForm, event => {
-            $.pjax.submit(event, this.opts.id, this.opts.pjax.pjaxOptions)
+            $.pjax.submit(event, this.opts.id, this.opts.pjax.pjaxOptions);
           });
         }
       }
@@ -271,7 +274,8 @@ var _grids = _grids || {};
     function setupDateRangePicker(instance) {
       if (instance.opts.dateRangeSelector) {
         if (typeof daterangepicker !== 'function') {
-          console.warn('date range picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')
+          console.warn(
+              'date range picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git');
         } else {
           const start = moment().subtract(29, 'days');
           const end = moment();
@@ -282,18 +286,24 @@ var _grids = _grids || {};
             ranges: {
               'Last 7 Days': [moment().subtract(6, 'days'), moment()],
               'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-              'This Month': [moment().startOf('month'), moment().endOf('month')],
-              'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+              'This Month': [
+                moment().startOf('month'),
+                moment().endOf('month')],
+              'Last Month': [
+                moment().subtract(1, 'month').startOf('month'),
+                moment().subtract(1, 'month').endOf('month')],
             },
             autoUpdateInput: false,
             locale: {
-              format: "YYYY-MM-DD",
-              cancelLabel: 'Clear'
-            }
+              format: 'YYYY-MM-DD',
+              cancelLabel: 'Clear',
+            },
           });
 
           element.on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+            $(this).
+                val(picker.startDate.format('YYYY-MM-DD') + ' - ' +
+                    picker.endDate.format('YYYY-MM-DD'));
           });
 
           element.on('cancel.daterangepicker', function(ev, picker) {
@@ -341,7 +351,7 @@ var _grids = _grids || {};
         const errs = this.getValidationErrors(response.errors || {});
         return `${html + errs}</div>`;
       } else {
-        return `${html + response}</div>`
+        return `${html + response}</div>`;
       }
     },
 
@@ -396,7 +406,7 @@ var _grids = _grids || {};
                 modal.modal('hide');
                 if (pjaxTarget) {
                   // reload a pjax container
-                  $.pjax.reload({container: pjaxTarget})
+                  $.pjax.reload({container: pjaxTarget});
                 }
               }, 500);
             }
@@ -411,7 +421,9 @@ var _grids = _grids || {};
           }
         },
         beforeSend() {
-          $(submitButton).attr('disabled', 'disabled').html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
+          $(submitButton).
+              attr('disabled', 'disabled').
+              html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
         },
         complete() {
           $(submitButton).html(originalButtonHtml).removeAttr('disabled');
@@ -430,9 +442,9 @@ var _grids = _grids || {};
           // display errors
           const el = $(`#${notification}`);
           el.html(msg);
-        }
+        },
       });
-    }
+    },
   };
 
   /**
@@ -454,25 +466,27 @@ var _grids = _grids || {};
        * Show a modal dialog dynamically
        */
       show() {
-        $('.show_modal_form').on('click', function (e) {
+        $('.show_modal_form').on('click', function(e) {
           e.preventDefault();
           const btn = $(this);
           const btnHtml = btn.html();
           const modalDialog = $('#bootstrap_modal');
           const modalSize = btn.data('modal-size');
           // show spinner as soon as user click is triggered
-          btn.attr('disabled', 'disabled').html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
+          btn.attr('disabled', 'disabled').
+              html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
 
           // load the modal into the container put on the html
-          $('.modal-content').load($(this).attr("href") || $(this).data('href'), () => {
-            let md = $('#bootstrap_modal');
-            // show the modal
-            md.modal({show: true});
-            // alter size
-            if (!modalSize) {
-              md.find('.modal-dialog').addClass(modalSize);
-            }
-          });
+          $('.modal-content').
+              load($(this).attr('href') || $(this).data('href'), () => {
+                let md = $('#bootstrap_modal');
+                // show the modal
+                md.modal({show: true});
+                // alter size
+                if (!modalSize) {
+                  md.find('.modal-dialog').addClass(modalSize);
+                }
+              });
 
           // revert button to original content, once the modal is shown
           modalDialog.on('shown.bs.modal', e => {
@@ -480,18 +494,20 @@ var _grids = _grids || {};
           });
 
           // destroy the modal
-          modalDialog.on('hidden.bs.modal', function (e) {
+          modalDialog.on('hidden.bs.modal', function(e) {
             $(this).modal('dispose');
           });
         });
       }
     }
 
-    $('#bootstrap_modal').on("click", '#' + 'modal_form' + ' button[type="submit"]', e => {
-      e.preventDefault();
-      // process forms on the modal
-      _grids.formUtils.handleFormSubmission('modal_form', $('#bootstrap_modal'));
-    });
+    $('#bootstrap_modal').
+        on('click', '#' + 'modal_form' + ' button[type="submit"]', e => {
+          e.preventDefault();
+          // process forms on the modal
+          _grids.formUtils.handleFormSubmission('modal_form',
+              $('#bootstrap_modal'));
+        });
 
     _grids.modal.init = options => {
       const obj = new modal(options);
@@ -505,7 +521,8 @@ var _grids = _grids || {};
   _grids.init = () => {
     // date picker
     if (typeof daterangepicker !== 'function') {
-      console.warn('date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')
+      console.warn(
+          'date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git');
     } else {
       const element = $('.grid-datepicker');
       element.daterangepicker({
@@ -514,8 +531,8 @@ var _grids = _grids || {};
         autoUpdateInput: false,
         minYear: 1901,
         locale: {
-          format: "YYYY-MM-DD"
-        }
+          format: 'YYYY-MM-DD',
+        },
       });
 
       element.on('apply.daterangepicker', function(ev, picker) {
