@@ -36,7 +36,7 @@ Add this to your layout. Just some basic setup.
 
 # Add the modal container to your page
 This is a simple laravel view that comes with the grid installation. It will serve as an injection point for the modal HTML. Ideally, this view should be included on your layout.
-```php
+```html
 // .. layout code
 <div class="container">
     @yield('content')
@@ -47,7 +47,7 @@ This is a simple laravel view that comes with the grid installation. It will ser
 
 # Create the modal view
 You can use the template below to get started. The `Modal` facade is available to help with rendering repeated boilerplate. All you have to do now is customize the form inputs to match your needs.
-```php
+```html
 {!! Modal::start($modal) !!}
 <div class="form-group row">
     <label for="input_name" class="col-sm-2 col-form-label">Name:</label>
@@ -94,7 +94,8 @@ This is pretty straightforward. You're only writing code to load the form you've
 > We use `render()`, so that just the HTML for the form is sent as a string, instead of the layout n etc.
 
 ## Available parameters
-For the input array, the following key values are required to be passed to the `Modal::start($data)` section
+For the input array, the following key values are required to be passed to the `Modal::start($data)` section;
+
 | key value        | Description           | Required  |
 | ------------- |:-------------:| -----:|
 | `action`      | Just any sensible action name to give to the modal. E.g `create` | `true` |
