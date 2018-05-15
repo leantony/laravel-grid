@@ -47,7 +47,10 @@
     "laravel": {
       "providers": [
         "Leantony\\Grid\\Providers\\GridServiceProvider"
-      ]
+      ],
+      "aliases": {
+        "Modal": "Leantony\\Grid\\Facades\\Modal"
+      }
     }
   },
   "minimum-stability": "dev",
