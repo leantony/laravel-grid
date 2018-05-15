@@ -40,8 +40,6 @@ var _grids = _grids || {};
         const pjaxContainer = obj.data('pjax-target');
         const refresh = obj.data('refresh-page');
         const isForm = obj.is('form');
-        const blockUi = obj.data('block-ui') || true;
-        const waitingMsg = obj.data('waiting-message');
 
         obj.on(event, e => {
           e.preventDefault();
@@ -57,14 +55,10 @@ var _grids = _grids || {};
             url: isForm ? obj.attr('action') : obj.attr('href'),
             data: isForm ? obj.serialize() : null,
             beforeSend() {
-              if (blockUi) {
-                _grids.utils.blockUI(waitingMsg || 'Please wait ...');
-              }
+              //
             },
             complete() {
-              if (blockUi) {
-                _grids.utils.unBlockUI();
-              }
+              //
             },
             success(data) {
               if (pjaxContainer) {
@@ -81,50 +75,6 @@ var _grids = _grids || {};
           });
         });
       });
-    };
-
-    /**
-     * Block UI. call this at the start of an ajax request
-     * @param message
-     */
-    _grids.utils.blockUI = message => {
-      if (typeof message === 'undefined') {
-        message = 'Please wait ...';
-      }
-      if (typeof blockUI !== 'function') {
-        console.warn('blockUI is undefined!');
-      } else {
-        const content = `<span id="bui">${message}</span>`;
-        $.blockUI({
-          message: content,
-          css: {
-            'border': 'none',
-            'padding': '15px',
-            'backgroundColor': '#333C44',
-            '-webkit-border-radius': '3px',
-            '-moz-border-radius': '3px',
-            'opacity': 1,
-            'color': '#fff',
-          },
-          overlayCSS: {
-            'backgroundColor': '#000',
-            'opacity': 0.4,
-            'cursor': 'wait',
-            'z-index': 1030,
-          },
-        });
-      }
-    };
-
-    /**
-     * Unblock UI
-     */
-    _grids.utils.unBlockUI = () => {
-      if (typeof blockUI !== 'function') {
-        console.warn('blockUI is undefined!');
-      } else {
-        $.unblockUI();
-      }
     };
 
     /**

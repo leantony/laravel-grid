@@ -12,7 +12,6 @@ The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box.
 + Font awesome (for icons)
 + Jquery (required by bootstrap and the package's javascript)
 + Jquery pjax (quickly view data without having to reload the page)
-+ [Block UI](https://github.com/malsup/blockui) (optional - to 'block' the UI when doing an AJAX request that might presumably take a while).
 + [Date picker](https://github.com/dangrossman/bootstrap-daterangepicker.git) (optional - for the single date & date range filters)
 
 
@@ -216,8 +215,6 @@ Be sure to also include the necessary javascript and css assets on your layout. 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <!-- pjax js (required) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
-<!-- block ui (block ui when doing an ajax request - not required, but cool) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
 <!-- datepicker js (required for datepickers) -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <!-- required to supply js functionality for the grid -->

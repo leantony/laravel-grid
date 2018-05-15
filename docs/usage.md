@@ -164,8 +164,6 @@ Be sure to also include the necessary javascript and css assets on your layout. 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <!-- pjax js (required) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
-<!-- block ui (block ui when doing an ajax request - not required, but cool) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
 <!-- datepicker js (required for datepickers) -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <!-- required to supply js functionality for the grid - add href as => asset('vendor/leantony/grid/js/grid.js') -->
