@@ -275,8 +275,8 @@ var _grids = _grids || {};
         } else {
           const start = moment().subtract(29, 'days');
           const end = moment();
-
-          $(instance.opts.dateRangeSelector).daterangepicker({
+          const element = $(instance.opts.dateRangeSelector);
+          element.daterangepicker({
             startDate: start,
             endDate: end,
             ranges: {
@@ -290,6 +290,14 @@ var _grids = _grids || {};
               format: "YYYY-MM-DD",
               cancelLabel: 'Clear'
             }
+          });
+
+          element.on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+          });
+
+          element.on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
           });
         }
       }
@@ -499,7 +507,8 @@ var _grids = _grids || {};
     if (typeof daterangepicker !== 'function') {
       console.warn('date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git')
     } else {
-      $('.grid-datepicker').daterangepicker({
+      const element = $('.grid-datepicker');
+      element.daterangepicker({
         singleDatePicker: true,
         showDropdowns: true,
         autoUpdateInput: false,
@@ -507,6 +516,14 @@ var _grids = _grids || {};
         locale: {
           format: "YYYY-MM-DD"
         }
+      });
+
+      element.on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('YYYY-MM-DD'));
+      });
+
+      element.on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
       });
     }
     // initialize modal js
