@@ -11,7 +11,6 @@ This laravel package allows rendering of data via a tabular format (grid). The g
 + Font awesome
 + Pjax middleware. E.g [this one](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 > You can also use [this package](https://github.com/spatie/laravel-pjax)
-+ [Block UI](https://github.com/malsup/blockui)
 
 ## Installation
 The package is available on packagist. If you need bootstrap 3 support install version `1.0` by running;
