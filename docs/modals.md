@@ -93,6 +93,16 @@ This is pretty straightforward. You're only writing code to load the form you've
 ```
 > We use `render()`, so that just the HTML for the form is sent as a string, instead of the layout n etc.
 
+## Available parameters
+For the input array, the following key values are required to be passed to the `Modal::start($data)` section
+| key value        | Description           | Required  |
+| ------------- |:-------------:| -----:|
+| `action`      | Just any sensible action name to give to the modal. E.g `create` | `true` |
+| `model`      | An eloquent model that relates to this modal. Action and model are used to create a title for the modal      |   `true` |
+| `route` | Url for form handling      |    `true` |
+| `pjaxContainer` | Pjax container to be refreshed after submit      |    `false` |
+| `method` | Form method. E.g `PUT`     |    `true` |
+
 # Add a button to handle rendering of the modal
 By default, the `create` and `view` buttons allow modal popups. For any other button, you just have to customize it as follows;
 ```php
