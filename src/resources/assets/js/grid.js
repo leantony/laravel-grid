@@ -35,8 +35,7 @@ var _grids = _grids || {};
         obj = $(obj);
         // confirmation
         const confirmation = obj.data('trigger-confirm');
-        const confirmationMessage = obj.data('confirmation-msg') ||
-            'Are you sure?';
+        const confirmationMessage = obj.data('confirmation-msg') || 'Are you sure?';
         const pjaxContainer = obj.data('pjax-target');
         const refresh = obj.data('refresh-page');
         const isForm = obj.is('form');
@@ -234,14 +233,20 @@ var _grids = _grids || {};
             startDate: start,
             endDate: end,
             ranges: {
-              'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-              'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+              'Last 7 Days': [
+                  moment().subtract(6, 'days'), moment()
+              ],
+              'Last 30 Days': [
+                  moment().subtract(29, 'days'), moment()
+              ],
               'This Month': [
                 moment().startOf('month'),
-                moment().endOf('month')],
+                moment().endOf('month')
+              ],
               'Last Month': [
                 moment().subtract(1, 'month').startOf('month'),
-                moment().subtract(1, 'month').endOf('month')],
+                moment().subtract(1, 'month').endOf('month')
+              ],
             },
             autoUpdateInput: false,
             locale: {
@@ -251,9 +256,7 @@ var _grids = _grids || {};
           });
 
           element.on('apply.daterangepicker', function(ev, picker) {
-            $(this).
-                val(picker.startDate.format('YYYY-MM-DD') + ' - ' +
-                    picker.endDate.format('YYYY-MM-DD'));
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
           });
 
           element.on('cancel.daterangepicker', function(ev, picker) {
@@ -423,8 +426,7 @@ var _grids = _grids || {};
           const modalDialog = $('#bootstrap_modal');
           const modalSize = btn.data('modal-size');
           // show spinner as soon as user click is triggered
-          btn.attr('disabled', 'disabled').
-              html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
+          btn.attr('disabled', 'disabled').html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
 
           // load the modal into the container put on the html
           $('.modal-content').
