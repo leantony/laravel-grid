@@ -8,6 +8,10 @@ namespace Leantony\Grid\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * @method static void start(array $data)
+ * @method static void end()
+ */
 class Modal extends Facade
 {
     /**

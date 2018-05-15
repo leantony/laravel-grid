@@ -7,10 +7,9 @@
 namespace Leantony\Grid\Providers;
 
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Leantony\Grid\Commands\GenerateGrid;
-use Leantony\Grid\Modal\ModalRenderer;
+use Leantony\Grid\ModalRenderer;
 
 class GridServiceProvider extends ServiceProvider
 {
@@ -25,25 +24,19 @@ class GridServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'leantony');
 
-        $this->publishes([
-            __DIR__ . '/../resources/config/grid.php' => config_path('grid.php')
-        ], 'config');
+        $this->loadPackageConfig();
 
-        $this->publishes([
-            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/leantony')
-        ], 'views');
-
-        $this->publishes([
-            __DIR__ . '/../resources/assets' => base_path('public/vendor/leantony/grid')
-        ], 'assets');
+        $this->loadPackageAssets();
 
         $this->registerCustomEvents();
     }
 
     /**
      * Load helper function files
+     *
+     * @return void
      */
-    protected function loadHelpers()
+    protected function loadHelpers(): void
     {
         $files = glob(__DIR__ . '/../Helpers/*.php');
         foreach ($files as $file) {
@@ -93,5 +86,33 @@ class GridServiceProvider extends ServiceProvider
     public function provides()
     {
         return ['modal'];
+    }
+
+    /**
+     * Load package assets
+     *
+     * @return void
+     */
+    public function loadPackageAssets(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/leantony')
+        ], 'views');
+
+        $this->publishes([
+            __DIR__ . '/../resources/assets' => base_path('public/vendor/leantony/grid')
+        ], 'assets');
+    }
+
+    /**
+     * Load package config
+     *
+     * @return void
+     */
+    public function loadPackageConfig(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../resources/config/grid.php' => config_path('grid.php')
+        ], 'config');
     }
 }
