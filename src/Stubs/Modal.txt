@@ -1,0 +1,9 @@
+{!! Modal::start($modal) !!}
+<div class="form-group row">
+    <label for="input_name" class="col-sm-2 col-form-label">{{ label }}:</label>
+    <div class="col-sm-10">
+        <input type="{{ inputType }}" class="form-control" id="input_{{ input }}" name="{{ input }}"
+               placeholder="Enter {{ input }}" value="{{ isset(${{ input }}) ? $data->{{ input }} : old('{{ input }}')}}">
+    </div>
+</div>
+{!! Modal::end() !!}

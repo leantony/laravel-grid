@@ -6,9 +6,10 @@
 
 namespace Leantony\Grid\Providers;
 
-use Event;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Leantony\Grid\Commands\GenerateGrid;
+use Leantony\Grid\ModalRenderer;
 
 class GridServiceProvider extends ServiceProvider
 {
@@ -23,26 +24,19 @@ class GridServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'leantony');
 
-        $this->publishes([
-            __DIR__ . '/../resources/config/grid.php' => config_path('grid.php')
-        ], 'config');
+        $this->loadPackageConfig();
 
-        $this->publishes([
-            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/leantony')
-        ], 'views');
+        $this->loadPackageAssets();
 
-        $this->publishes([
-            __DIR__ . '/../resources/assets' => base_path('public/vendor/leantony/grid')
-        ], 'assets');
-
-        // events
-        Event::listen('grid.fetch_data', 'Leantony\\Grid\\Listeners\\HandleUserAction@handle');
+        $this->registerCustomEvents();
     }
 
     /**
      * Load helper function files
+     *
+     * @return void
      */
-    protected function loadHelpers()
+    protected function loadHelpers(): void
     {
         $files = glob(__DIR__ . '/../Helpers/*.php');
         foreach ($files as $file) {
@@ -58,5 +52,67 @@ class GridServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands(GenerateGrid::class);
+        $this->registerServices();
+    }
+
+    /**
+     * Register app services
+     *
+     * @return void
+     */
+    public function registerServices()
+    {
+        $this->app->singleton('modal', function ($app) {
+            return new ModalRenderer();
+        });
+    }
+
+    /**
+     * Register custom events
+     *
+     * @return void
+     */
+    public function registerCustomEvents(): void
+    {
+        // events
+        Event::listen('grid.fetch_data', 'Leantony\\Grid\\Listeners\\HandleUserAction@handle');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['modal'];
+    }
+
+    /**
+     * Load package assets
+     *
+     * @return void
+     */
+    public function loadPackageAssets(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/leantony')
+        ], 'views');
+
+        $this->publishes([
+            __DIR__ . '/../resources/assets' => base_path('public/vendor/leantony/grid')
+        ], 'assets');
+    }
+
+    /**
+     * Load package config
+     *
+     * @return void
+     */
+    public function loadPackageConfig(): void
+    {
+        $this->publishes([
+            __DIR__ . '/../resources/config/grid.php' => config_path('grid.php')
+        ], 'config');
     }
 }

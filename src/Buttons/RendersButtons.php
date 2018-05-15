@@ -280,14 +280,25 @@ trait RendersButtons
      */
     protected function makeCustomButton(array $properties, $position = null): GenericButton
     {
-        $name = $properties['name'] ?? 'unknown';
+        $key = $properties['name'] ?? 'unknown';
         $position = $position ?? 'toolbar';
         if ($position === 'toolbar') {
-            $this->addToolbarButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
+            $this->addToolbarButton($key, new GenericButton(array_merge($properties, ['type' => $position])));
         } else {
-            $this->addRowButton($name, new GenericButton(array_merge($properties, ['type' => $position])));
+            $this->addRowButton($key, new GenericButton(array_merge($properties, ['type' => $position])));
         }
-        return $this->buttons[$position][$name];
+        return $this->buttons[$position][$key];
+    }
+
+    /**
+     * Add a custom button key to the array
+     *
+     * @param string $name
+     * @return string
+     */
+    protected function makeButtonKey(string $name)
+    {
+        return str_slug($name);
     }
 
     /**
@@ -300,7 +311,7 @@ trait RendersButtons
      */
     protected function addToolbarButton(string $button, GenericButton $instance)
     {
-        $this->addButton('toolbar', strtolower($button), $instance);
+        $this->addButton('toolbar', $button, $instance);
     }
 
     /**
@@ -319,7 +330,7 @@ trait RendersButtons
         }
         $this->buttons = array_merge_recursive($this->buttons, [
             $target => [
-                $button => $instance,
+                $this->makeButtonKey($button) => $instance,
             ]
         ]);
     }
@@ -334,20 +345,20 @@ trait RendersButtons
      */
     protected function addRowButton(string $button, GenericButton $instance)
     {
-        $this->addButton('rows', strtolower($button), $instance);
+        $this->addButton('rows', $button, $instance);
     }
 
     /**
      * Edit an existing button
      *
      * @param string $target location where the button will be placed on the grid. Needs to be among the `$buttonTargets`
-     * @param string $button button name. Needs to be a button that exists among those that need to be generated
+     * @param string $buttonName button name. Needs to be a button that exists among those that need to be generated
      * @param array $properties the key value pairs of the properties that need to be customized
      * @return void
      */
-    protected function editButtonProperties($target, $button, array $properties)
+    protected function editButtonProperties($target, $buttonName, array $properties)
     {
-        $instance = $this->buttons[$target][$button];
+        $instance = $this->buttons[$target][$this->makeButtonKey($buttonName)];
 
         $this->ensureButtonInstanceValidity($instance);
 
