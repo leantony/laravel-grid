@@ -5,7 +5,7 @@ Assuming you have all the requirements ready, this are the steps you will follow
 You also need to have published the grid's assets. If you haven't done that already, run the command;
 
 ```php
-php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
+php artisan vendor:publish --provider="Leantony\Grid\Providers\GridServiceProvider"
 ```
 > For this steps, we will be assuming you want a modal displayed when you click on the 'create' button, so that you get a form that will help you create a user. This of course also assumes you already have a grid generated already.
 
@@ -153,3 +153,6 @@ This should also be pretty straightforward. The major change should be returning
 ```
 This should be enough. You can then reload your page, and click on the `create` button on your grid. The modal will be loaded dynamically via AJAX, and it should pop up.
 You can refer to the example application [here](http://laravel-grid.herokuapp.com), for a demo.
+
+# Previous
+[Customization](customization.md)

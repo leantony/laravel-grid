@@ -238,3 +238,6 @@ php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" 
     "@php artisan vendor:publish --provider=\"Leantony\\Grid\\Providers\\ServiceProvider\" --tag=assets --force"
 ]
 ```
+
+# Next up
+[Customizing the grid](customization.md)
