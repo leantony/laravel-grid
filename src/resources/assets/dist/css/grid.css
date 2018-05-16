@@ -2,6 +2,18 @@
  * Copyright (c) 2018.
  * @author Antony [leantony] Chacha
  */
+.laravel-grid .grid-w-70 {
+  width: 70% !important; }
+
+.laravel-grid .grid-w-65 {
+  width: 65% !important; }
+
+.laravel-grid .grid-w-60 {
+  width: 60% !important; }
+
+.laravel-grid .grid-w-55 {
+  width: 55% !important; }
+
 .laravel-grid .grid-w-50 {
   width: 50% !important; }
 
@@ -28,6 +40,9 @@
 
 .laravel-grid .grid-w-10 {
   width: 10% !important; }
+
+.laravel-grid .grid-w-5 {
+  width: 5% !important; }
 
 .laravel-grid .grid-bold {
   font-weight: 600; }

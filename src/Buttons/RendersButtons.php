@@ -207,6 +207,7 @@ trait RendersButtons
             'dataAttributes' => [
                 'method' => 'DELETE',
                 'trigger-confirm' => true,
+                'confirmation-msg' => 'Are you sure you want to delete this record?',
                 'pjax-target' => '#' . $this->id
             ],
             'url' => function ($gridName, $item) {
@@ -388,13 +389,7 @@ trait RendersButtons
      */
     protected function editRowButton(string $button, array $properties)
     {
-        $instance = $this->buttons['rows'][$button];
-
-        $this->ensureButtonInstanceValidity($instance);
-
-        foreach ($properties as $k => $v) {
-            $instance->{$k} = $v;
-        }
+        $this->editButtonProperties('row', $button, $properties);
     }
 
     /**
@@ -406,12 +401,6 @@ trait RendersButtons
      */
     protected function editToolbarButton(string $button, array $properties)
     {
-        $instance = $this->buttons['toolbar'][$button];
-
-        $this->ensureButtonInstanceValidity($instance);
-
-        foreach ($properties as $k => $v) {
-            $instance->{$k} = $v;
-        }
+        $this->editButtonProperties('toolbar', $button, $properties);
     }
 }
