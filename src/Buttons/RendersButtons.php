@@ -207,7 +207,6 @@ trait RendersButtons
             'dataAttributes' => [
                 'method' => 'DELETE',
                 'trigger-confirm' => true,
-                'confirmation-msg' => 'Are you sure you want to delete this record?',
                 'pjax-target' => '#' . $this->id
             ],
             'url' => function ($gridName, $item) {
