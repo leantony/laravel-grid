@@ -1,167 +1,39 @@
 # Laravel grid
 
+Live demo: [here](http://laravel-grid.herokuapp.com/)
+
 [![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
 
 This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
 
 ## Requirements
-The grid supports [pjax](https://github.com/defunkt/jquery-pjax) out of the box. For pjax support on laravel, try - [spatie/laravel-pjax](https://github.com/spatie/laravel-pjax), or create the middleware on your own using [jeffrey way's middleware.](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
-
-+ Laravel 5.5 and above
-+ Bootstrap 3|4 (for the styling) - see installation section below
++ Laravel 5.5+
++ Bootstrap 4 (for the styling)
 + Font awesome (for icons)
 + Jquery (required by bootstrap and the package's javascript)
-+ Jquery pjax (quickly view data without having to reload the page)
++ Jquery pjax (quickly view data without having to reload the page). Note that you'll need to [create the middleware on your own](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 + [Date picker](https://github.com/dangrossman/bootstrap-daterangepicker.git) (optional - for the single date & date range filters)
 
 
-## Installation
-The package is available on packagist. If you need bootstrap 3 support, please run;
-```php
-composer install leantony/laravel-grid ~1.0
-```
-For `bootstrap 4`, please run
+# Getting started
+
+## Install
+The package is available on packagist. Just run;
 ```php
 composer install leantony/laravel-grid "2.0.x-dev"
 ```
+> For bootstrap 3 support, consider installing version `1.0`.
 
-You can then publish the resources (views) and assets (css & js). CSS and JS are needed on your layout so that the grid works appropriately.
-
+## Publish assets
+The grid comes with a config file, CSS assets, JS assets and view files. The command below should allow you to publish them.
 ```php
-php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider"
+php artisan vendor:publish --provider="Leantony\Grid\Providers\GridServiceProvider"
 ```
 
-> You can publish the assets and views separately by passing the `--tag` argument to the command. 
+> You can also choose to publish the assets and views separately by passing the `--tag` argument to the command. 
 For the argument values, try `assets`, `views`, `config` for js|css assets, views and config respectively.
 
-
-When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
-```php
-php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force
-```
-> You can also place this command in composer so that it is executed automatically on each update run. Like this;
-```php
-// ... composer config
-"post-autoload-dump": [
-    "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-    "@php artisan package:discover",
-    "@php artisan vendor:publish --provider=\"Leantony\\Grid\\Providers\\ServiceProvider\" --tag=assets --force"
-]
-```
-
-
-## Usage
-
-### creating the grid
-A laravel command is available to make it easy to create grids. 
-Once installed, just run the command:
-```php
-php artisan make:grid --model="{modelClass}"
-```
-Just make sure you replace `{modelClass}` with your actual `eloquent` model class. E.g
-```php
-php artisan make:grid --model="App\User"
-```
-Once this is run, a grid will be generated. Default namespace for grid generation is `App\Grids`.
-
-Once the generation of the grid is done, you can add add it in your controller like this. E.g a `user` model grid:
-
-```php
-class UsersController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @param UsersGridInterface $usersGrid
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function index(UsersGridInterface $usersGrid, Request $request)
-    {
-        // the 'query' argument needs to be an instance of the eloquent query builder
-        // you can load relationships at this point
-        return $usersGrid
-                    ->create(['query' => User::query(), 'request' => $request])
-                    ->renderOn('welcome'); // render the grid on the welcome view
-    }
-}
-```
-Just make sure that you do not call `->get()` on the query.
-
-> If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
-```php
-     /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->bind(UsersGridInterface::class, UsersGrid::class);
-    }
-```
-
-Otherwise, you can also instantiate the grid class like any other class then inject any constructor dependencies you might need.
-```php
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-        $user = $request->user();
-        return (new UsersGrid(['user' => $user])) // you can then use it as $this->user within the class. It's set implicitly using the __set() call
-                    ->create(['query' => User::query(), 'request' => $request])
-                    ->renderOn('welcome');
-    }
-```
-> Adding `$user` above as part of the key value pair array on the create method would achieve the same results as above.
-
-
-If you need to pass extra data to the view specified, you just need to pass the data as arguments, just as you do normally on any other laravel controller;
-```php
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-        $data = 'hello world';
-        
-        return (new UsersGrid())
-                    ->create(['query' => User::query(), 'request' => $request])
-                    ->renderOn('welcome', compact('data'));
-    }
-```
-
-For eloquent relationships, its basically the same approach. Like this;
-```php
-class UsersController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @param UsersGridInterface $usersGrid
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function index(UsersGridInterface $usersGrid, Request $request)
-    {
-        // load relationships
-        $query = User::with(['posts', 'activities'])
-        return $usersGrid
-                    ->create(['query' => $query, 'request' => $request])
-                    ->renderOn('welcome');
-    }
-}
-```
-And once again, just make sure that you do not call `->get()` on the query.
-
-### Adding assets
+## Add/Customize your layout
 Be sure to also include the necessary javascript and css assets on your layout. An example layout is as shown below;
 ```html
 <!-- sample laravel layout -->
@@ -241,15 +113,88 @@ Be sure to also include the necessary javascript and css assets on your layout. 
 </html>
 ```
 
-### Rendering the grid
-To display your grid, simply add this to your view. Or any appropiate variable you passed into the `renderOn` method.
+## Creating grids
+A laravel command is available to make it easy to create grids. It's usage is as shown below;
 ```php
-{!! $grid !!}
+php artisan make:grid --model="{modelClass}"
 ```
-For a quick demonstration, be sure to check out the demo [here](http://laravel-grid.herokuapp.com/). The demo's source code is also [available on github](https://github.com/leantony/laravel-grid-app).
+Just make sure you replace `{modelClass}` with your actual `eloquent` model class. E.g
+```php
+php artisan make:grid --model="App\User"
+```
+Once this is run, a grid will be generated. Default namespace for grid generation is `App\Grids`. Once the generation of the grid is done, you can add add it in your controller like this;
 
-## Multiple grids on the same page
-Just pass a name argument to the `renderOn` method. Like this
+```php
+class UsersController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @param UsersGridInterface $usersGrid
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(UsersGridInterface $usersGrid, Request $request)
+    {
+        // the 'query' argument needs to be an instance of the eloquent query builder
+        // you can load relationships at this point
+        return $usersGrid
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome'); // render the grid on the welcome view
+    }
+}
+```
+Just make sure that you do not call `->get()` on the query.
+
+> If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
+```php
+     /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->bind(UsersGridInterface::class, UsersGrid::class);
+    }
+```
+
+Otherwise, you can also instantiate the grid class like any other class then inject any constructor dependencies you might need.
+```php
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        return (new UsersGrid(['user' => $user])) // you can then use it as $this->user within the class. It's set implicitly using the __set() call
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome');
+    }
+```
+
+If you need to pass extra data to the view specified, you just need to pass the data as arguments, just as you do normally on any other laravel controller;
+```php
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $data = 'hello world';
+        
+        return (new UsersGrid())
+                    ->create(['query' => User::query(), 'request' => $request])
+                    ->renderOn('welcome', compact('data'));
+    }
+```
+
+For eloquent relationships, its basically the same approach. Like this;
 ```php
 class UsersController extends Controller
 {
@@ -266,19 +211,30 @@ class UsersController extends Controller
         $query = User::with(['posts', 'activities'])
         return $usersGrid
                     ->create(['query' => $query, 'request' => $request])
-                    ->renderOn('welcome', [], 'users'); // first argument is the viewname, then data, then the name of the variable to be sent to the view representing the grid
+                    ->renderOn('welcome');
     }
 }
 ```
-Then render as;
+And once again, just make sure that you do not call `->get()` on the query.
+
+## Rendering the grid
+To display your grid, simply add this to your view. Or any appropriate variable you passed into the `renderOn` method.
 ```php
-{!! $users !!}
+{!! $grid !!}
 ```
+For a quick demonstration, be sure to check out the demo [here](http://laravel-grid.herokuapp.com/). The demo's source code is also [available on github](https://github.com/leantony/laravel-grid-app).
 
-# Further customizations
-To customize the grid, check out [the customization section](https://github.com/leantony/laravel-grid/wiki/Customization). Following the instructions above should get you on the right track. However, if you run into any issues, please be sure to [raise it](https://github.com/leantony/laravel-grid/issues/new).
-
-# More docs
-For more docs, please checkout the [wiki](https://github.com/leantony/laravel-grid/wiki).
-
-> The docs linked in the wiki may only apply to version 1.0, so please bear with me as I update them progressively.
+## Updating local JS and CSS assets after package updates
+When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
+```php
+php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force
+```
+> You can also place this command in composer so that it is executed automatically on each update run. Like this;
+```php
+// ... composer config
+"post-autoload-dump": [
+    "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+    "@php artisan package:discover",
+    "@php artisan vendor:publish --provider=\"Leantony\\Grid\\Providers\\ServiceProvider\" --tag=assets --force"
+]
+```
