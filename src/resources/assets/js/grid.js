@@ -49,9 +49,7 @@ const _grids = _grids || {};
             }
           }
           $.ajax({
-            method: isForm ?
-                obj.attr('method') :
-                (obj.data('method') || 'POST'),
+            method: isForm ? obj.attr('method') : (obj.data('method') || 'POST'),
             url: isForm ? obj.attr('action') : obj.attr('href'),
             data: isForm ? obj.serialize() : null,
             beforeSend() {
@@ -228,8 +226,7 @@ const _grids = _grids || {};
     function setupDateRangePicker(instance) {
       if (instance.opts.dateRangeSelector) {
         if (typeof daterangepicker !== 'function') {
-          console.warn(
-              'date range picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git');
+          console.warn('date range picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git');
         } else {
           const start = moment().subtract(29, 'days');
           const end = moment();
@@ -245,8 +242,7 @@ const _grids = _grids || {};
                   moment().subtract(29, 'days'), moment()
               ],
               'This Month': [
-                moment().startOf('month'),
-                moment().endOf('month')
+                moment().startOf('month'), moment().endOf('month')
               ],
               'Last Month': [
                 moment().subtract(1, 'month').startOf('month'),
@@ -385,9 +381,7 @@ const _grids = _grids || {};
           }
         },
         beforeSend() {
-          $(submitButton).
-              attr('disabled', 'disabled').
-              html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
+          $(submitButton).attr('disabled', 'disabled').html('<i class="fa fa-spinner fa-spin"></i>&nbsp;loading');
         },
         complete() {
           $(submitButton).html(originalButtonHtml).removeAttr('disabled');
@@ -468,8 +462,7 @@ const _grids = _grids || {};
         on('click', '#' + 'modal_form' + ' button[type="submit"]', e => {
           e.preventDefault();
           // process forms on the modal
-          _grids.formUtils.handleFormSubmission('modal_form',
-              $('#bootstrap_modal'));
+          _grids.formUtils.handleFormSubmission('modal_form', $('#bootstrap_modal'));
         });
 
     _grids.modal.init = options => {
@@ -484,8 +477,7 @@ const _grids = _grids || {};
   _grids.init = () => {
     // date picker
     if (typeof daterangepicker !== 'function') {
-      console.warn(
-          'date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git');
+      console.warn('date picker option requires https://github.com/dangrossman/bootstrap-daterangepicker.git');
     } else {
       const element = $('.grid-datepicker');
       element.daterangepicker({
