@@ -4,7 +4,7 @@
  */
 
 'use strict';
-var _grids = _grids || {};
+const _grids = _grids || {};
 
 (($ => {
 
@@ -304,10 +304,16 @@ var _grids = _grids || {};
       html += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
       // add a heading
       if (type === 'error') {
-        html += response.message || 'Please fix the following errors';
-        html = `<strong>${html}</strong>`;
-        const errs = this.getValidationErrors(response.errors || {});
-        return `${html + errs}</div>`;
+        if(response.serverError) {
+          html += response.serverError.message || 'A server error occurred.';
+          html = `<strong>${html}</strong>`;
+          return html;
+        } else {
+          html += response.message || 'Please fix the following errors';
+          html = `<strong>${html}</strong>`;
+          const errs = this.getValidationErrors(response.errors || {});
+          return `${html + errs}</div>`;
+        }
       } else {
         return `${html + response}</div>`;
       }
@@ -391,7 +397,7 @@ var _grids = _grids || {};
           // error handling
           switch (data.status) {
             case 500:
-              msg = 'A server error occurred...';
+              msg = _this.renderAlert('error', {serverError: {message: "An error occurred on the server."}});
               break;
             default:
               msg = _this.renderAlert('error', data.responseJSON);
