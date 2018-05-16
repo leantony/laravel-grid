@@ -8,3 +8,5 @@ gen
 
 # custom
 vendor
+node_modules
+*.map

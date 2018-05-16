@@ -1,0 +1,39 @@
+{
+  "name": "laravel_grid",
+  "version": "2.0.0",
+  "description": "laravel data grid inspired by the yii2 gridview",
+  "main": "none",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "babel --presets es2016 src/resources/assets/js/grid.js -o src/resources/assets/dist/js/grid.js --source-maps",
+    "css": "node-sass --include-path scss src/resources/assets/css/grid.scss src/resources/assets/dist/css/grid.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leantony/laravel-grid.git"
+  },
+  "keywords": [
+    "laravel",
+    "laravel-grid",
+    "grid",
+    "grid-generator",
+    "pjax",
+    "bootstrap"
+  ],
+  "author": "chachaantony@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leantony/laravel-grid/issues"
+  },
+  "homepage": "https://github.com/leantony/laravel-grid#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2016": "^6.24.1",
+    "node-sass": "^4.9.0"
+  }
+}

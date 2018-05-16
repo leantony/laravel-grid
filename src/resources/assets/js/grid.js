@@ -26,8 +26,9 @@ var _grids = _grids || {};
      *
      * @param element
      * @param event
+     * @param options
      */
-    _grids.utils.handleAjaxRequest = (element, event) => {
+    _grids.utils.handleAjaxRequest = (element, event, options) => {
       event = event || 'click';
       if (element.length < 1) return;
 
@@ -54,10 +55,14 @@ var _grids = _grids || {};
             url: isForm ? obj.attr('action') : obj.attr('href'),
             data: isForm ? obj.serialize() : null,
             beforeSend() {
-              //
+              if(options.beforeSend) {
+                options.beforeSend.call(this)
+              }
             },
             complete() {
-              //
+              if(options.onComplete) {
+                options.onComplete.call(this)
+              }
             },
             success(data) {
               if (pjaxContainer) {
@@ -500,8 +505,7 @@ var _grids = _grids || {};
     // table links
     _grids.utils.tableLinks({element: '.linkable', navigationDelay: 100});
     // setup ajax listeners
-    _grids.utils.handleAjaxRequest($('.data-remote'), 'click');
-    _grids.utils.handleAjaxRequest($('form[data-remote]'), 'submit');
+    _grids.utils.handleAjaxRequest($('.data-remote'), 'click', {});
   };
 
   return _grids;

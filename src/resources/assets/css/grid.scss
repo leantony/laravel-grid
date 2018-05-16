@@ -2,63 +2,65 @@
  * Copyright (c) 2018.
  * @author Antony [leantony] Chacha
  */
-.grid-w-50 {
+.laravel-grid {
+  .grid-w-50 {
     width: 50% !important;
-}
+  }
 
-.grid-w-45 {
+  .grid-w-45 {
     width: 45% !important;
-}
+  }
 
-.grid-w-40 {
+  .grid-w-40 {
     width: 40% !important;
-}
+  }
 
-.grid-w-35 {
+  .grid-w-35 {
     width: 35% !important;
-}
+  }
 
-.grid-w-30 {
+  .grid-w-30 {
     width: 30% !important;
-}
+  }
 
-.grid-w-25 {
+  .grid-w-25 {
     width: 25% !important;
-}
+  }
 
-.grid-w-20 {
+  .grid-w-20 {
     width: 20% !important;
-}
+  }
 
-.grid-w-15 {
+  .grid-w-15 {
     width: 15% !important;
-}
+  }
 
-.grid-w-10 {
+  .grid-w-10 {
     width: 10% !important;
-}
+  }
 
-.grid-bold {
+  .grid-bold {
     font-weight: 600;
-}
+  }
 
-.grid-export-button {
+  .grid-export-button {
     margin-left: 5px;
-}
+  }
 
-.grid-filter {
+  .grid-filter {
     font-size: 12px;
-}
+  }
 
-.grid-filter-button {
+  .grid-filter-button {
     cursor: pointer;
     font-size: 12px;
-}
+  }
 
-.grid-row-button {
+  .grid-row-button {
     font-size: 11px;
-}
+  }
 
-.grid-wrapper {
+  .grid-wrapper {
     margin-top: 20px;
+  }
 }
