@@ -99,8 +99,9 @@ class GridServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/views' => base_path('resources/views/vendor/leantony')
         ], 'views');
 
+        // only publish compiled assets
         $this->publishes([
-            __DIR__ . '/../resources/assets' => base_path('public/vendor/leantony/grid')
+            __DIR__ . '/../resources/assets/dist' => base_path('public/vendor/leantony/grid')
         ], 'assets');
     }
 
