@@ -136,6 +136,11 @@ trait HasGridConfigurations
      */
     private $gridNamespace;
 
+    /**
+     * @var array
+     */
+    private $defaultColumnDataOptions;
+
     public function getGridFilterFieldColumnClass()
     {
         if ($this->filterFieldColumnClass === null) {
@@ -341,5 +346,16 @@ trait HasGridConfigurations
             $this->gridNamespace = config('grid.generation.namespace', "App\\Grids");
         }
         return $this->gridNamespace;
+    }
+
+    public function getGridDefaultColumnDataOptions()
+    {
+        if ($this->defaultColumnDataOptions === null) {
+            $this->defaultColumnDataOptions = config('grid.columns.default_data_value', [
+                "search" => ["enabled" => false],
+                "filter" => ["enabled" => true, "operator" => "="]
+            ]);
+        }
+        return $this->defaultColumnDataOptions;
     }
 }

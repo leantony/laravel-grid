@@ -68,6 +68,10 @@ trait CreatesColumns
         // process
         foreach ($this->columns as $columnName => $columnData) {
 
+            // string in place of column data
+            if (!is_array($columnData)) {
+                $columnData = $this->getGridDefaultColumnDataOptions();
+            }
             // should render
             if (!$this->canRenderColumn($columnName, $columnData)) {
                 continue;

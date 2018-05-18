@@ -33,12 +33,6 @@ return [
          * The query parameter supplied to indicate a sort direction
          */
         'dir_param' => 'sort_dir',
-
-        /**
-         * Valid sort directions
-         */
-        'valid_directions' => ['asc', 'desc']
-
     ],
 
     /**
@@ -62,7 +56,7 @@ return [
         ],
 
         /**
-         * Max allowed export rows. Will apply to json and html export options
+         * Max allowed export rows
          */
         'max_rows' => 5000
     ],
