@@ -38,7 +38,7 @@
 
                                 @if($loop->first)
 
-                                    @if($sort = $column->sortable)
+                                    @if($column->sortable)
                                         <th scope="col"
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                             title="click to sort by {{ $column->key }}">
@@ -53,7 +53,7 @@
                                         </th>
                                     @endif
                                 @else
-                                    @if($sort = $column->sortable)
+                                    @if($column->sortable)
                                         <th scope="col" title="click to sort by {{ $column->key }}"
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"

@@ -18,11 +18,18 @@ trait RendersButtons
     protected $renderButtons = true;
 
     /**
-     * Valid positions in the grid where buttons can be placed
+     * Buttons on the rows of the grid
      *
-     * @var array
+     * @var string
      */
-    protected $buttonTargets = ['rows', 'toolbar'];
+    protected static $TYPE_ROW = 'rows';
+
+    /**
+     * Buttons on the toolbar of the grid
+     *
+     * @var string
+     */
+    protected static $TYPE_TOOLBAR = 'toolbar';
 
     /**
      * List of default buttons to be generated on the grid. If you need to add custom buttons
@@ -74,13 +81,13 @@ trait RendersButtons
     {
         $this->buttons = [
             // toolbar buttons
-            'toolbar' => [
+            static::$TYPE_TOOLBAR => [
                 'create' => $this->addCreateButton(),
                 'refresh' => $this->addRefreshButton(),
                 'export' => $this->addExportButton(),
             ],
             // row buttons
-            'rows' => [
+            static::$TYPE_ROW => [
                 'view' => $this->addViewButton(),
                 'delete' => $this->addDeleteButton()
             ]
@@ -101,7 +108,7 @@ trait RendersButtons
             'name' => "Create",
             'class' => "btn btn-success",
             'showModal' => true,
-            'type' => 'toolbar',
+            'type' => static::$TYPE_TOOLBAR,
             'icon' => 'fa-plus-circle',
             'url' => $this->getCreateUrl(['ref' => $this->getId()]),
             'title' => 'add new ' . $this->shortSingularGridName(),
@@ -127,7 +134,7 @@ trait RendersButtons
             'class' => 'btn btn-primary',
             'gridId' => $this->id,
             'url' => $this->getRefreshUrl(),
-            'type' => 'toolbar',
+            'type' => static::$TYPE_TOOLBAR,
             'title' => 'refresh table for ' . strtolower($this->name),
             'renderIf' => function () {
                 return in_array('refresh', $this->buttonsToGenerate);
@@ -152,7 +159,7 @@ trait RendersButtons
                 return view('leantony::grid.buttons.export', $data)->render();
             },
             'gridId' => $this->id,
-            'type' => 'toolbar',
+            'type' => static::$TYPE_TOOLBAR,
             'exportRoute' => $this->getIndexRouteName(),
             'renderIf' => function () {
                 // only render the export button if `$allowsExporting` is set to true
@@ -176,7 +183,7 @@ trait RendersButtons
             'class' => 'btn btn-outline-primary btn-sm grid-row-button',
             'showModal' => true,
             'gridId' => $this->id,
-            'type' => 'row',
+            'type' => static::$TYPE_ROW,
             'title' => 'view record',
             'url' => function ($gridName, $item) {
                 return $this->getViewUrl([$gridName => $item->id, 'ref' => $this->getId()]);
@@ -201,7 +208,7 @@ trait RendersButtons
             'position' => 2,
             'class' => 'data-remote grid-row-button btn btn-outline-danger btn-sm',
             'icon' => 'fa-trash',
-            'type' => 'row',
+            'type' => static::$TYPE_ROW,
             'title' => 'delete record',
             'pjaxEnabled' => false,
             'dataAttributes' => [
@@ -281,8 +288,8 @@ trait RendersButtons
     protected function makeCustomButton(array $properties, $position = null): GenericButton
     {
         $key = $properties['name'] ?? 'unknown';
-        $position = $position ?? 'toolbar';
-        if ($position === 'toolbar') {
+        $position = $position ?? static::$TYPE_TOOLBAR;
+        if ($position === static::$TYPE_TOOLBAR) {
             $this->addToolbarButton($key, new GenericButton(array_merge($properties, ['type' => $position])));
         } else {
             $this->addRowButton($key, new GenericButton(array_merge($properties, ['type' => $position])));
@@ -311,7 +318,7 @@ trait RendersButtons
      */
     protected function addToolbarButton(string $button, GenericButton $instance)
     {
-        $this->addButton('toolbar', $button, $instance);
+        $this->addButton(static::$TYPE_TOOLBAR, $button, $instance);
     }
 
     /**
@@ -325,8 +332,8 @@ trait RendersButtons
      */
     public function addButton(string $target, string $button, GenericButton $instance)
     {
-        if (!in_array($target, $this->buttonTargets)) {
-            throw new InvalidArgumentException("Invalid target supplied. Expects either of => " . json_encode($this->buttonTargets));
+        if ($target !== static::$TYPE_TOOLBAR || $target !== static::$TYPE_ROW) {
+            throw new InvalidArgumentException(printf("Invalid target supplied. Expects either of %s or %s", static::$TYPE_ROW, static::$TYPE_TOOLBAR));
         }
         $this->buttons = array_merge_recursive($this->buttons, [
             $target => [
@@ -345,7 +352,7 @@ trait RendersButtons
      */
     protected function addRowButton(string $button, GenericButton $instance)
     {
-        $this->addButton('rows', $button, $instance);
+        $this->addButton(static::$TYPE_ROW, $button, $instance);
     }
 
     /**
@@ -388,7 +395,7 @@ trait RendersButtons
      */
     protected function editRowButton(string $button, array $properties)
     {
-        $this->editButtonProperties('row', $button, $properties);
+        $this->editButtonProperties(static::$TYPE_ROW, $button, $properties);
     }
 
     /**
@@ -400,6 +407,6 @@ trait RendersButtons
      */
     protected function editToolbarButton(string $button, array $properties)
     {
-        $this->editButtonProperties('toolbar', $button, $properties);
+        $this->editButtonProperties(static::$TYPE_TOOLBAR, $button, $properties);
     }
 }
