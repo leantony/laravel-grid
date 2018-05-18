@@ -141,7 +141,7 @@ trait HasGridConfigurations
      */
     private $defaultColumnDataOptions;
 
-    public function getGridFilterFieldColumnClass()
+    public function getGridFilterFieldColumnClass(): string
     {
         if ($this->filterFieldColumnClass === null) {
             $this->filterFieldColumnClass = config('grid.columns.filter_field_class', 'grid-w-15');
@@ -247,7 +247,7 @@ trait HasGridConfigurations
         return $this->paginationView;
     }
 
-    public function gridNeedsSimplePagination()
+    public function gridNeedsSimplePagination(): bool
     {
         return $this->getGridPaginationFunction() === 'simple';
     }
@@ -255,7 +255,7 @@ trait HasGridConfigurations
     public function getGridPaginationFunction(): string
     {
         if ($this->paginationType === null) {
-            $this->paginationType = config('grids.pagination.type', 'default');
+            $this->paginationType = config('grid.pagination.type', 'default');
         }
         return $this->paginationType;
     }
@@ -263,7 +263,7 @@ trait HasGridConfigurations
     public function getGridPaginationPageSize(): int
     {
         if ($this->paginationSize === null) {
-            $this->paginationSize = config('grids.pagination.default_size', 15);
+            $this->paginationSize = config('grid.pagination.default_size', 15);
         }
         return $this->paginationSize;
     }
@@ -329,7 +329,7 @@ trait HasGridConfigurations
         return $this->maxExportRows;
     }
 
-    public function getGridColumnsToSkipOnGeneration()
+    public function getGridColumnsToSkipOnGeneration(): array
     {
         if ($this->columnsToSkipOnGeneratingGrid === null) {
             $this->columnsToSkipOnGeneratingGrid = config('grid.generation.columns_to_skip', [
@@ -340,7 +340,7 @@ trait HasGridConfigurations
         return $this->columnsToSkipOnGeneratingGrid;
     }
 
-    public function getGridNamespace()
+    public function getGridNamespace(): string
     {
         if ($this->gridNamespace === null) {
             $this->gridNamespace = config('grid.generation.namespace', "App\\Grids");
@@ -348,7 +348,7 @@ trait HasGridConfigurations
         return $this->gridNamespace;
     }
 
-    public function getGridDefaultColumnDataOptions()
+    public function getGridDefaultColumnDataOptions(): array
     {
         if ($this->defaultColumnDataOptions === null) {
             $this->defaultColumnDataOptions = config('grid.columns.default_data_value', [
