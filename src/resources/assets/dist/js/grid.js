@@ -456,12 +456,11 @@ var _grids = _grids || {};
 
             // load the modal into the container put on the html
             $('.modal-content').load($(this).attr('href') || $(this).data('href'), function () {
-              var md = $('#bootstrap_modal');
               // show the modal
-              md.modal({ show: true });
+              $('#bootstrap_modal').modal({ show: true });
               // alter size
-              if (!modalSize) {
-                md.find('.modal-dialog').addClass(modalSize);
+              if (modalSize) {
+                $('.modal-content').parent('div').addClass(modalSize);
               }
             });
 
