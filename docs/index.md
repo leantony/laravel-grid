@@ -227,7 +227,7 @@ For a quick demonstration, be sure to check out the demo [here](http://laravel-g
 ## Updating local JS and CSS assets after package updates
 When the package is updated, it is highly likely that you will also need to update the javascript assets. To do that, run this command below after an update;
 ```php
-php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" --tag=assets --force
+php artisan vendor:publish --provider="Leantony\Grid\Providers\GridServiceProvider" --tag=assets --force
 ```
 > You can also place this command in composer so that it is executed automatically on each update run. Like this;
 ```php
@@ -235,7 +235,7 @@ php artisan vendor:publish --provider="Leantony\Grid\Providers\ServiceProvider" 
 "post-autoload-dump": [
     "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
     "@php artisan package:discover",
-    "@php artisan vendor:publish --provider=\"Leantony\\Grid\\Providers\\ServiceProvider\" --tag=assets --force"
+    "@php artisan vendor:publish --provider=\"Leantony\\Grid\\Providers\\GridServiceProvider\" --tag=assets --force"
 ]
 ```
 
