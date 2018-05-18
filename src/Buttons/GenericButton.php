@@ -100,7 +100,7 @@ class GenericButton implements Htmlable
     protected $gridId;
 
     /**
-     * Type of button. Can be one of either `row` or `toolbar`
+     * Type of button. Can be one of either `rows` or `toolbar`
      * @var string
      */
     protected $type = 'toolbar';
