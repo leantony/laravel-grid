@@ -10,3 +10,5 @@ gen
 vendor
 node_modules
 *.map
+
+.env
