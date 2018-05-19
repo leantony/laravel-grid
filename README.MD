@@ -147,6 +147,7 @@ class UsersController extends Controller
 Just make sure that you do not call `->get()` on the query.
 
 > If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
+
 ```php
      /**
      * Register any application services.
@@ -230,6 +231,7 @@ When the package is updated, it is highly likely that you will also need to upda
 php artisan vendor:publish --provider="Leantony\Grid\Providers\GridServiceProvider" --tag=assets --force
 ```
 > You can also place this command in composer so that it is executed automatically on each update run. Like this;
+
 ```php
 // ... composer config
 "post-autoload-dump": [
