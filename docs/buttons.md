@@ -84,7 +84,6 @@ public function configureButtons()
         ]);
     }
 ```
-> The `name` passed to the method should be a lowercase representation of the actual button's name. E.g if the name of the button is `Refresh` then you will pass in `refresh`.
 
 ## Adding custom buttons
 Within the `configureButtons` function, call the `makeCustomButton` and pass in any of the attributes listed above in the array.
