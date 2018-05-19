@@ -184,6 +184,7 @@ Sometimes you might need to display a specific button, only when say, the user o
 And just like the section on adding buttons, it's generally the same approach for a button on the `toolbar`. The `renderIf` callback takes no arguments. Consider a case where you need to render the `create` button only when a user is logged in. Here's how you will do it;
 
 > Just note that the call is to the `editToolbarButton` in this case
+
 ```php
     //
     public function configureButtons()
