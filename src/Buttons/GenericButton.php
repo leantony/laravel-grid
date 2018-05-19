@@ -108,7 +108,6 @@ class GenericButton implements Htmlable
     /**
      * CreateButton constructor.
      * @param array $params
-     * @throws \Exception
      */
     public function __construct(array $params = [])
     {
@@ -198,19 +197,18 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @return string
+     * @return string|callable
      */
-    public function getUrl(): string
+    public function getUrl()
     {
         return $this->url;
     }
 
     /**
-     * @param string $url
+     * @param string|callable $url
      * @return GenericButton
-     * @internal param callable|string $link
      */
-    public function setUrl(string $url): GenericButton
+    public function setUrl($url): GenericButton
     {
         $this->url = $url;
         return $this;
@@ -235,7 +233,7 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getIcon()
     {
@@ -243,7 +241,7 @@ class GenericButton implements Htmlable
     }
 
     /**
-     * @param null $icon
+     * @param string $icon
      * @return GenericButton
      */
     public function setIcon($icon)

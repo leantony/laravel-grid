@@ -51,6 +51,13 @@ trait ConfiguresRoutes
     protected $sortUrl;
 
     /**
+     * The route parameter to be used for view and delete routes
+     *
+     * @var string
+     */
+    protected $defaultRouteParameter = 'id';
+
+    /**
      * @return string
      */
     public function getIndexRouteName(): string
@@ -217,5 +224,25 @@ trait ConfiguresRoutes
     public function setDeleteRouteName(string $deleteRouteName): void
     {
         $this->deleteRouteName = $deleteRouteName;
+    }
+
+    /**
+     * Get the default route parameter
+     *
+     * @return string
+     */
+    public function getDefaultRouteParameter(): string
+    {
+        return $this->defaultRouteParameter;
+    }
+
+    /**
+     * Set the default route parameter
+     *
+     * @param string $defaultRouteParameter
+     */
+    public function setDefaultRouteParameter(string $defaultRouteParameter): void
+    {
+        $this->defaultRouteParameter = $defaultRouteParameter;
     }
 }

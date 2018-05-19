@@ -49,7 +49,8 @@ class GenerateGrid extends Command
         'isLinkable' => '{{ linkable }}',
         'rows' => '{{ rows }}',
         'routeRoot' => '{{ routeRoot }}',
-        'binding' => '{{ binding }}'
+        'binding' => '{{ binding }}',
+        'modelPk' => '{{ modelPk }}',
     ];
 
     /**
@@ -436,6 +437,7 @@ class GenerateGrid extends Command
             'tableName' => $tableName,
             'routeRoot' => $routeRoot,
             'binding' => $this->binding,
+            'modelPk' => $model->getKeyName(),
         ], $contents);
 
         return array($namespace, $tableName, $replaced);
@@ -470,7 +472,8 @@ class GenerateGrid extends Command
             $replacements['tableName'],
             'false',
             $replacements['routeRoot'],
-            $replacements['binding']
+            $replacements['binding'],
+            $replacements['modelPk']
         ], $stub);
 
         $this->info("Finished performing replacements to the stub files...");

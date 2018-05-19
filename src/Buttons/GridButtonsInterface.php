@@ -10,8 +10,6 @@ interface GridButtonsInterface
 {
     /**
      * Configure rendered buttons, if need be.
-     * For example, within this function, you can call `addButton()` to add a button to the grid
-     * You can also call `editButtonProperties()` to edit any properties for buttons that will be generated
      *
      * @return void
      */
@@ -20,7 +18,7 @@ interface GridButtonsInterface
     /**
      * Add a button to the grid
      *
-     * @param $target string the location where the button will be rendered. Needs to be among the `$buttonTargets`
+     * @param $target string the location where the button will be rendered
      * @param $button string the button name. Can be any name
      * @param $instance GenericButton the button instance
      *
