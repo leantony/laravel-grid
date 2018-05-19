@@ -75,7 +75,6 @@ trait RendersButtons
      * Set default buttons for the grid
      *
      * @return void
-     * @throws \Exception
      */
     public function setDefaultButtons()
     {
@@ -98,12 +97,11 @@ trait RendersButtons
      * Add a create button to the grid
      *
      * @return GenericButton
-     * @throws \Exception
      */
     protected function addCreateButton(): GenericButton
     {
         return (new GenericButton([
-            'gridId' => $this->id,
+            'gridId' => $this->getId(),
             'position' => 1,
             'name' => "Create",
             'class' => "btn btn-success",
@@ -122,7 +120,6 @@ trait RendersButtons
      * Add a refresh button to the grid
      *
      * @return GenericButton
-     * @throws \Exception
      */
     protected function addRefreshButton(): GenericButton
     {
@@ -132,7 +129,7 @@ trait RendersButtons
             'position' => 2,
             'icon' => 'fa-refresh',
             'class' => 'btn btn-primary',
-            'gridId' => $this->id,
+            'gridId' => $this->getId(),
             'url' => $this->getRefreshUrl(),
             'type' => static::$TYPE_TOOLBAR,
             'title' => 'refresh table for ' . strtolower($this->name),
@@ -146,7 +143,6 @@ trait RendersButtons
      * Add an export button to the grid
      *
      * @return GenericButton
-     * @throws \Exception
      */
     protected function addExportButton(): GenericButton
     {
@@ -158,7 +154,7 @@ trait RendersButtons
             'renderCustom' => function ($data) {
                 return view('leantony::grid.buttons.export', $data)->render();
             },
-            'gridId' => $this->id,
+            'gridId' => $this->getId(),
             'type' => static::$TYPE_TOOLBAR,
             'exportRoute' => $this->getIndexRouteName(),
             'renderIf' => function () {
@@ -172,7 +168,6 @@ trait RendersButtons
      * Add a view button to the grid
      *
      * @return GenericButton
-     * @throws \Exception
      */
     protected function addViewButton(): GenericButton
     {
@@ -182,11 +177,13 @@ trait RendersButtons
             'position' => 1,
             'class' => 'btn btn-outline-primary btn-sm grid-row-button',
             'showModal' => true,
-            'gridId' => $this->id,
+            'gridId' => $this->getId(),
             'type' => static::$TYPE_ROW,
             'title' => 'view record',
             'url' => function ($gridName, $item) {
-                return $this->getViewUrl([$gridName => $item->id, 'ref' => $this->getId()]);
+                return $this->getViewUrl([
+                    $gridName => $item->{$this->getDefaultRouteParameter()}, 'ref' => $this->getId()
+                ]);
             },
             'renderIf' => function ($gridName, $item) {
                 return in_array('view', $this->buttonsToGenerate);
@@ -198,12 +195,11 @@ trait RendersButtons
      * Add a delete button to the grid
      *
      * @return GenericButton
-     * @throws \Exception
      */
     protected function addDeleteButton(): GenericButton
     {
         return (new GenericButton([
-            'gridId' => $this->id,
+            'gridId' => $this->getId(),
             'name' => 'Delete',
             'position' => 2,
             'class' => 'data-remote grid-row-button btn btn-outline-danger btn-sm',
@@ -214,10 +210,12 @@ trait RendersButtons
             'dataAttributes' => [
                 'method' => 'DELETE',
                 'trigger-confirm' => true,
-                'pjax-target' => '#' . $this->id
+                'pjax-target' => '#' . $this->getId()
             ],
             'url' => function ($gridName, $item) {
-                return route($this->getDeleteRouteName(), [$gridName => $item->id, 'ref' => $this->getId()]);
+                return route($this->getDeleteRouteName(), [
+                    $gridName => $item->{$this->getDefaultRouteParameter()}, 'ref' => $this->getId()
+                ]);
             },
             'renderIf' => function ($gridName, $item) {
                 return in_array('delete', $this->buttonsToGenerate);
@@ -332,8 +330,13 @@ trait RendersButtons
      */
     public function addButton(string $target, string $button, GenericButton $instance)
     {
-        if ($target !== static::$TYPE_TOOLBAR || $target !== static::$TYPE_ROW) {
-            throw new InvalidArgumentException(printf("Invalid target supplied. Expects either of %s or %s", static::$TYPE_ROW, static::$TYPE_TOOLBAR));
+        $targets = [
+            static::$TYPE_TOOLBAR,
+            static::$TYPE_ROW,
+        ];
+
+        if (!in_array($target, $targets)) {
+            throw new InvalidArgumentException(sprintf("Invalid target supplied. Expects value in array => %s", json_encode($targets)));
         }
         $this->buttons = array_merge_recursive($this->buttons, [
             $target => [

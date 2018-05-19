@@ -59,6 +59,9 @@ class {{ model }}Grid extends Grid implements {{ binding }}
         $this->setCreateRouteName('{{ routeRoot }}.create');
         $this->setViewRouteName('{{ routeRoot }}.show');
         $this->setDeleteRouteName('{{ routeRoot }}.destroy');
+
+        // default route parameter
+        $this->setDefaultRouteParameter('{{ modelPk }}');
     }
 
     /**
@@ -80,7 +83,13 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     */
     public function configureButtons()
     {
-        //
+        // call `addRowButton` to add a row button
+        // call `addToolbarButton` to add a toolbar button
+        // call `makeCustomButton` to do either of the above, but passing in the button properties as an array
+
+        // call `editToolbarButton` to edit a toolbar button
+        // call `editRowButton` to edit a row button
+        // call `editButtonProperties` to do either of the above. All the edit functions accept the properties as an array
     }
 
     /**
