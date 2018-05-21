@@ -96,5 +96,8 @@ trait SharedSetup
         $app['router']->get('users/:id', ['as' => 'users.show', 'uses' => 'Tests\Setup\Controller\UsersTestController@show']);
         $app['router']->patch('users/:id', ['as' => 'users.update', 'uses' => 'Tests\Setup\Controller\UsersTestController@update']);
         $app['router']->delete('users/:id', ['as' => 'users.destroy', 'uses' => 'Tests\Setup\Controller\UsersTestController@destroy']);
+
+        // customized grid
+        $app['router']->get('userz', ['as' => 'users.index_2', 'uses' => 'Tests\Setup\Controller\UsersTestController@index_two']);
     }
 }

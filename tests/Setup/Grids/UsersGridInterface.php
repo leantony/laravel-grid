@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Setup\Controller;
+namespace Tests\Setup\Grids;
 
 use Leantony\Grid\GridInterface;
 

@@ -2,6 +2,9 @@
 
 namespace Tests\Browser;
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Laravel\Dusk\Browser;
 use Orchestra\Testbench\Dusk\TestCase;
 use Tests\Setup\SharedSetup;
@@ -10,8 +13,24 @@ class BrowserTestCases extends TestCase
 {
     use SharedSetup;
 
-    protected static $baseServeHost = '127.0.0.1';
-    protected static $baseServePort = 9000;
+    /**
+     * Create the RemoteWebDriver instance.
+     *
+     * @return \Facebook\WebDriver\Remote\RemoteWebDriver
+     */
+    protected function driver(): RemoteWebDriver
+    {
+        $chromeOptions = new ChromeOptions();
+        $chromeOptions->setBinary('/usr/bin/google-chrome');
+        $chromeOptions->addArguments(['no-first-run', 'no-sandbox']);
+        $capabilities = DesiredCapabilities::chrome();
+        $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
+
+        return RemoteWebDriver::create(
+            'http://localhost:9515',
+            $capabilities
+        );
+    }
 
     /**
      * Test seeing the grid
@@ -26,7 +45,9 @@ class BrowserTestCases extends TestCase
             /** @var $browser Browser */
             $browser->visit('/users')
                 ->assertSee('Users')
-                ->assertSee('tester_1');
+                ->assertSee('tester_1')
+                ->assertSee('tester_6')
+                ->assertSee('testrole_1');
         });
     }
 
