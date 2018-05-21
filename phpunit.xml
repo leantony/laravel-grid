@@ -23,9 +23,12 @@
         </whitelist>
     </filter>
     <php>
-        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
+        <env name="APP_KEY" value="zJnMFyc3fnk1HpxsF0wtQZIyY78pj"/>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="testing"/>
+        <env name="DB_DATABASE" value="homestead_test"/>
+        <env name="DB_USERNAME" value="root"/>
+        <env name="DB_PASSWORD" value=""/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>

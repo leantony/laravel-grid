@@ -72,7 +72,7 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     public function getLinkableCallback(): Closure
     {
         return function ($gridName, $item) {
-            return route($this->getViewRouteName(), [$gridName => $item->id]);
+            return route($this->getViewRouteName(), [$gridName => $item->{{ modelPk }}]);
         };
     }
 
@@ -101,6 +101,8 @@ class {{ model }}Grid extends Grid implements {{ binding }}
     public function getRowCssStyle(): Closure
     {
         return function ($gridName, $item) {
+            // e.g, to add a success class to specific table rows;
+            // return $item->{{ modelPk }} % 2 === 0 ? 'table-success' : '';
             return "";
         };
     }
