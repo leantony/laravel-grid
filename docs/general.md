@@ -1,4 +1,4 @@
-This are the usual table columns. Just like the `buttons`, also this can be customized. But first, they have to be added to the grid. If you used the command available to generate the grid, some of your model columns should already be there. Below is a sample copied from the [sample app's code](https://github.com/leantony/laravel-grid-app/blob/e6777b97a53ebbf80105f5533b53959b8c066655/app/Grids/UsersGrid.php#L40-L74);
+The grid consists both rows and columns - but of course, since it's all but a HTML table. And just like the `buttons`, also the rows and columns can be customized. But first, they have to be added to the grid. If you used the command available to generate the grid, some of your model columns should already be there. Below are sample columns from a generated grid copied from the [sample app's code](https://github.com/leantony/laravel-grid-app/blob/6e96abdb7c1d5c9616d6913752a7f21ccfc65c45/app/Grids/UsersGrid.php#L44);
 ```php
      /**
      * Set the columns to be displayed.
