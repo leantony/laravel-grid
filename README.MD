@@ -22,7 +22,7 @@ The package is available on packagist. Just run;
 ```php
 composer install leantony/laravel-grid "2.0.x-dev"
 ```
-> For bootstrap 3 support, consider installing version `1.0`.
+> For bootstrap 3 support, consider installing version `1.0`. Version 1.0 though is preety not much updated at this point, so may lack some features.
 
 ## Publish assets
 The grid comes with a config file, CSS assets, JS assets and view files. The command below should allow you to publish them.
