@@ -3,6 +3,11 @@
 Live demo: [here](http://laravel-grid.herokuapp.com/)
 
 [![Build Status](https://travis-ci.org/leantony/laravel-grid.svg?branch=master)](https://travis-ci.org/leantony/laravel-grid)
+[![Latest Stable Version](https://poser.pugx.org/leantony/laravel-grid/v/stable)](https://packagist.org/packages/leantony/laravel-grid)
+[![Latest Unstable Version](https://poser.pugx.org/leantony/laravel-grid/v/unstable)](https://packagist.org/packages/leantony/laravel-grid)
+[![Total Downloads](https://poser.pugx.org/leantony/laravel-grid/downloads)](https://packagist.org/packages/leantony/laravel-grid)
+[![Monthly Downloads](https://poser.pugx.org/leantony/laravel-grid/d/monthly)](https://packagist.org/packages/leantony/laravel-grid)
+[![Daily Downloads](https://poser.pugx.org/leantony/laravel-grid/d/daily)](https://packagist.org/packages/leantony/laravel-grid)
 
 This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
 
