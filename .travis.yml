@@ -4,17 +4,10 @@ php:
   - 7.1
   - 7.2
 
-services:
-  - mysql
-
 before_script:
   - cp .env.travis .env
   - composer self-update
   - composer install --no-interaction
-
-before_install:
-  - mysql -e "set global wait_timeout = 28800;"
-  - mysql -e 'CREATE DATABASE homestead_test;'
 
 script:
   - vendor/bin/phpunit tests/Unit/PackageTestCase.php
