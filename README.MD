@@ -6,8 +6,6 @@ Live demo: [here](http://laravel-grid.herokuapp.com/)
 [![Latest Stable Version](https://poser.pugx.org/leantony/laravel-grid/v/stable)](https://packagist.org/packages/leantony/laravel-grid)
 [![Latest Unstable Version](https://poser.pugx.org/leantony/laravel-grid/v/unstable)](https://packagist.org/packages/leantony/laravel-grid)
 [![Total Downloads](https://poser.pugx.org/leantony/laravel-grid/downloads)](https://packagist.org/packages/leantony/laravel-grid)
-[![Monthly Downloads](https://poser.pugx.org/leantony/laravel-grid/d/monthly)](https://packagist.org/packages/leantony/laravel-grid)
-[![Daily Downloads](https://poser.pugx.org/leantony/laravel-grid/d/daily)](https://packagist.org/packages/leantony/laravel-grid)
 
 This package allows rendering of data via a tabular format (grid). The grid uses bootstrap classes to style the `table` elements. Icons used are from `font-awesome`, and most of the functionality is insipred by the yii2's framework's gridview widget. 
 
@@ -151,7 +149,7 @@ class UsersController extends Controller
 ```
 Just make sure that you do not call `->get()` on the query.
 
-> If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
+If you inject the interface on the controller, just make sure that you add a binding to the service provider. Like this;
 
 ```php
      /**
@@ -235,7 +233,7 @@ When the package is updated, it is highly likely that you will also need to upda
 ```php
 php artisan vendor:publish --provider="Leantony\Grid\Providers\GridServiceProvider" --tag=assets --force
 ```
-> You can also place this command in composer so that it is executed automatically on each update run. Like this;
+You can also place this command in composer so that it is executed automatically on each update run. Like this;
 
 ```php
 // ... composer config
