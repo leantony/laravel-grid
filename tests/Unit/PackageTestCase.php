@@ -72,11 +72,8 @@ class PackageTestCase extends TestCase
     {
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
-            'driver' => 'mysql',
-            'host' => env('DB_HOST', '172.19.0.3'),
-            'database' => env('DB_DATABASE', 'homestead_test'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', 'secret'),
+            'driver' => 'sqlite',
+            'database' => ':memory:',
             'prefix' => '',
         ]);
     }
