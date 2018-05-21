@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Controller;
+namespace Tests\Setup\Controller;
 
 use Closure;
 use Leantony\Grid\Grid;
-use Tests\TestModels\Role;
+use Tests\Setup\TestModels\Role;
 
 class UsersGrid extends Grid implements UsersGridInterface
 {

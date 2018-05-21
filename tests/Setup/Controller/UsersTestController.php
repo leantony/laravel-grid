@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Controller;
+namespace Tests\Setup\Controller;
 
 use Illuminate\Http\Request;
-use Tests\TestModels\User;
+use Tests\Setup\TestModels\User;
 
 class UsersTestController extends \Illuminate\Routing\Controller
 {
