@@ -23,10 +23,11 @@ class PdfExport implements GridExportInterface
         $exportableColumns = $args['exportableColumns'];
         $fileName = $args['fileName'];
         $exportView = $args['exportView'];
+        $title = $args['title'];
 
         if(class_exists(\Barryvdh\DomPDF\ServiceProvider::class)) {
             $pdf = app('dompdf.wrapper');
-            $pdf->loadHTML(view($exportView, ['columns' => $exportableColumns, 'data' => $data])->render());
+            $pdf->loadHTML(view($exportView, ['title' => $title, 'columns' => $exportableColumns, 'data' => $data])->render());
             return $pdf->download($fileName . '.pdf');
         }
         throw new \InvalidArgumentException("PDF library not found. Please install 'barryvdh/laravel-dompdf' to handle PDF exports");

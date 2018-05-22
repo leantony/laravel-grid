@@ -22,9 +22,11 @@ class HtmlExport implements GridExportInterface
         $exportableColumns = $args['exportableColumns'];
         $fileName = $args['fileName'];
         $exportView = $args['exportView'];
+        $title = $args['title'];
 
-        return response()->streamDownload(function () use ($data, $exportableColumns, $exportView) {
+        return response()->streamDownload(function () use ($data, $exportableColumns, $exportView, $title) {
             echo view($exportView, [
+                'title' => $title,
                 'columns' => $exportableColumns,
                 'data' => $data->toArray()
             ])->render();

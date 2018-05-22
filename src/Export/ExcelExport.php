@@ -6,7 +6,6 @@
 
 namespace Leantony\Grid\Export;
 
-use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
