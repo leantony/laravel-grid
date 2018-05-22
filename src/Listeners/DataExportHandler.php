@@ -32,13 +32,6 @@ class DataExportHandler
     protected $allowsExporting = true;
 
     /**
-     * Query chunk size for export
-     *
-     * @var int
-     */
-    protected $chunkSize = 200;
-
-    /**
      * The filename that would be exported
      *
      * @var string
@@ -106,13 +99,14 @@ class DataExportHandler
     public function exportAs($type = 'xlsx')
     {
         switch ($type) {
-            case 'pdf': {
-                return (new PdfExport())->export($this->getExportData(), [
-                    'exportableColumns' => $this->getExportableColumns()[1],
-                    'fileName' => $this->getFileNameForExport(),
-                    'exportView' => $this->getGridExportView(),
-                ]);
-            }
+            case 'pdf':
+                {
+                    return (new PdfExport())->export($this->getExportData(), [
+                        'exportableColumns' => $this->getExportableColumns()[1],
+                        'fileName' => $this->getFileNameForExport(),
+                        'exportView' => $this->getGridExportView(),
+                    ]);
+                }
             case 'csv':
             case 'xlsx':
                 {
@@ -206,18 +200,18 @@ class DataExportHandler
      */
     public function getExportData(array $params = []): Collection
     {
-        $useUnformattedKeys = $params['doNotFormatKeys'] ?? false;
+        $doNotFormatKeys = $params['doNotFormatKeys'] ?? false;
 
         list($pinch, $columns) = $this->getExportableColumns();
 
         $records = new Collection();
 
-        $this->getQuery()->select($pinch)->chunk(200, function($items) use ($columns, $params, $useUnformattedKeys, $records){
+        $this->getQuery()->select($pinch)->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, $records) {
             // customize the results
             $columns = $columns->toArray();
 
-            $data = $items->map(function ($value) use ($columns, $params, $useUnformattedKeys) {
-                return call_user_func([$this, 'dataFormatter'], $value, $columns, $useUnformattedKeys);
+            $data = $items->map(function ($value) use ($columns, $params, $doNotFormatKeys) {
+                return call_user_func([$this, 'dataFormatter'], $value, $columns, $doNotFormatKeys);
             });
             $records->push($data);
         });
@@ -230,10 +224,10 @@ class DataExportHandler
      *
      * @param mixed $item
      * @param array $columns
-     * @param boolean $useUnformattedKeys
+     * @param boolean $doNotFormatKeys
      * @return array
      */
-    protected function dataFormatter($item, array $columns, bool $useUnformattedKeys): array
+    protected function dataFormatter($item, array $columns, bool $doNotFormatKeys): array
     {
         $data = [];
         foreach ($columns as $column) {
@@ -241,11 +235,11 @@ class DataExportHandler
             // `processColumns()` would have already taken care of processing the callbacks
             // so here, we only pass the required arguments
             if (is_callable($column->data)) {
-                $key = $useUnformattedKeys ? $column->key : $column->name;
+                $key = $doNotFormatKeys ? $column->key : $column->name;
                 $value = call_user_func($column->data, $item, $column->key);
                 array_push($data, [$key => $value]);
             } else {
-                $key = $useUnformattedKeys ? $column->key : $column->name;
+                $key = $doNotFormatKeys ? $column->key : $column->name;
                 $value = $item->{$column->key};
                 array_push($data, [$key => $value]);
             }

@@ -94,7 +94,7 @@ trait HasGridConfigurations
      *
      * @var int
      */
-    private $maxExportRows;
+    private $gridExportQueryChunkSize;
 
     /**
      * @var string
@@ -321,12 +321,12 @@ trait HasGridConfigurations
         return $this->exportView;
     }
 
-    public function getGridMaxExportRows(): int
+    public function getGridExportQueryChunkSize(): int
     {
-        if ($this->maxExportRows === null) {
-            $this->maxExportRows = config('grid.export.max_rows', 5000);
+        if ($this->gridExportQueryChunkSize === null) {
+            $this->gridExportQueryChunkSize = config('grid.export.chunk_size', 300);
         }
-        return $this->maxExportRows;
+        return $this->gridExportQueryChunkSize;
     }
 
     public function getGridColumnsToSkipOnGeneration(): array
