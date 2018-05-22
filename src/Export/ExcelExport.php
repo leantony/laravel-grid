@@ -6,87 +6,68 @@
 
 namespace Leantony\Grid\Export;
 
-use Excel;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ExcelExport implements FromQuery, WithTitle, WithHeadings, WithMapping
+class ExcelExport implements FromCollection, WithTitle, WithHeadings
 {
     use Exportable;
 
     /**
-     * @var Builder
+     * The data
+     *
+     * @var Collection
      */
-    private $query;
+    protected $data;
 
     /**
-     * @var array
+     * The title of the report
+     *
+     * @var string
      */
-    private $pinch;
+    private $title;
 
     /**
+     * The columns to export
+     *
      * @var array
      */
     private $columns;
 
-    /**
-     * @var string
-     */
-    private $title;
-    /**
-     * @var callable
-     */
-    private $mapperFunction;
 
     /**
+     * The headings to export
+     *
      * @var array
      */
     private $headings;
 
     /**
-     * ExcelExport constructor.
-     * @param Builder $builder
-     * @param array $pinch
-     * @param array $columns
-     * @param array $headings
-     * @param string $title
-     * @param callable $mapperFunction
+     * DefaultExport constructor.
+     * @param array $params
      */
-    public function __construct($builder, array $pinch, array $columns, array $headings, string $title, callable $mapperFunction)
+    public function __construct(array $params)
     {
-        $this->query = $builder;
-        $this->pinch = $pinch;
-        $this->columns = $columns;
-        $this->headings = $headings;
-        $this->title = $title;
-        $this->mapperFunction = $mapperFunction;
+        $this->title = $params['title'];
+        $this->columns = $params['columns'];
+        $this->data = $params['data'];
+        $this->headings = $params['headings'];
     }
 
-    public function query()
+    public function collection()
     {
-        return $this->query->select($this->pinch);
+        return $this->data;
     }
 
-    public function map($data): array
-    {
-        return call_user_func($this->mapperFunction, $data, $this->columns, false);
-    }
-
-    /**
-     * @return string
-     */
     public function title(): string
     {
         return $this->title;
     }
 
-    /**
-     * @return array
-     */
     public function headings(): array
     {
         return $this->headings;

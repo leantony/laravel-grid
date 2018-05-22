@@ -88,6 +88,7 @@ trait SharedSetup
 
         // some sample config
         $app['config']->set('grid.warn_when_empty', true);
+        $app['config']->set('grid.export.allowed_types', ['pdf', 'csv', 'html', 'json', 'xlsx']);
 
         // routes
         $app['router']->get('users', ['as' => 'users.index', 'uses' => 'Tests\Setup\Controller\UsersTestController@index']);

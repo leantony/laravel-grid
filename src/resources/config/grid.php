@@ -56,9 +56,9 @@ return [
         ],
 
         /**
-         * Max allowed export rows
+         * Export chunk size
          */
-        'max_rows' => 5000
+        'chunk_size' => 200
     ],
 
     /**
