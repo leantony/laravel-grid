@@ -105,6 +105,7 @@ class DataExportHandler
                         'exportableColumns' => $this->getExportableColumns()[1],
                         'fileName' => $this->getFileNameForExport(),
                         'exportView' => $this->getGridExportView(),
+                        'title' => $this->getGrid()->getName() . ' PDF report data'
                     ]);
                 }
             case 'csv':
@@ -129,6 +130,7 @@ class DataExportHandler
                         'exportableColumns' => $this->getExportableColumns()[1],
                         'fileName' => $this->getFileNameForExport(),
                         'exportView' => $this->getGridExportView(),
+                        'title' => $this->getGrid()->getName() . ' HTML report data'
                     ]);
                 }
             case 'json':
@@ -200,22 +202,34 @@ class DataExportHandler
      */
     public function getExportData(array $params = []): Collection
     {
+        // in some special cases, we would need to preserve key names as they were on the model itself
+        // for example, exporting data as JSON
         $doNotFormatKeys = $params['doNotFormatKeys'] ?? false;
 
+        // the pinch contains the columns the user wants to export as per their configuration
+        // the columns are the actual processed column objects
         list($pinch, $columns) = $this->getExportableColumns();
 
         $records = new Collection();
 
+        // we do a select query of the columns the user marked as exportable
+        // this means that for now, custom columns would not be exported
+        // then process those columns in chunks of a configured size
         $this->getQuery()->select($pinch)->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, $records) {
             // customize the results
             $columns = $columns->toArray();
 
+            // we run a map over each item from the chunk and run a formatter function over it
+            // the formatter function takes into account the various user defined customizations for
+            // each column entry
             $data = $items->map(function ($value) use ($columns, $params, $doNotFormatKeys) {
                 return call_user_func([$this, 'dataFormatter'], $value, $columns, $doNotFormatKeys);
             });
+            // once we are done, we add the data to a collection
             $records->push($data);
         });
 
+        // the collection will have a single nested one inside it, so we take that one
         return $records[0];
     }
 
@@ -232,8 +246,8 @@ class DataExportHandler
         $data = [];
         foreach ($columns as $column) {
             // render as per requested on each column
-            // `processColumns()` would have already taken care of processing the callbacks
-            // so here, we only pass the required arguments
+            // `processColumns()` would have already taken care of adding the user defined callbacks
+            // so here, we call those callbacks with the required arguments
             if (is_callable($column->data)) {
                 $key = $doNotFormatKeys ? $column->key : $column->name;
                 $value = call_user_func($column->data, $item, $column->key);
