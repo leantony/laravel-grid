@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\TestModels;
+namespace Tests\Setup\TestModels;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;

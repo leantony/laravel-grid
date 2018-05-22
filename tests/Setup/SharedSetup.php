@@ -1,19 +1,15 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Setup;
 
 use Carbon\Carbon;
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Leantony\Grid\Facades\Modal;
-use Orchestra\Testbench\TestCase;
-use Tests\TestModels\Role;
-use Tests\TestModels\User;
+use Tests\Setup\TestModels\Role;
 
-class PackageTestCase extends TestCase
+trait SharedSetup
 {
     use DatabaseTransactions;
 
@@ -92,57 +88,17 @@ class PackageTestCase extends TestCase
 
         // some sample config
         $app['config']->set('grid.warn_when_empty', true);
+        $app['config']->set('grid.export.allowed_types', ['pdf', 'csv', 'html', 'json', 'xlsx']);
 
         // routes
-        $app['router']->get('users', ['as' => 'users.index', 'uses' => 'Tests\Controller\UsersTestController@index']);
-        $app['router']->get('users/create', ['as' => 'users.create', 'uses' => 'Tests\Controller\UsersTestController@create']);
-        $app['router']->post('users/create', ['as' => 'users.store', 'uses' => 'Tests\Controller\UsersTestController@store']);
-        $app['router']->get('users/:id', ['as' => 'users.show', 'uses' => 'Tests\Controller\UsersTestController@show']);
-        $app['router']->patch('users/:id', ['as' => 'users.update', 'uses' => 'Tests\Controller\UsersTestController@update']);
-        $app['router']->delete('users/:id', ['as' => 'users.destroy', 'uses' => 'Tests\Controller\UsersTestController@destroy']);
-    }
+        $app['router']->get('users', ['as' => 'users.index', 'uses' => 'Tests\Setup\Controller\UsersTestController@index']);
+        $app['router']->get('users/create', ['as' => 'users.create', 'uses' => 'Tests\Setup\Controller\UsersTestController@create']);
+        $app['router']->post('users/create', ['as' => 'users.store', 'uses' => 'Tests\Setup\Controller\UsersTestController@store']);
+        $app['router']->get('users/:id', ['as' => 'users.show', 'uses' => 'Tests\Setup\Controller\UsersTestController@show']);
+        $app['router']->patch('users/:id', ['as' => 'users.update', 'uses' => 'Tests\Setup\Controller\UsersTestController@update']);
+        $app['router']->delete('users/:id', ['as' => 'users.destroy', 'uses' => 'Tests\Setup\Controller\UsersTestController@destroy']);
 
-    /** @test */
-    public function config_is_loaded()
-    {
-        $this->assertEquals(true, Config::get('grid.warn_when_empty'));
-    }
-
-    /** @test */
-    public function can_run_the_migrations()
-    {
-        $users = DB::table('users')->where('id', '=', 1)->first();
-        $this->assertNotNull($users);
-    }
-
-    /**
-     * @test
-     */
-    public function grid_is_generated_using_command()
-    {
-        Artisan::call('make:grid', [
-            '--model' => User::class,
-        ]);
-
-        $resultAsText = Artisan::output();
-
-        $this->assertContains('Finished performing replacements to the stub files', $resultAsText);
-    }
-
-    /**
-     * @test
-     */
-    public function grid_is_displayed()
-    {
-        $response = $this->get('/users');
-
-        $content = $response->getContent();
-
-        $response->assertStatus(200);
-        $this->assertNotNull($content);
-        $this->assertContains('Users', $content);
-        $this->assertContains('<div class="row laravel-grid" id="user-grid">', $content);
-        $this->assertContains('<option value="1">testrole_1</option>', $content);
-        $this->assertContains('50 entries', $content);
+        // customized grid
+        $app['router']->get('userz', ['as' => 'users.index_2', 'uses' => 'Tests\Setup\Controller\UsersTestController@index_two']);
     }
 }

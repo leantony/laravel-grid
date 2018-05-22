@@ -17,6 +17,7 @@ This package allows rendering of data via a tabular format (grid). The grid uses
 + Jquery pjax (quickly view data without having to reload the page). Note that you'll need to [create the middleware on your own](https://gist.github.com/JeffreyWay/8526696b6f29201c4e33)
 + [Date picker](https://github.com/dangrossman/bootstrap-daterangepicker.git) (optional - for the single date & date range filters)
 
+> **Note that from version 2.0.2 onwards, you'll need the package [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf) to export data from the grid as PDF**
 
 # Getting started
 

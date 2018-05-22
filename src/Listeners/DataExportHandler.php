@@ -11,9 +11,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Leantony\Grid\Export\DefaultExporter;
 use Leantony\Grid\Export\ExcelExport;
+use Leantony\Grid\Export\ExcelExporter;
 use Leantony\Grid\Export\HtmlExport;
 use Leantony\Grid\Export\JsonExport;
+use Leantony\Grid\Export\PdfExport;
 use Leantony\Grid\GridInterface;
 use Leantony\Grid\GridResources;
 
@@ -97,19 +100,28 @@ class DataExportHandler
     {
         switch ($type) {
             case 'pdf':
+                {
+                    return (new PdfExport())->export($this->getExportData(), [
+                        'exportableColumns' => $this->getExportableColumns()[1],
+                        'fileName' => $this->getFileNameForExport(),
+                        'exportView' => $this->getGridExportView(),
+                    ]);
+                }
             case 'csv':
             case 'xlsx':
                 {
-                    list($pinch, $columns) = $this->getExportableColumns();
+                    $columns = $this->getExportableColumns()[1];
                     // headings
                     $headings = $columns->map(function ($col) {
                         return $col->name;
                     })->toArray();
 
-                    $exporter = new ExcelExport($this->getQuery(), $pinch, $columns->toArray(), $headings, 'report', function ($data, $columns) {
-                        return call_user_func([$this, 'dataFormatter'], $data, $columns, false);
-                    });
-                    return $exporter->download($this->getFileNameForExport() . '.' . $type);
+                    return (new ExcelExport([
+                        'title' => $this->getGrid()->getName(),
+                        'columns' => $columns,
+                        'data' => $this->getExportData(),
+                        'headings' => $headings,
+                    ]))->download($this->getFileNameForExport() . '.' . $type);
                 }
             case 'html':
                 {
@@ -188,21 +200,23 @@ class DataExportHandler
      */
     public function getExportData(array $params = []): Collection
     {
-        $useUnformattedKeys = $params['doNotFormatKeys'] ?? false;
+        $doNotFormatKeys = $params['doNotFormatKeys'] ?? false;
 
         list($pinch, $columns) = $this->getExportableColumns();
 
-        // works on the underlying query instance
-        $values = $this->getQuery()->take($this->getGrid()->getGridMaxExportRows())->get();
+        $records = new Collection();
 
-        // customize the results
-        $columns = $columns->toArray();
+        $this->getQuery()->select($pinch)->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, $records) {
+            // customize the results
+            $columns = $columns->toArray();
 
-        $data = $values->map(function ($value) use ($columns, $params, $useUnformattedKeys) {
-            return call_user_func([$this, 'dataFormatter'], $value, $columns, $useUnformattedKeys);
+            $data = $items->map(function ($value) use ($columns, $params, $doNotFormatKeys) {
+                return call_user_func([$this, 'dataFormatter'], $value, $columns, $doNotFormatKeys);
+            });
+            $records->push($data);
         });
 
-        return $data;
+        return $records[0];
     }
 
     /**
@@ -210,10 +224,10 @@ class DataExportHandler
      *
      * @param mixed $item
      * @param array $columns
-     * @param boolean $useUnformattedKeys
+     * @param boolean $doNotFormatKeys
      * @return array
      */
-    protected function dataFormatter($item, array $columns, bool $useUnformattedKeys): array
+    protected function dataFormatter($item, array $columns, bool $doNotFormatKeys): array
     {
         $data = [];
         foreach ($columns as $column) {
@@ -221,11 +235,11 @@ class DataExportHandler
             // `processColumns()` would have already taken care of processing the callbacks
             // so here, we only pass the required arguments
             if (is_callable($column->data)) {
-                $key = $useUnformattedKeys ? $column->key : $column->name;
+                $key = $doNotFormatKeys ? $column->key : $column->name;
                 $value = call_user_func($column->data, $item, $column->key);
                 array_push($data, [$key => $value]);
             } else {
-                $key = $useUnformattedKeys ? $column->key : $column->name;
+                $key = $doNotFormatKeys ? $column->key : $column->name;
                 $value = $item->{$column->key};
                 array_push($data, [$key => $value]);
             }

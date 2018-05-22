@@ -1,13 +1,20 @@
+sudo: required
 language: php
+dist: trusty
 
 php:
   - 7.1
   - 7.2
 
+addons:
+   chrome: stable
+
 before_script:
+  - set -e
   - cp .env.travis .env
-  - composer self-update
-  - composer install --no-interaction
+  - travis_retry composer install --no-interaction
+  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
 
 script:
-  - vendor/bin/phpunit tests/Unit/PackageTestCase.php
+  - vendor/bin/phpunit tests/Unit/PackageTestCases.php
+#  - vendor/bin/phpunit tests/Browser/BrowserTestCases.php
