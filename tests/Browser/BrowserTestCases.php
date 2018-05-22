@@ -13,6 +13,8 @@ class BrowserTestCases extends TestCase
 {
     use SharedSetup;
 
+    protected static $baseServePort = 9100;
+
     /**
      * Create the RemoteWebDriver instance.
      *
@@ -65,6 +67,62 @@ class BrowserTestCases extends TestCase
             $browser->visit('/users')
                 ->clickLink('Refresh')
                 ->assertPathIs('/users');
+        });
+    }
+
+    /**
+     * @throws \Throwable
+     * @test
+     */
+    public function can_do_an_export_as_excel()
+    {
+        $this->browse(function ($browser) {
+            /** @var $browser Browser */
+            $browser->visit('/users')
+                ->clickLink('excel')
+                ->assertQueryStringHas('export', 'xlsx');
+        });
+    }
+
+    /**
+     * @throws \Throwable
+     * @test
+     */
+    public function can_do_an_export_as_html()
+    {
+        $this->browse(function ($browser) {
+            /** @var $browser Browser */
+            $browser->visit('/users')
+                ->clickLink('html')
+                ->assertQueryStringHas('export', 'html');
+        });
+    }
+
+    /**
+     * @throws \Throwable
+     * @test
+     */
+    public function can_do_an_export_as_csv()
+    {
+        $this->browse(function ($browser) {
+            /** @var $browser Browser */
+            $browser->visit('/users')
+                ->clickLink('csv')
+                ->assertQueryStringHas('export', 'csv');
+        });
+    }
+
+    /**
+     * @throws \Throwable
+     * @test
+     */
+    public function can_do_an_export_as_pdf()
+    {
+        $this->browse(function ($browser) {
+            /** @var $browser Browser */
+            $browser->visit('/users')
+                ->clickLink('pdf')
+                ->assertQueryStringHas('export', 'pdf');
         });
     }
 }
