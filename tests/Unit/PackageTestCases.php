@@ -20,6 +20,7 @@ class PackageTestCases extends TestCase
     public function config_is_loaded()
     {
         $this->assertEquals(true, Config::get('grid.warn_when_empty'));
+        $this->assertEquals(['pdf', 'csv', 'html', 'json', 'xlsx'], Config::get('grid.export.allowed_types'));
     }
 
     /**
