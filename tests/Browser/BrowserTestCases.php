@@ -24,7 +24,7 @@ class BrowserTestCases extends TestCase
     {
         $chromeOptions = new ChromeOptions();
         $chromeOptions->setBinary('/usr/bin/google-chrome');
-        $chromeOptions->addArguments(['no-first-run', 'no-sandbox']);
+        $chromeOptions->addArguments(['--disable-gpu', '--headless', '--no-sandbox']);
         $capabilities = DesiredCapabilities::chrome();
         $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 
