@@ -210,55 +210,50 @@ class DataExportHandler
         // the columns are the actual processed column objects
         list($pinch, $columns) = $this->getExportableColumns();
 
-        $records = new Collection();
-
+        $records = [];
         // we do a select query of the columns the user marked as exportable
         // this means that for now, custom columns would not be exported
         // then process those columns in chunks of a configured size
-        $this->getQuery()->select($pinch)->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, $records) {
-            // customize the results
-            $columns = $columns->toArray();
-
+        $this->getQuery()->select($pinch)->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, &$records) {
             // we run a map over each item from the chunk and run a formatter function over it
             // the formatter function takes into account the various user defined customizations for
             // each column entry
             $data = $items->map(function ($value) use ($columns, $params, $doNotFormatKeys) {
                 return call_user_func([$this, 'dataFormatter'], $value, $columns, $doNotFormatKeys);
             });
-            // once we are done, we add the data to a collection
-            $records->push($data);
+            // once we are done, we add the data to the array
+            $records[] = $data->toArray();
         });
 
-        // the collection will have a single nested one inside it, so we take that one
-        return $records[0];
+        return collect($records)->collapse();
     }
 
     /**
      * Format data for export
      *
      * @param mixed $item
-     * @param array $columns
+     * @param array|Collection $columns
      * @param boolean $doNotFormatKeys
-     * @return array
+     * @return array|Collection
      */
-    protected function dataFormatter($item, array $columns, bool $doNotFormatKeys): array
+    protected function dataFormatter($item, $columns, bool $doNotFormatKeys): array
     {
-        $data = [];
-        foreach ($columns as $column) {
+        $data = $columns->map(function ($column) use ($item, $doNotFormatKeys) {
             // render as per requested on each column
             // `processColumns()` would have already taken care of adding the user defined callbacks
             // so here, we call those callbacks with the required arguments
             if (is_callable($column->data)) {
                 $key = $doNotFormatKeys ? $column->key : $column->name;
                 $value = call_user_func($column->data, $item, $column->key);
-                array_push($data, [$key => $value]);
+                return [$key => $value];
             } else {
                 $key = $doNotFormatKeys ? $column->key : $column->name;
                 $value = $item->{$column->key};
-                array_push($data, [$key => $value]);
+                return [$key => $value];
             }
-        }
+        });
+
         // collapse the data to a 1d array
-        return collect($data)->collapse()->toArray();
+        return $data->collapse()->toArray();
     }
 }
