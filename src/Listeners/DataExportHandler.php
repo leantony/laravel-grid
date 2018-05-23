@@ -232,11 +232,11 @@ class DataExportHandler
      * Format data for export
      *
      * @param mixed $item
-     * @param array|Collection $columns
+     * @param Collection $columns
      * @param boolean $doNotFormatKeys
      * @return array|Collection
      */
-    protected function dataFormatter($item, $columns, bool $doNotFormatKeys): array
+    protected function dataFormatter($item, Collection $columns, bool $doNotFormatKeys): array
     {
         $data = $columns->map(function ($column) use ($item, $doNotFormatKeys) {
             // render as per requested on each column
