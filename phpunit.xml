@@ -7,14 +7,10 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false">
+         stopOnFailure="true">
     <testsuites>
-        <testsuite name="browser">
-            <directory suffix=".php">./tests/Browser</directory>
-        </testsuite>
-
-        <testsuite name="unit">
-            <directory suffix=".php">./tests/Unit</directory>
+        <testsuite name="Package tests">
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
     <filter>

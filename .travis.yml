@@ -16,5 +16,4 @@ before_script:
   - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
 
 script:
-  - vendor/bin/phpunit tests/Unit/PackageTestCases.php
-  - vendor/bin/phpunit tests/Browser/BrowserTestCases.php
+  - vendor/bin/phpunit --configuration phpunit.xml

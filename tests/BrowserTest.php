@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Browser;
+namespace Tests;
 
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
@@ -9,7 +9,7 @@ use Laravel\Dusk\Browser;
 use Orchestra\Testbench\Dusk\TestCase;
 use Tests\Setup\SharedSetup;
 
-class BrowserTestCases extends TestCase
+class BrowserTest extends TestCase
 {
     use SharedSetup;
 
