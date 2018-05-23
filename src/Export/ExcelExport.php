@@ -9,10 +9,11 @@ namespace Leantony\Grid\Export;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ExcelExport implements FromCollection, WithTitle, WithHeadings
+class ExcelExport implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize
 {
     use Exportable;
 

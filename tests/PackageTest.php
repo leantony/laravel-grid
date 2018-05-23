@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
@@ -9,7 +9,7 @@ use Orchestra\Testbench\TestCase;
 use Tests\Setup\SharedSetup;
 use Tests\Setup\TestModels\User;
 
-class PackageTestCases extends TestCase
+class PackageTest extends TestCase
 {
     use SharedSetup;
 
