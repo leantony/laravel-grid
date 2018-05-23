@@ -137,6 +137,7 @@ class SearchDataHandler
             } else {
 
                 if ($operator === strtolower('like')) {
+                    // default like scenario
                     $value = '%' . $userInput . '%';
                 } else {
                     $value = $userInput;

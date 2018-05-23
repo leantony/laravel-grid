@@ -85,6 +85,8 @@ class SortDataHandler
             $dir = $this->getRequest()->get($this->getGrid()->getGridSortDirParam());
 
             if (in_array($dir, $this->getGrid()->getGridSortDirections())) {
+                // store the sort direction so that we can use it later to automatically toggle
+                // between either sort direction without any special javascript
                 session(['__grid.current_sort_direction' => $dir]);
                 return $dir;
             }
