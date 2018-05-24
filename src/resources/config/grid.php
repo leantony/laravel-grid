@@ -58,7 +58,12 @@ return [
         /**
          * Export chunk size
          */
-        'chunk_size' => 200
+        'chunk_size' => 200,
+
+        /**
+         * Strict mode - only export columns available on the corresponding DB table
+         */
+        'strict_mode' => true,
     ],
 
     /**
