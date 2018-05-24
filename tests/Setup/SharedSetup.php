@@ -7,13 +7,17 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Leantony\Grid\Facades\Modal;
+use Tests\Setup\Grids\UsersGrid;
 use Tests\Setup\TestModels\Role;
+use Tests\Setup\TestModels\User;
 
 trait SharedSetup
 {
     use DatabaseTransactions;
 
     protected $connectionsToTransact = ['testing'];
+
+    protected $grid;
 
     /**
      * Setup the test environment.
@@ -36,6 +40,20 @@ trait SharedSetup
     {
         return [
             'Modal' => Modal::class
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function getGridInstances()
+    {
+        return [
+            'users_default' => (new UsersGrid())
+                ->create(['query' => User::with('role'), 'request' => app('request')]),
+            'users_customized' => (new UsersGrid())
+                ->create(['query' => User::with('role'), 'request' => app('request')])
         ];
     }
 
