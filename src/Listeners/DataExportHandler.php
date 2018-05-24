@@ -211,13 +211,18 @@ class DataExportHandler
         list($pinch, $columns) = $this->getExportableColumns();
 
         $records = [];
-        // we do a select query of the columns the user marked as exportable
-        // this means that for now, custom columns would not be exported
-        // then process those columns in chunks of a configured size
-        $this->getQuery()->select($pinch)->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, &$records) {
+
+        $query = $this->getQuery();
+        if ($this->getGridStrictExportStatus() === true) {
+            $query = $this->getQuery()->select($pinch);
+        }
+
+        // we process the query columns in chunks of a configured size
+        $query->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, &$records) {
             // we run a map over each item from the chunk and run a formatter function over it
             // the formatter function takes into account the various user defined customizations for
             // each column entry
+            /** @var $items Collection */
             $data = $items->map(function ($value) use ($columns, $params, $doNotFormatKeys) {
                 return call_user_func([$this, 'dataFormatter'], $value, $columns, $doNotFormatKeys);
             });

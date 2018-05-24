@@ -141,6 +141,11 @@ trait HasGridConfigurations
      */
     private $defaultColumnDataOptions;
 
+    /**
+     * @var boolean
+     */
+    private $strictColumnExporting;
+
     public function getGridFilterFieldColumnClass(): string
     {
         if ($this->filterFieldColumnClass === null) {
@@ -235,6 +240,14 @@ trait HasGridConfigurations
             $this->exportParam = config('grid.export.param', 'export');
         }
         return $this->exportParam;
+    }
+
+    public function getGridStrictExportStatus(): bool
+    {
+        if ($this->strictColumnExporting === null) {
+            $this->strictColumnExporting = config('grid.export.strict_mode', true);
+        }
+        return $this->strictColumnExporting;
     }
 
     public function getGridPaginationView(): string
