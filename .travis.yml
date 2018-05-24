@@ -1,3 +1,7 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=569e9734e6918679812340deb80dd89f07d5e1264fde4b8272c2b37c9c371cce
+
 sudo: required
 language: php
 dist: trusty
