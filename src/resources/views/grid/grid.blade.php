@@ -31,9 +31,9 @@
                 <!-- grid contents -->
                 <div class="table-responsive grid-wrapper">
                     <table class="{{ $grid->getClass() }}">
-                        <thead>
+                        <thead class="{{ $grid->getHeaderClass() }}">
                         <!-- headers -->
-                        <tr>
+                        <tr class="filter-header">
                             @foreach($columns as $column)
 
                                 @if($loop->first)
@@ -162,25 +162,25 @@
 </div>
 @push('grid_js')
     <script>
-        (function ($) {
-            var grid = "{{ '#' . $grid->getId() }}";
-            var filterForm = "{{ '#' . $grid->getFilterFormId() }}";
-            var searchForm = "{{ '#' . $grid->getSearchFormId() }}";
-            _grids.grid.init({
-                id: grid,
-                filterForm: filterForm,
-                dateRangeSelector: '.date-range',
-                searchForm: searchForm,
-                pjax: {
-                    pjaxOptions: {
-                        scrollTo: false
-                    },
-                    // what to do after a PJAX request. Js plugins have to be re-intialized
-                    afterPjax: function (e) {
-                        _grids.init();
-                    }
-                }
-            });
-        })(jQuery);
+      (function($) {
+        var grid = "{{ '#' . $grid->getId() }}";
+        var filterForm = "{{ '#' . $grid->getFilterFormId() }}";
+        var searchForm = "{{ '#' . $grid->getSearchFormId() }}";
+        _grids.grid.init({
+          id: grid,
+          filterForm: filterForm,
+          dateRangeSelector: '.date-range',
+          searchForm: searchForm,
+          pjax: {
+            pjaxOptions: {
+              scrollTo: false,
+            },
+            // what to do after a PJAX request. Js plugins have to be re-intialized
+            afterPjax: function(e) {
+              _grids.init();
+            },
+          },
+        });
+      })(jQuery);
     </script>
 @endpush

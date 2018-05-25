@@ -503,6 +503,16 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
+     * The class of the grid table header
+     *
+     * @return string
+     */
+    public function getHeaderClass(): string
+    {
+        return $this->getGridDefaultHeaderClass();
+    }
+
+    /**
      * Pass the grid on to the user defined view e.g an index page, along with any data that may be required
      * Will dynamically switch between displaying the grid and downloading exported files
      *
