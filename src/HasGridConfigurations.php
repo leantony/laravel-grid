@@ -33,6 +33,11 @@ trait HasGridConfigurations
     /**
      * @var string
      */
+    private $gridHeaderClass;
+
+    /**
+     * @var string
+     */
     private $gridView;
 
     /**
@@ -209,6 +214,14 @@ trait HasGridConfigurations
             $this->gridClass = config('grid.default_class', 'table table-bordered table-hover');
         }
         return $this->gridClass;
+    }
+
+    public function getGridDefaultHeaderClass(): string
+    {
+        if ($this->gridHeaderClass === null) {
+            $this->gridHeaderClass = config('grid.default_header_class', "");
+        }
+        return $this->gridHeaderClass;
     }
 
     public function getGridColumnsToSkipOnFilter(): array
