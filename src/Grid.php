@@ -40,6 +40,13 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $linkableRows = false;
 
     /**
+     * Specify if the footer section needs to be displayed
+     *
+     * @var bool
+     */
+    protected $showFooter = false;
+
+    /**
      * The id of the grid. Many grids can exist on the same page, but the ID has to be unique
      *
      * @var string
@@ -196,6 +203,16 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * If the grid should show a footer
+     *
+     * @return bool
+     */
+    public function shouldShowFooter(): bool
+    {
+        return $this->showFooter;
     }
 
     /**
