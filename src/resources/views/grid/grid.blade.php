@@ -38,7 +38,7 @@
 
                                 @if($loop->first)
 
-                                    @if($column->sortable)
+                                    @if($column->isSortable)
                                         <th scope="col"
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
                                             title="click to sort by {{ $column->key }}">
@@ -53,7 +53,7 @@
                                         </th>
                                     @endif
                                 @else
-                                    @if($column->sortable)
+                                    @if($column->isSortable)
                                         <th scope="col" title="click to sort by {{ $column->key }}"
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"
@@ -104,7 +104,7 @@
                                         @endif
                                         @foreach($columns as $column)
                                             @if(is_callable($column->data))
-                                                @if($column->raw)
+                                                @if($column->useRawFormat)
                                                     <td class="{{ $column->rowClass }}">
                                                         {!! call_user_func($column->data, $item, $column->key) !!}
                                                     </td>
@@ -114,7 +114,7 @@
                                                     </td>
                                                 @endif
                                             @else
-                                                @if($column->raw)
+                                                @if($column->useRawFormat)
                                                     <td class="{{ $column->rowClass }}">
                                                         {!! $item->{$column->key} !!}
                                                     </td>
@@ -140,6 +140,22 @@
                                         @endforeach
                                     </tr>
                                     @endforeach
+                                    @if($grid->shouldShowFooter())
+                                        <tr>
+                                            @foreach($columns as $column)
+                                                @if($column->footer === null)
+                                                    <td></td>
+                                                @else
+                                                    <td>
+                                                        {{ call_user_func($column->footer) }}
+                                                    </td>
+                                                @endif
+                                                @if($loop->last)
+                                                    <td></td>
+                                                @endif
+                                            @endforeach
+                                        </tr>
+                                    @endif
                                 @endif
                         </tbody>
                         <!-- end data -->
