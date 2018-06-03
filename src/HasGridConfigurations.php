@@ -151,6 +151,19 @@ trait HasGridConfigurations
      */
     private $strictColumnExporting;
 
+    /**
+     * @var string
+     */
+    private $gridFooterClass;
+
+    public function getGridFooterClass(): string
+    {
+        if ($this->gridFooterClass === null) {
+            $this->gridFooterClass = config('grid.footer.class', 'table-info');
+        }
+        return $this->gridFooterClass;
+    }
+
     public function getGridFilterFieldColumnClass(): string
     {
         if ($this->filterFieldColumnClass === null) {

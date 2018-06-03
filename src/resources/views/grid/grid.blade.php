@@ -141,13 +141,13 @@
                                     </tr>
                                     @endforeach
                                     @if($grid->shouldShowFooter())
-                                        <tr>
+                                        <tr class="{{ $grid->getGridFooterClass() }}">
                                             @foreach($columns as $column)
                                                 @if($column->footer === null)
                                                     <td></td>
                                                 @else
                                                     <td>
-                                                        {{ call_user_func($column->footer) }}
+                                                        <b>{{ call_user_func($column->footer) }}</b>
                                                     </td>
                                                 @endif
                                                 @if($loop->last)
