@@ -24,7 +24,8 @@ The button's PHP class uses the magic functions `__set` and `__get`, so you can 
 'title' => '',
 
 // the type of the button. Defines the location where the button will be placed on the grid.
-// can be one of `row` or `toolbar`. Defaults to toolbar
+// can be one of `rows` or `toolbar`. Defaults to toolbar
+// Preset constants `TYPE_ROW` and `TYPE_TOOLBAR` can also be used
 'type' => 'toolbar',
 
 // HTML5 data attributes that you may use in javascript. You need to supply them as a key value pair, with the key only having the data-{name} part. 
@@ -94,7 +95,7 @@ public function configureButtons()
         $this->makeCustomButton([
             'name' => 'Home',
             'url' => url('/'),
-        ], 'toolbar'); // means this button will be placed on the toolbar. Try 'row' to place it on the rows. Defaults to 'toolbar'
+        ], static::$TYPE_TOOLBAR); // means this button will be placed on the toolbar. Try 'row' to place it on the rows. Defaults to 'toolbar'
     }
 ```
 You can also choose to call `addRowButton` or `addToolbarButton` to achieve the same task. These methods accept an instance of the `GenericButtonClass`, which you can create and set the attributes by chaining the methods (see below).
@@ -123,7 +124,7 @@ public function configureButtons()
             'url' => function($gridName, $gridItem) {
                 return route('users.show', [$gridName => $gridItem->id]);
             },
-        ], 'row');
+        ], static::$TYPE_ROW);
     }
 ```
 > since the data item is only available when the loop to render the rows has began, the location of this button should be `row`. Otherwise it won't work.
@@ -224,7 +225,7 @@ public function configureButtons()
        // enabling
         $this->editToolbarButton('create', [
             // set to false to disable
-            'showModal' => false
+            'showModal' => true
         ]);
     }
 ```
@@ -258,7 +259,7 @@ E.g if you want to remove the buttons on the `rows`
     //
     public function configureButtons()
     {
-        $this->clearButtons('rows');
+        $this->clearButtons(static::$TYPE_ROW);
     }
 ```
 > Both the above functions will lead to the buttons not being displayed regardless of the `$displayButtons` option.
