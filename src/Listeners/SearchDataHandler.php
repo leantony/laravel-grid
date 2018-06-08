@@ -87,7 +87,7 @@ class SearchDataHandler
     public function canUseProvidedUserInput($userInput)
     {
         // skip empty requests
-        if ($userInput === null || empty(trim($userInput))) {
+        if ($userInput === null || strlen(trim($userInput)) < 1) {
             return false;
         }
         return true;
