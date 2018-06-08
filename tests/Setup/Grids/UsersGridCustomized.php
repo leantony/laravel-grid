@@ -51,7 +51,12 @@ class UsersGridCustomized extends Grid implements UsersGridInterface
 		        ],
 		        "styles" => [
 		            "column" => "grid-w-10"
-		        ]
+		        ],
+                'footer' => [
+                    'data' => function() {
+                        return 'Total:' . $this->getQuery()->sum('id');
+                    }
+                ]
 		    ],
 		    "name" => [
 		        "search" => [

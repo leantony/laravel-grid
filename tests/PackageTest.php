@@ -124,4 +124,19 @@ class PackageTest extends TestCase
         $grid->setDefaultRouteParameter('email');
         $this->assertEquals($grid->getDefaultRouteParameter(), 'email');
     }
+
+    /**
+     * @throws \Throwable
+     * @test
+     */
+    public function grid_can_add_footer()
+    {
+        $grid = $this->getGridInstances()['users_customized'];
+        /** @var $grid UsersGrid */
+        $grid->setShowFooter(true);
+        $existingTotal = User::query()->sum('id');
+        $content = $grid->render();
+
+        $this->assertContains("Total:${existingTotal}", $content);
+    }
 }

@@ -216,6 +216,14 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
+     * @param bool $showFooter
+     */
+    public function setShowFooter(bool $showFooter): void
+    {
+        $this->showFooter = $showFooter;
+    }
+
+    /**
      * Transform the name of the grid, to a short, identifier
      * Useful for route param names
      *
