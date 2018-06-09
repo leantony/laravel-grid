@@ -67,6 +67,17 @@ return [
     ],
 
     /**
+     * Footer class
+     */
+    'footer' => [
+
+        /**
+         * CSS class for the footer row
+         */
+        'class' => 'table-info'
+    ],
+
+    /**
      * Configuration related to searching of data
      */
     'search' => [

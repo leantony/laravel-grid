@@ -96,24 +96,59 @@ trait CreatesColumns
             // data
             $data = $this->fetchColumnData($columnName, $columnData)['data'];
 
-            // once we are done, push to columns array
-            array_push($columns, new Column([
-                'name' => $label,
-                'key' => $columnName,
-                'data' => $data,
-                'searchable' => $searchable,
-                'rowClass' => $rowClass,
-                'columnClass' => $columnClass,
-                'sortable' => $columnData['sort'] ?? true,
-                'filter' => $filter,
-                'raw' => $columnData['raw'] ?? false,
-                'export' => $columnData['export'] ?? true,
-            ]));
+            // footer
+            $footer = $this->fetchFooterData($columnName, $columnData)['footer'];
+
+            $col = (new Column())->setName($label)
+                ->setKey($columnName)
+                ->setData($data)
+                ->setSearchableColumns($searchable)
+                ->setColumnClass($columnClass)
+                ->setRowClass($rowClass)
+                ->setIsSortable($columnData['sort'] ?? true)
+                ->setUseRawFormat($columnData['raw'] ?? false)
+                ->setFilter($filter)
+                ->setIsExportable($columnData['export'] ?? true)
+                ->setExtra($this->getExtras($columnData))
+                ->setFooter($footer);
+
+            array_push($columns, $col);
         }
 
         $this->processedColumns = $columns;
 
         return $this->processedColumns;
+    }
+
+    /**
+     * Any extra/custom column data to be sent to the view
+     *
+     * @param array $columnData
+     * @return array|mixed
+     */
+    public function getExtras(array $columnData)
+    {
+        return $columnData['extra'] ?? [];
+    }
+
+    /**
+     * Get footer data
+     *
+     * @param string $columnName
+     * @param array $columnData
+     * @return array|mixed
+     */
+    public function fetchFooterData(string $columnName, array $columnData): array
+    {
+        if (!isset($columnData['footer'])) {
+            return ['footer' => null];
+        } else {
+            $data = $columnData['footer']['data'] ?? null;
+            if (is_callable($data)) {
+                return ['footer' => $data];
+            }
+            throw new \InvalidArgumentException("the 'data' key needs to be a function.");
+        }
     }
 
     /**

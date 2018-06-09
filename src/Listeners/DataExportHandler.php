@@ -160,7 +160,7 @@ class DataExportHandler
         $availableColumns = $this->getColumnsToExport();
         $columns = collect($availableColumns)->reject(function ($column) use (&$pinch) {
             // reject all columns that have been set as not exportable
-            $canBeSkipped = !$column->export;
+            $canBeSkipped = !$column->isExportable;
             if (!$canBeSkipped) {
                 // add this to an array to be used for granular filtering of the query
                 $pinch[] = $column->key;

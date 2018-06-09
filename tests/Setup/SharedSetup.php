@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Leantony\Grid\Facades\Modal;
 use Tests\Setup\Grids\UsersGrid;
+use Tests\Setup\Grids\UsersGridCustomized;
 use Tests\Setup\TestModels\Role;
 use Tests\Setup\TestModels\User;
 
@@ -52,7 +53,7 @@ trait SharedSetup
         return [
             'users_default' => (new UsersGrid())
                 ->create(['query' => User::with('role'), 'request' => app('request')]),
-            'users_customized' => (new UsersGrid())
+            'users_customized' => (new UsersGridCustomized())
                 ->create(['query' => User::with('role'), 'request' => app('request')])
         ];
     }
