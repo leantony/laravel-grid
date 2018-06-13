@@ -8,6 +8,7 @@ namespace Leantony\Grid\Columns;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Leantony\Grid\Events\ColumnProcessed;
 
 trait CreatesColumns
 {
@@ -112,7 +113,19 @@ trait CreatesColumns
                 ->setExtra($this->getExtras($columnData))
                 ->setFooter($footer);
 
-            array_push($columns, $col);
+            // allow customizations of column attributes
+            $result = event(
+                'grid.column_processed',
+                new ColumnProcessed($columnName, $columnData, $col)
+            );
+
+            // if there was no valid result, then just use the one pre-created
+            $customizedCol = data_get($result, 0);
+            if ($customizedCol === null || !$customizedCol instanceof Column) {
+                array_push($columns, $col);
+            } else {
+                array_push($columns, $customizedCol);
+            }
         }
 
         $this->processedColumns = $columns;
