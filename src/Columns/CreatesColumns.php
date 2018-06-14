@@ -215,7 +215,11 @@ trait CreatesColumns
     public function fetchColumnLabel(string $columnName, array $columnData)
     {
         if (isset($columnData['label'])) {
-            $label = $columnData['label'];
+            if (is_array($columnData['label'])) {
+                $label = $columnData['label']['value'];
+            } else {
+                $label = $columnData['label'];
+            }
         } else {
             $label = ucwords(preg_replace($this->getGridLabelNamePattern(), ' ', $columnName));
         }
