@@ -243,4 +243,4 @@ You can also place this command in composer so that it is executed automatically
 ```
 
 # Next up
-[Customizing the grid](customization.md)
+[Rendering the grid](rendering.md)

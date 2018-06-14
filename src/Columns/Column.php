@@ -86,6 +86,15 @@ class Column
     }
 
     /**
+     * @param $name
+     * @param $value
+     */
+    public function __set($name, $value)
+    {
+        $this->{$name} = $value;
+    }
+
+    /**
      * @return mixed|array
      */
     public function getFooter()
