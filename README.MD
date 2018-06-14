@@ -28,6 +28,11 @@ composer install leantony/laravel-grid "~2.0"
 ```
 > For bootstrap 3 support, consider installing version `1.0`. Version 1.0 though is pretty not much updated at this point, so may lack some features.
 
+If you can't wait for a release inorder to try any fixes, or the latest features, just run;
+```php
+composer install leantony/laravel-grid "2.0.x-dev"
+```
+
 ## Publish assets
 The grid comes with a config file, CSS assets, JS assets and view files. The command below should allow you to publish them.
 ```php
