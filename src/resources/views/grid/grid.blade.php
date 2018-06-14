@@ -44,12 +44,20 @@
                                             title="click to sort by {{ $column->key }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
-                                                {{ $column->name }}
+                                                @if($column->useRawHtmlForLabel)
+                                                    {!! $column->name !!}
+                                                @else
+                                                    {{ $column->name }}
+                                                @endif
                                             </a>
                                         </th>
                                     @else
                                         <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
-                                            {{ $column->name }}
+                                            @if($column->useRawHtmlForLabel)
+                                                {!! $column->name !!}
+                                            @else
+                                                {{ $column->name }}
+                                            @endif
                                         </th>
                                     @endif
                                 @else
@@ -58,13 +66,21 @@
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
                                             <a data-trigger-pjax="1" class="data-sort"
                                                href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
-                                                {{ $column->name }}
+                                                @if($column->useRawHtmlForLabel)
+                                                    {!! $column->name !!}
+                                                @else
+                                                    {{ $column->name }}
+                                                @endif
                                             </a>
                                         </th>
                                     @else
                                         <th scope="col"
                                             class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
-                                            {{ $column->name }}
+                                            @if($column->useRawHtmlForLabel)
+                                                {!! $column->name !!}
+                                            @else
+                                                {{ $column->name }}
+                                            @endif
                                         </th>
                                     @endif
                                 @endif
