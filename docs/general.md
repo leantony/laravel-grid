@@ -61,7 +61,7 @@ This specifies if a column is sortable. Defaults to `true`. View sample usage be
 ```
 
 ### label
-+ Possible values = `string`
++ Possible values = `string|array`
 + Required = `false`
 
 This represents a readable name for the `column name`. Defaults to `null` and the regular expression - `/[^a-z0-9 -]+/` is used where each valid match is replaced with a space. View example usage below;
@@ -71,6 +71,15 @@ This represents a readable name for the `column name`. Defaults to `null` and th
 // set to null or ommit the key to use the available defaults
 "name" => ["label" => null];
 ```
+When the label key is supplied as an array, the following arguments are expected
++ value = `string` ~ The label value
++ raw = `boolean` ~ true|false, to determine if you can use or not use raw html for the title
+Example;
+```php
+"id" => ["label" => ['value' => '<i class="fa fa-user"></i>&nbsp;User ID', 'raw' => true]],
+```
+This will render the `id` colum with a label of `<i class="fa fa-user"></i>&nbsp;User ID`. The HTML will be applied too.
+
 
 ### filter
 + Possible values = `array`
@@ -79,7 +88,7 @@ This represents a readable name for the `column name`. Defaults to `null` and th
 This represents a `filter` which will be rendered in a new `<tr>` below the column name. The possible values can be;
 + `boolean` **enabled** - Specifies if the filter is enabled for this column. If not supplied, `false` is assumed.
 + `string` **operator** - Specifies the sql operator that will be applied to the value entered by the user. Possible values are `=`, `like`, etc. Default is `=`. This value is not case sensitive.
-+ `string` **type** - specifies the type of filter. Possible values are `text`, `date`, `select` and `daterange`. These are documented on the [filters section](customize_filters.md). Defaults to `text`.
++ `string` **type** - specifies the type of filter. Possible values are `text`, `date`, `select` and `daterange`. These are documented on the [filters section](filters.md). Defaults to `text`.
 + `callable` **query** - Specifies a custom query that will be called to filter the data for this column based on its value. Defaults to `null`. The function expects these 3 arguments - `query` which is an instance of the eloquent query builder, `columnName` which is the name of the column you need to filter, and `userInput` is the user's input.
 
 ```php
