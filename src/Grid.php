@@ -154,7 +154,7 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      *
      * @return GridInterface
      */
-    protected function withoutSearchForm(): GridInterface
+    public function withoutSearchForm(): GridInterface
     {
         $this->shouldRenderSearchForm = false;
         return $this;
