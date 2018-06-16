@@ -24,7 +24,7 @@
                                 @endforeach
                             </div>
                         </div>
-                @endif
+                    @endif
                 <!-- end toolbar buttons -->
                 </div>
                 <!-- end search form -->
