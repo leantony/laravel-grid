@@ -17,6 +17,7 @@ use Leantony\Grid\Buttons\GridButtonsInterface;
 use Leantony\Grid\Buttons\RendersButtons;
 use Leantony\Grid\Columns\CreatesColumns;
 use Leantony\Grid\Columns\GridColumnsInterface;
+use Leantony\Grid\Events\GridInitialized;
 use Leantony\Grid\Events\UserActionRequested;
 use Leantony\Grid\Filters\AddsColumnFilters;
 use Leantony\Grid\Filters\GridFilterInterface;
@@ -117,6 +118,13 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $tableColumns = [];
 
     /**
+     * Controls rendering or not, for the search form
+     *
+     * @var bool
+     */
+    protected $shouldRenderSearchForm = true;
+
+    /**
      * Create the grid
      *
      * @param array $params
@@ -129,6 +137,8 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
             $this->__set($k, $v);
         }
         $this->init();
+        // initialized event
+        event('grid.initialized', new GridInitialized($this, $params));
         // do filter, export, paginate, search = main user actions
         $result = event(
             'grid.fetch_data',
@@ -136,6 +146,17 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         );
         $this->setGridDataItems($result);
 
+        return $this;
+    }
+
+    /**
+     * Define rendering of the search form
+     *
+     * @return GridInterface
+     */
+    public function withoutSearchForm(): GridInterface
+    {
+        $this->shouldRenderSearchForm = false;
         return $this;
     }
 
@@ -297,6 +318,16 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
                 $this->data = $data;
             }
         }
+    }
+
+    /**
+     * Grid should render search form
+     *
+     * @return bool
+     */
+    public function shouldRenderSearchForm()
+    {
+        return $this->shouldRenderSearchForm;
     }
 
     /**

@@ -77,6 +77,7 @@ class GridServiceProvider extends ServiceProvider
         // events
         Event::listen('grid.fetch_data', 'Leantony\\Grid\\Listeners\\HandleUserAction@handle');
         Event::listen('grid.column_processed', 'Leantony\\Grid\\Listeners\\AddExtraAttributesToProcessedColumn@handle');
+        Event::listen('grid.initialized', 'Leantony\\Grid\\Listeners\\GridWasInitialized@handle');
     }
 
     /**

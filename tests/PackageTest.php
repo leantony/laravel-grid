@@ -139,4 +139,19 @@ class PackageTest extends TestCase
 
         $this->assertContains("Total:${existingTotal}", $content);
     }
+
+    /**
+     * @throws \Exception
+     * @test
+     * @throws \Throwable
+     */
+    public function grid_can_disable_rendering_of_search_form()
+    {
+        $grid = $this->getGridInstances()['users_default'];
+        /** @var $grid UsersGrid */
+        $grid->withoutSearchForm();
+        $id = $grid->getId();
+        $content = $grid->render();
+        $this->assertNotContains("<form method='GET' id=\"${id}\"", $content);
+    }
 }

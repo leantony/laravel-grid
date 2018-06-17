@@ -12,7 +12,9 @@
             <div class="card-body">
                 <!-- search form -->
                 <div class="row">
-                {!! $grid->renderSearchForm() !!}
+                    @if($grid->shouldRenderSearchForm())
+                        {!! $grid->renderSearchForm() !!}
+                    @endif
                 <!-- toolbar buttons -->
                     @if($grid->hasButtons('toolbar'))
                         <div class="col-md-{{ $grid->getGridToolbarSize()[1] }}">
@@ -22,7 +24,7 @@
                                 @endforeach
                             </div>
                         </div>
-                @endif
+                    @endif
                 <!-- end toolbar buttons -->
                 </div>
                 <!-- end search form -->
