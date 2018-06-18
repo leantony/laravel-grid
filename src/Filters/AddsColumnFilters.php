@@ -85,7 +85,7 @@ trait AddsColumnFilters
     {
         $filter = new GenericFilter([
             'name' => $elementId,
-            'id' => $elementId,
+            'id' => $this->createElementId($elementId),
             'enabled' => $enabled,
             'formId' => $this->getFilterFormId(),
             'class' => 'form-control grid-datepicker grid-filter ' . $elementClass,
@@ -119,7 +119,7 @@ trait AddsColumnFilters
     {
         $filter = new GenericFilter([
             'name' => $elementId,
-            'id' => $elementId,
+            'id' => $this->createElementId($elementId),
             'enabled' => $enabled,
             'formId' => $this->getFilterFormId(),
             'class' => 'form-control grid-filter ' . $elementClass,
@@ -143,7 +143,7 @@ trait AddsColumnFilters
     {
         $filter = new GenericFilter([
             'name' => $elementId,
-            'id' => $elementId,
+            'id' => $this->createElementId($elementId),
             'enabled' => $enabled,
             'formId' => $this->getFilterFormId(),
             'type' => 'select',
@@ -151,5 +151,16 @@ trait AddsColumnFilters
             'data' => $data,
         ]);
         return $filter;
+    }
+
+    /**
+     * Create the ID for the grid filter
+     *
+     * @param $elementId
+     * @return string
+     */
+    protected function createElementId($elementId): string
+    {
+        return 'grid-filter-' . $elementId;
     }
 }
