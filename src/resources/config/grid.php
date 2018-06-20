@@ -178,5 +178,15 @@ return [
             'password',
             'password_hash',
         ]
+    ],
+
+    /**
+     * Grid templates
+     */
+    'templates' => [
+        /**
+         * The view to use for the templates
+         */
+        'view' => 'leantony::grid.templates.bs4-card'
     ]
 ];

@@ -31,7 +31,8 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         CreatesColumns,
         ConfiguresRoutes,
         AddsColumnFilters,
-        RendersButtons;
+        RendersButtons,
+        RendersGrid;
 
     /**
      * Specify if the rows on the table should be clicked to navigate to the record
@@ -39,13 +40,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
      * @var bool
      */
     protected $linkableRows = false;
-
-    /**
-     * Specify if the footer section needs to be displayed
-     *
-     * @var bool
-     */
-    protected $showFooter = false;
 
     /**
      * The id of the grid. Many grids can exist on the same page, but the ID has to be unique
@@ -118,13 +112,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     protected $tableColumns = [];
 
     /**
-     * Controls rendering or not, for the search form
-     *
-     * @var bool
-     */
-    protected $shouldRenderSearchForm = true;
-
-    /**
      * Create the grid
      *
      * @param array $params
@@ -146,17 +133,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
         );
         $this->setGridDataItems($result);
 
-        return $this;
-    }
-
-    /**
-     * Define rendering of the search form
-     *
-     * @return GridInterface
-     */
-    public function withoutSearchForm(): GridInterface
-    {
-        $this->shouldRenderSearchForm = false;
         return $this;
     }
 
@@ -224,24 +200,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * If the grid should show a footer
-     *
-     * @return bool
-     */
-    public function shouldShowFooter(): bool
-    {
-        return $this->showFooter;
-    }
-
-    /**
-     * @param bool $showFooter
-     */
-    public function setShowFooter(bool $showFooter): void
-    {
-        $this->showFooter = $showFooter;
     }
 
     /**
@@ -318,37 +276,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
                 $this->data = $data;
             }
         }
-    }
-
-    /**
-     * Grid should render search form
-     *
-     * @return bool
-     */
-    public function shouldRenderSearchForm()
-    {
-        return $this->shouldRenderSearchForm;
-    }
-
-    /**
-     * Render the search form on the grid
-     *
-     * @return string
-     * @throws \Throwable
-     */
-    public function renderSearchForm()
-    {
-        $params = func_get_args();
-        $data = [
-            'colSize' => $this->getGridToolbarSize()[0], // size
-            'action' => $this->getSearchUrl(),
-            'id' => $this->getSearchFormId(),
-            'name' => $this->getGridSearchParam(),
-            'dataAttributes' => [],
-            'placeholder' => $this->getSearchPlaceholder(),
-        ];
-
-        return view($this->getGridSearchView(), array_merge($data, $params))->render();
     }
 
     /**
@@ -446,45 +373,6 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     }
 
     /**
-     * Render the grid as HTML on the user defined view
-     *
-     * @return string
-     * @throws \Throwable
-     */
-    public function render()
-    {
-        return view($this->getGridView(), $this->compactData(func_get_args()))->render();
-    }
-
-    /**
-     * Specify the data to be sent to the view
-     *
-     * @param array $params
-     * @return array
-     * @throws \Exception
-     */
-    protected function compactData($params = [])
-    {
-        $data = [
-            'grid' => $this,
-            'columns' => $this->processColumns()
-        ];
-        return array_merge($data, $this->getExtraParams($params));
-    }
-
-    /**
-     * Any extra parameters that need to be passed to the grid
-     * $params is func_get_args() passed from render
-     *
-     * @param array $params
-     * @return array
-     */
-    public function getExtraParams($params)
-    {
-        return array_merge($this->extraParams, $params);
-    }
-
-    /**
      * Override this method and return a callback so that linkable rows are applied
      *
      * @return Closure
@@ -566,24 +454,5 @@ abstract class Grid implements Htmlable, GridInterface, GridButtonsInterface, Gr
     public function getHeaderClass(): string
     {
         return $this->getGridDefaultHeaderClass();
-    }
-
-    /**
-     * Pass the grid on to the user defined view e.g an index page, along with any data that may be required
-     * Will dynamically switch between displaying the grid and downloading exported files
-     *
-     * @param string $viewName the view name
-     * @param array $data any extra data to be sent to the view
-     * @param string $as the variable to be sent to the view, representing the grid
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
-     * @throws \Throwable
-     */
-    public function renderOn(string $viewName, $data = [], $as = 'grid')
-    {
-        if ($this->getRequest()->has($this->getGridExportParam())) {
-            return $this->exportHandler->export();
-        }
-        return view($viewName, array_merge($data, [$as => $this]));
     }
 }
