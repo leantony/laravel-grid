@@ -156,6 +156,19 @@ trait HasGridConfigurations
      */
     private $gridFooterClass;
 
+    /**
+     * @var string
+     */
+    private $gridTemplateView;
+
+    public function getGridTemplateView(): string
+    {
+        if ($this->gridTemplateView === null) {
+            $this->gridTemplateView = config('grid.templates.view', 'leantony::grid.templates.bs4-card');
+        }
+        return $this->gridTemplateView;
+    }
+
     public function getGridFooterClass(): string
     {
         if ($this->gridFooterClass === null) {
