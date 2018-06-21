@@ -16,9 +16,9 @@ interface GridInterface
      * Create the grid
      *
      * @param array $params
-     * @return GridInterface
+     * @return $this
      */
-    public function create(array $params): GridInterface;
+    public function create(array $params): self;
 
     /**
      * Initialize grid variables

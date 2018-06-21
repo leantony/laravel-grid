@@ -86,9 +86,9 @@ trait RendersGrid
     /**
      * Define rendering of the search form
      *
-     * @return GridInterface
+     * @return $this
      */
-    public function withoutSearchForm(): GridInterface
+    public function withoutSearchForm(): self
     {
         $this->shouldRenderSearchForm = false;
         return $this;
@@ -98,9 +98,9 @@ trait RendersGrid
      * Define a custom layout/template to use when rendering the grid
      *
      * @param string $layout
-     * @return GridInterface
+     * @return $this
      */
-    public function withCustomTemplate(string $layout): GridInterface
+    public function withCustomTemplate(string $layout): self
     {
         $this->templateToUseForRendering = $layout;
         return $this;
@@ -109,9 +109,9 @@ trait RendersGrid
     /**
      * Define rendering of the filters
      *
-     * @return GridInterface
+     * @return $this
      */
-    public function withoutFilters(): GridInterface
+    public function withoutFilters(): self
     {
         $this->shouldRenderFilters = false;
         return $this;
