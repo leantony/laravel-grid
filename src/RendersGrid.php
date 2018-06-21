@@ -38,6 +38,14 @@ trait RendersGrid
     protected $shouldShowModalOnClickingRow = false;
 
     /**
+     * Controls the layout to use for rendering the grid.
+     * If not set, defaults to the default view set on config
+     *
+     * @var null|string
+     */
+    protected $templateToUseForRendering = null;
+
+    /**
      * If the grid should show a footer
      *
      * @return bool
@@ -62,7 +70,7 @@ trait RendersGrid
      */
     public function shouldRenderGridFilters(): bool
     {
-        return true;
+        return $this->shouldRenderFilters;
     }
 
     /**
@@ -80,9 +88,32 @@ trait RendersGrid
      *
      * @return GridInterface
      */
-    public function withoutSearchForm()
+    public function withoutSearchForm(): GridInterface
     {
         $this->shouldRenderSearchForm = false;
+        return $this;
+    }
+
+    /**
+     * Define a custom layout/template to use when rendering the grid
+     *
+     * @param string $layout
+     * @return GridInterface
+     */
+    public function withCustomTemplate(string $layout): GridInterface
+    {
+        $this->templateToUseForRendering = $layout;
+        return $this;
+    }
+
+    /**
+     * Define rendering of the filters
+     *
+     * @return GridInterface
+     */
+    public function withoutFilters(): GridInterface
+    {
+        $this->shouldRenderFilters = false;
         return $this;
     }
 
@@ -92,7 +123,7 @@ trait RendersGrid
      *
      * @return bool
      */
-    public function shouldShowModalOnClickingRow()
+    public function shouldShowModalOnClickingRow(): bool
     {
         return $this->shouldShowModalOnClickingRow;
     }
@@ -104,6 +135,9 @@ trait RendersGrid
      */
     public function getRenderingTemplateToUse(): string
     {
+        if ($this->templateToUseForRendering !== null && is_string($this->templateToUseForRendering)) {
+            return $this->templateToUseForRendering;
+        }
         return $this->getGridTemplateView();
     }
 
@@ -128,7 +162,7 @@ trait RendersGrid
     {
         $data = [
             'grid' => $this,
-            'columns' => $this->processColumns()
+            'columns' => $this->getProcessedColumns()
         ];
         return array_merge($data, $this->getExtraParams($params));
     }
