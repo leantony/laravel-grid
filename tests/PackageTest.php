@@ -145,13 +145,94 @@ class PackageTest extends TestCase
      * @test
      * @throws \Throwable
      */
-    public function grid_can_disable_rendering_of_search_form()
+    public function grid_can_disable_rendering_of_filters()
+    {
+        $grid = $this->getGridInstances()['users_default'];
+        /** @var $grid UsersGrid */
+        $grid->withoutFilters();
+        // a sample filter that's enabled on the grid
+        $usersFilterId = 'grid-filter-user';
+        $content = $grid->render();
+        $this->assertNotContains("${usersFilterId}", $content);
+    }
+
+    /**
+     * @throws \Exception
+     * @test
+     * @throws \Throwable
+     */
+    public function grid_can_enable_rendering_of_filters()
+    {
+        $grid = $this->getGridInstances()['users_default'];
+        /** @var $grid UsersGrid */
+        // the grid filter form id
+        $gridFilterFormId = 'user-grid-filter';
+        // a sample filter that's enabled on the grid
+        $usersFilterId = 'grid-filter-name';
+        $content = $grid->render();
+        $this->assertContains("${gridFilterFormId}", $content);
+        $this->assertContains("${usersFilterId}", $content);
+    }
+
+    /**
+     * @throws \Exception
+     * @test
+     * @throws \Throwable
+     */
+    public function grid_can_enable_rendering_of_search()
+    {
+        $grid = $this->getGridInstances()['users_default'];
+        /** @var $grid UsersGrid */
+        $id = 'search-user-grid';
+        $content = $grid->render();
+        $this->assertContains("${id}", $content);
+    }
+
+    /**
+     * @throws \Exception
+     * @test
+     * @throws \Throwable
+     */
+    public function grid_can_disable_rendering_of_search()
     {
         $grid = $this->getGridInstances()['users_default'];
         /** @var $grid UsersGrid */
         $grid->withoutSearchForm();
-        $id = $grid->getId();
+        $id = 'search-user-grid';
         $content = $grid->render();
-        $this->assertNotContains("<form method='GET' id=\"${id}\"", $content);
+        $this->assertNotContains("${id}", $content);
+    }
+
+    /**
+     * @throws \Exception
+     * @test
+     * @throws \Throwable
+     */
+    public function grid_can_render_using_default_layout()
+    {
+        // default scenario
+        $grid = $this->getGridInstances()['users_default'];
+        /** @var $grid UsersGrid */
+        $content = $grid->render();
+        // default layout uses a bootstrap4 card
+        $this->assertContains("card-header", $content);
+        $this->assertContains("card-body", $content);
+        $this->assertContains("card-footer", $content);
+    }
+
+    /**
+     * @throws \Exception
+     * @test
+     * @throws \Throwable
+     */
+    public function grid_can_render_using_custom_layout()
+    {
+        // using custom template
+        $grid = $this->getGridInstances()['users_default'];
+        /** @var $grid UsersGrid */
+        $grid->withCustomTemplate('leantony::grid.templates.dummy');
+        $content = $grid->render();
+        // default layout uses a bootstrap4 card
+        $this->assertContains("dummy", $content);
     }
 }

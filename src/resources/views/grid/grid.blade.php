@@ -1,199 +1,167 @@
-<div class="row laravel-grid" id="{{ $grid->getId() }}">
-    <div class="col-md-12 col-xs-12 col-sm-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="pull-left">
-                    <h4 class="grid-title">{{ $grid->getName() }}</h4>
+@extends($grid->getRenderingTemplateToUse())
+@section('data')
+    <div class="row">
+        @if($grid->shouldRenderSearchForm())
+            {!! $grid->renderSearchForm() !!}
+        @endif
+
+        @if($grid->hasButtons('toolbar'))
+            <div class="col-md-{{ $grid->getGridToolbarSize()[1] }}">
+                <div class="pull-right">
+                    @foreach($grid->getButtons('toolbar') as $button)
+                        {!! $button->render() !!}
+                    @endforeach
                 </div>
-                <!-- pagination info -->
-            @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'right'])
-            <!-- end pagination info -->
             </div>
-            <div class="card-body">
-                <!-- search form -->
-                <div class="row">
-                    @if($grid->shouldRenderSearchForm())
-                        {!! $grid->renderSearchForm() !!}
-                    @endif
-                <!-- toolbar buttons -->
-                    @if($grid->hasButtons('toolbar'))
-                        <div class="col-md-{{ $grid->getGridToolbarSize()[1] }}">
-                            <div class="pull-right">
-                                @foreach($grid->getButtons('toolbar') as $button)
-                                    {!! $button->render() !!}
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-                <!-- end toolbar buttons -->
-                </div>
-                <!-- end search form -->
-                <!-- filter form declaration -->
-                <form action="{{ $grid->getSearchUrl() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
-                <!-- grid contents -->
-                <div class="table-responsive grid-wrapper">
-                    <table class="{{ $grid->getClass() }}">
-                        <thead class="{{ $grid->getHeaderClass() }}">
-                        <!-- headers -->
-                        <tr class="filter-header">
-                            @foreach($columns as $column)
+        @endif
 
-                                @if($loop->first)
+    </div>
+    <form action="{{ $grid->getSearchUrl() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
+    <div class="table-responsive grid-wrapper">
+        <table class="{{ $grid->getClass() }}">
+            <thead class="{{ $grid->getHeaderClass() }}">
+            <tr class="filter-header">
+                @foreach($columns as $column)
 
-                                    @if($column->isSortable)
-                                        <th scope="col"
-                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
-                                            title="click to sort by {{ $column->key }}">
-                                            <a data-trigger-pjax="1" class="data-sort"
-                                               href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
-                                                @if($column->useRawHtmlForLabel)
-                                                    {!! $column->name !!}
-                                                @else
-                                                    {{ $column->name }}
-                                                @endif
-                                            </a>
-                                        </th>
+                    @if($loop->first)
+
+                        @if($column->isSortable)
+                            <th scope="col"
+                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}"
+                                title="click to sort by {{ $column->key }}">
+                                <a data-trigger-pjax="1" class="data-sort"
+                                   href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
+                                    @if($column->useRawHtmlForLabel)
+                                        {!! $column->name !!}
                                     @else
-                                        <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
-                                            @if($column->useRawHtmlForLabel)
-                                                {!! $column->name !!}
-                                            @else
-                                                {{ $column->name }}
-                                            @endif
-                                        </th>
+                                        {{ $column->name }}
+                                    @endif
+                                </a>
+                            </th>
+                        @else
+                            <th class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
+                                @if($column->useRawHtmlForLabel)
+                                    {!! $column->name !!}
+                                @else
+                                    {{ $column->name }}
+                                @endif
+                            </th>
+                        @endif
+                    @else
+                        @if($column->isSortable)
+                            <th scope="col" title="click to sort by {{ $column->key }}"
+                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
+                                <a data-trigger-pjax="1" class="data-sort"
+                                   href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
+                                    @if($column->useRawHtmlForLabel)
+                                        {!! $column->name !!}
+                                    @else
+                                        {{ $column->name }}
+                                    @endif
+                                </a>
+                            </th>
+                        @else
+                            <th scope="col"
+                                class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
+                                @if($column->useRawHtmlForLabel)
+                                    {!! $column->name !!}
+                                @else
+                                    {{ $column->name }}
+                                @endif
+                            </th>
+                        @endif
+                    @endif
+                @endforeach
+                <th></th>
+            </tr>
+            @if($grid->shouldRenderGridFilters())
+                <tr>
+                    {!! $grid->renderGridFilters() !!}
+                </tr>
+            @endif
+            </thead>
+            <tbody>
+            @if($grid->hasItems())
+                @if($grid->warnIfEmpty())
+                    <div class="alert alert-warning" role="alert">
+                        <strong><i class="fa fa-exclamation-triangle"></i>&nbsp;No data present!.</strong>
+                    </div>
+                @endif
+            @else
+                @foreach($grid->getData() as $item)
+                    @if($grid->allowsLinkableRows())
+                        @php
+                            $callback = call_user_func($grid->getLinkableCallback(), $grid->transformName(), $item);
+                        @endphp
+                        @php
+                            $trClassCallback = call_user_func($grid->getRowCssStyle(), $grid->transformName(), $item);
+                        @endphp
+                        <tr class="{{ trim("linkable " . $trClassCallback) }}" data-url="{{ $callback }}">
+                    @else
+                        @php
+                            $trClassCallback = call_user_func($grid->getRowCssStyle(), $grid->transformName(), $item);
+                        @endphp
+                        <tr class="{{ $trClassCallback }}">
+                            @endif
+                            @foreach($columns as $column)
+                                @if(is_callable($column->data))
+                                    @if($column->useRawFormat)
+                                        <td class="{{ $column->rowClass }}">
+                                            {!! call_user_func($column->data, $item, $column->key) !!}
+                                        </td>
+                                    @else
+                                        <td class="{{ $column->rowClass }}">
+                                            {{ call_user_func($column->data , $item, $column->key) }}
+                                        </td>
                                     @endif
                                 @else
-                                    @if($column->isSortable)
-                                        <th scope="col" title="click to sort by {{ $column->key }}"
-                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
-                                            <a data-trigger-pjax="1" class="data-sort"
-                                               href="{{ $grid->getSortUrl($column->key, $grid->getSelectedSortDirection()) }}">
-                                                @if($column->useRawHtmlForLabel)
-                                                    {!! $column->name !!}
-                                                @else
-                                                    {{ $column->name }}
-                                                @endif
-                                            </a>
-                                        </th>
+                                    @if($column->useRawFormat)
+                                        <td class="{{ $column->rowClass }}">
+                                            {!! $item->{$column->key} !!}
+                                        </td>
                                     @else
-                                        <th scope="col"
-                                            class="{{ is_callable($column->columnClass) ? call_user_func($column->columnClass) : $column->columnClass }}">
-                                            @if($column->useRawHtmlForLabel)
-                                                {!! $column->name !!}
-                                            @else
-                                                {{ $column->name }}
-                                            @endif
-                                        </th>
+                                        <td class="{{ $column->rowClass }}">
+                                            {{ $item->{$column->key} }}
+                                        </td>
                                     @endif
                                 @endif
-                            @endforeach
-                            <th></th>
-                        </tr>
-                        <!-- end headers -->
-                        <!-- filters -->
-                        <tr>
-                            @include('leantony::grid.filter', ['columns' => $columns, 'formId' => $grid->getFilterFormId()])
-                        </tr>
-                        <!-- end filters -->
-                        </thead>
-                        <!-- data -->
-                        <tbody>
-                        @if($grid->hasItems())
-                            @if($grid->warnIfEmpty())
-                                <div class="alert alert-warning" role="alert">
-                                    <strong><i class="fa fa-exclamation-triangle"></i>&nbsp;No data present!.</strong>
-                                </div>
-                            @endif
-                        @else
-                            @foreach($grid->getData() as $item)
-                                @if($grid->allowsLinkableRows())
-                                    @php
-                                        $callback = call_user_func($grid->getLinkableCallback(), $grid->transformName(), $item);
-                                    @endphp
-                                    @php
-                                        $trClassCallback = call_user_func($grid->getRowCssStyle(), $grid->transformName(), $item);
-                                    @endphp
-                                    <tr class="{{ trim("linkable " . $trClassCallback) }}" data-url="{{ $callback }}">
-                                @else
-                                    @php
-                                        $trClassCallback = call_user_func($grid->getRowCssStyle(), $grid->transformName(), $item);
-                                    @endphp
-                                    <tr class="{{ $trClassCallback }}">
-                                        @endif
-                                        @foreach($columns as $column)
-                                            @if(is_callable($column->data))
-                                                @if($column->useRawFormat)
-                                                    <td class="{{ $column->rowClass }}">
-                                                        {!! call_user_func($column->data, $item, $column->key) !!}
-                                                    </td>
+                                @if($loop->last && $grid->hasButtons('rows'))
+                                    <td>
+                                        <div class="pull-right">
+                                            @foreach($grid->getButtons('rows') as $button)
+                                                @if(call_user_func($button->renderIf, $grid->transformName(), $item))
+                                                    {!! $button->render(['gridName' => $grid->transformName(), 'gridItem' => $item]) !!}
                                                 @else
-                                                    <td class="{{ $column->rowClass }}">
-                                                        {{ call_user_func($column->data , $item, $column->key) }}
-                                                    </td>
-                                                @endif
-                                            @else
-                                                @if($column->useRawFormat)
-                                                    <td class="{{ $column->rowClass }}">
-                                                        {!! $item->{$column->key} !!}
-                                                    </td>
-                                                @else
-                                                    <td class="{{ $column->rowClass }}">
-                                                        {{ $item->{$column->key} }}
-                                                    </td>
-                                                @endif
-                                            @endif
-                                            @if($loop->last && $grid->hasButtons('rows'))
-                                                <td>
-                                                    <div class="pull-right">
-                                                        @foreach($grid->getButtons('rows') as $button)
-                                                            @if(call_user_func($button->renderIf, $grid->transformName(), $item))
-                                                                {!! $button->render(['gridName' => $grid->transformName(), 'gridItem' => $item]) !!}
-                                                            @else
-                                                                @continue
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                </td>
-                                            @endif
-                                        @endforeach
-                                    </tr>
-                                    @endforeach
-                                    @if($grid->shouldShowFooter())
-                                        <tr class="{{ $grid->getGridFooterClass() }}">
-                                            @foreach($columns as $column)
-                                                @if($column->footer === null)
-                                                    <td></td>
-                                                @else
-                                                    <td>
-                                                        <b>{{ call_user_func($column->footer) }}</b>
-                                                    </td>
-                                                @endif
-                                                @if($loop->last)
-                                                    <td></td>
+                                                    @continue
                                                 @endif
                                             @endforeach
-                                        </tr>
-                                    @endif
+                                        </div>
+                                    </td>
                                 @endif
-                        </tbody>
-                        <!-- end data -->
-                    </table>
-                </div>
-                <!-- end grid contents -->
-            </div>
-            <div class="card-footer">
-            @include('leantony::grid.pagination.pagination-info', ['grid' => $grid, 'direction' => 'left', 'atFooter' => true])
-            <!-- pagination -->
-                @if($grid->wantsPagination())
-                    <div class="pull-right">
-                        {{ $grid->getData()->appends(request()->query())->links($grid->getGridPaginationView(), ['pjaxTarget' => $grid->getId()]) }}
-                    </div><!-- /.center -->
-            @endif
-            <!-- end pagination -->
-            </div>
-        </div>
+                            @endforeach
+                        </tr>
+                        @endforeach
+                        @if($grid->shouldShowFooter())
+                            <tr class="{{ $grid->getGridFooterClass() }}">
+                                @foreach($columns as $column)
+                                    @if($column->footer === null)
+                                        <td></td>
+                                    @else
+                                        <td>
+                                            <b>{{ call_user_func($column->footer) }}</b>
+                                        </td>
+                                    @endif
+                                    @if($loop->last)
+                                        <td></td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                        @endif
+                    @endif
+            </tbody>
+        </table>
     </div>
-</div>
+@endsection
 @push('grid_js')
     <script>
       (function($) {
