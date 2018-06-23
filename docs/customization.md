@@ -178,6 +178,7 @@ These will be copied to `resources/views/vendor/leantony/grid`. From there, you 
 # Advanced customization
 Most of the grid's functionality in terms of manipulating columns, exporting, buttons, filters, is customizable, and for that which is not, am working on it. However, you should be able to;
 + [Buttons](buttons.md)
++ [Templating](templating.md)
 + [Columns, rows, search, export and filters](general.md)
 + [Modal forms](modals.md)
 + [Pagination](pagination.md)
