@@ -1,11 +1,11 @@
-@foreach($columns as $row)
-    @if(!$row->filter)
+@foreach($columns as $col)
+    @if(!$col->filter)
         <th></th>
-    @elseif(!$row->filter->enabled)
+    @elseif(!$col->filter->enabled)
         <th></th>
     @else
         <th>
-            {!! $row->filter !!}
+            {!! $col->filter->render(['titleSetOnColumn' => $col->filterTitle]) !!}
         </th>
     @endif
     @if($loop->last)

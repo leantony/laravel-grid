@@ -158,9 +158,13 @@ class GenericFilter implements Htmlable
             case 'text':
                 // all filters apart from dropdowns are rendered as text elements.
                 // css classes or js libraries can be used to change this
-                return view('leantony::grid.filters.text', $this->compactData(func_get_args()))->render();
+                return view('leantony::grid.filters.text', $this->compactData(
+                    array_collapse(func_get_args())
+                ))->render();
             case 'select':
-                return view('leantony::grid.filters.dropdown', $this->compactData(func_get_args()))->render();
+                return view('leantony::grid.filters.dropdown', $this->compactData(
+                    array_collapse(func_get_args())
+                ))->render();
             default:
                 throw new \Exception("Unknown filter type.");
         }
