@@ -235,4 +235,22 @@ class PackageTest extends TestCase
         // default layout uses a bootstrap4 card
         $this->assertContains("dummy", $content);
     }
+
+    /**
+     * @throws \Throwable
+     * @test
+     */
+    public function grid_can_add_custom_filter_titles()
+    {
+        $filterText = "filter-by-foo-bar";
+        $existingFilterTextSampleNotExisting = "filter by name";
+        $existingFilterTextSampleExisting = "filter by created_at";
+        $grid = $this->getGridInstances()['users_customized'];
+        /** @var $grid UsersGrid */
+        $content = $grid->render();
+
+        $this->assertContains($filterText, $content);
+        $this->assertContains($existingFilterTextSampleExisting, $content);
+        $this->assertNotContains($existingFilterTextSampleNotExisting, $content);
+    }
 }

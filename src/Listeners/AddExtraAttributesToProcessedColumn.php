@@ -34,6 +34,8 @@ class AddExtraAttributesToProcessedColumn
 
         $this->addHtmlCheckForLabel($data, $col);
 
+        $this->addTitleForFilter($data, $col);
+
         // make sure the column object is returned
         return $col;
     }
@@ -53,5 +55,23 @@ class AddExtraAttributesToProcessedColumn
         }
 
         $col->useRawHtmlForLabel = $useRawHtmlForLabel;
+    }
+
+    /**
+     * Add title for filter. This will not be used if not set
+     * So, the default one set on the filter will be used if this one is unavailable
+     *
+     * @param $columnData
+     * @param $col
+     */
+    public function addTitleForFilter($columnData, $col): void
+    {
+        if (isset($columnData['filter'])) {
+            $filterTitle = $columnData['filter']['title'] ?? null;
+        } else {
+            $filterTitle = null;
+        }
+
+        $col->filterTitle = $filterTitle;
     }
 }

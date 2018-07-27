@@ -46,6 +46,7 @@ class UsersGridCustomized extends Grid implements UsersGridInterface
 		    "id" => [
 		        "label" => "ID",
 		        "filter" => [
+		            "title" => "filter-by-foo-bar",
 		            "enabled" => true,
 		            "operator" => "="
 		        ],
