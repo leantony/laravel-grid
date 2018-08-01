@@ -78,10 +78,12 @@ trait SharedSetup
         });
 
         collect(range(1, 50))->each(function ($v) use ($usersBuilder, $now) {
+            $role_id = Role::query()->get()->random()->id;
             $usersBuilder->insert([
                 'name' => 'tester_' . $v,
                 'email' => 'hello@testuser' . $v . '.com',
-                'role_id' => Role::query()->get()->random()->id,
+                'is_admin' => $role_id === 1,
+                'role_id' => $role_id,
                 'password' => 'secret',
                 'created_at' => $now,
                 'updated_at' => $now,
