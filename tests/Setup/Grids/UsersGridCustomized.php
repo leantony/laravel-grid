@@ -3,6 +3,7 @@
 namespace Tests\Setup\Grids;
 
 use Closure;
+use Illuminate\Support\Arr;
 use Leantony\Grid\Grid;
 use Tests\Setup\TestModels\Role;
 
@@ -35,42 +36,52 @@ class UsersGridCustomized extends Grid implements UsersGridInterface
     protected $linkableRows = true;
 
     /**
-    * Set the columns to be displayed.
-    *
-    * @return void
-    * @throws \Exception if an error occurs during parsing of the data
-    */
+     * Set the columns to be displayed.
+     *
+     * @return void
+     * @throws \Exception if an error occurs during parsing of the data
+     */
     public function setColumns()
     {
         $this->columns = [
-		    "id" => [
-		        "label" => "ID",
-		        "filter" => [
-		            "title" => "filter-by-foo-bar",
-		            "enabled" => true,
-		            "operator" => "="
-		        ],
-		        "styles" => [
-		            "column" => "grid-w-10"
-		        ],
+            "id" => [
+                "label" => "ID",
+                "filter" => [
+                    "title" => "filter-by-foo-bar",
+                    "enabled" => true,
+                    "operator" => "="
+                ],
+                "styles" => [
+                    "column" => "grid-w-10"
+                ],
                 'footer' => [
-                    'data' => function() {
+                    'data' => function () {
                         return 'Total:' . $this->getQuery()->sum('id');
                     }
                 ]
-		    ],
-		    "name" => [
-		        "search" => [
-		            "enabled" => false
-		        ],
-		        "filter" => [
-		            "enabled" => false,
-		            "operator" => "="
-		        ],
+            ],
+            "is_admin" => [
+                "label" => "Admin",
+                "presenter" => function ($columnData, $columnName) {
+                    return Arr::random($this->defaultBooleanData, 1)[0];
+                },
+                "filter" => [
+                    'enabled' => true,
+                    'type' => 'boolean',
+                ]
+            ],
+            "name" => [
+                "search" => [
+                    "enabled" => false
+                ],
+                "filter" => [
+                    "enabled" => false,
+                    "operator" => "="
+                ],
                 "styles" => [
                     "column" => "grid-w-40"
                 ]
-		    ],
+            ],
             "role_id" => [
                 'label' => 'Role',
                 'export' => false,
@@ -84,25 +95,25 @@ class UsersGridCustomized extends Grid implements UsersGridInterface
                     'data' => Role::query()->pluck('name', 'id')
                 ]
             ],
-		    "email" => [
-		        "search" => [
-		            "enabled" => true
-		        ],
-		        "filter" => [
-		            "enabled" => true,
-		            "operator" => "="
-		        ]
-		    ],
-		    "created_at" => [
-		        "sort" => false,
-		        "date" => "true",
-		        "filter" => [
-		            "enabled" => true,
-		            "type" => "date",
-		            "operator" => "<="
-		        ]
-		    ]
-		];
+            "email" => [
+                "search" => [
+                    "enabled" => true
+                ],
+                "filter" => [
+                    "enabled" => true,
+                    "operator" => "="
+                ]
+            ],
+            "created_at" => [
+                "sort" => false,
+                "date" => "true",
+                "filter" => [
+                    "enabled" => true,
+                    "type" => "date",
+                    "operator" => "<="
+                ]
+            ]
+        ];
     }
 
     /**
@@ -125,10 +136,10 @@ class UsersGridCustomized extends Grid implements UsersGridInterface
     }
 
     /**
-    * Return a closure that is executed per row, to render a link that will be clicked on to execute an action
-    *
-    * @return Closure
-    */
+     * Return a closure that is executed per row, to render a link that will be clicked on to execute an action
+     *
+     * @return Closure
+     */
     public function getLinkableCallback(): Closure
     {
         return function ($gridName, $item) {
@@ -137,10 +148,10 @@ class UsersGridCustomized extends Grid implements UsersGridInterface
     }
 
     /**
-    * Configure rendered buttons, or add your own
-    *
-    * @return void
-    */
+     * Configure rendered buttons, or add your own
+     *
+     * @return void
+     */
     public function configureButtons()
     {
         // call `addRowButton` to add a row button
@@ -153,16 +164,16 @@ class UsersGridCustomized extends Grid implements UsersGridInterface
     }
 
     /**
-    * Returns a closure that will be executed to apply a class for each row on the grid
-    * The closure takes two arguments - `name` of grid, and `item` being iterated upon
-    *
-    * @return Closure
-    */
+     * Returns a closure that will be executed to apply a class for each row on the grid
+     * The closure takes two arguments - `name` of grid, and `item` being iterated upon
+     *
+     * @return Closure
+     */
     public function getRowCssStyle(): Closure
     {
         return function ($gridName, $item) {
             // e.g, to add a success class to specific table rows;
-             return $item->id % 2 === 0 ? 'table-success' : '';
+            return $item->id % 2 === 0 ? 'table-success' : '';
         };
     }
 }

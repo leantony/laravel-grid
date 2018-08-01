@@ -253,4 +253,17 @@ class PackageTest extends TestCase
         $this->assertContains($existingFilterTextSampleExisting, $content);
         $this->assertNotContains($existingFilterTextSampleNotExisting, $content);
     }
+
+    /**
+     * @throws \Throwable
+     * @test
+     */
+    public function grid_can_add_boolean_filter()
+    {
+        $filterText = "False";
+        $grid = $this->getGridInstances()['users_customized'];
+        /** @var $grid UsersGrid */
+        $content = $grid->render();
+        $this->assertContains($filterText, $content);
+    }
 }
