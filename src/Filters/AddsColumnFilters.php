@@ -11,6 +11,15 @@ use InvalidArgumentException;
 
 trait AddsColumnFilters
 {
+    // filters
+    protected static $FILTER_DATE = "date";
+    protected static $FILTER_DATE_RANGE = "daterange";
+    protected static $FILTER_TEXT = "text";
+    protected static $FILTER_SELECT = "select";
+    protected static $FILTER_BOOLEAN = "boolean";
+
+    protected $defaultBooleanData = [0 => 'False', 1 => 'True'];
+
     /**
      * Add a filter to the column. It will be rendered just below the column name, as a type defined below
      *
@@ -28,14 +37,14 @@ trait AddsColumnFilters
         $filterInstance = null;
         if (!$filterType instanceof GenericFilter) {
             switch ($filterType) {
-                case 'date':
+                case self::$FILTER_DATE:
                     {
                         $filterInstance = $this->addDateFilter(
                             $filterEnabled, $columnName, $filterDataAttributes, $filterClass
                         );
                         break;
                     }
-                case 'daterange':
+                case self::$FILTER_DATE_RANGE:
                     {
                         // uses https://github.com/dangrossman/bootstrap-daterangepicker.git
                         $filterInstance = $this->addTextFilter(
@@ -43,7 +52,7 @@ trait AddsColumnFilters
                         );
                         break;
                     }
-                case 'text':
+                case self::$FILTER_TEXT:
                     {
                         // use text for any other filter type. E.g a custom one you might need
                         $filterInstance = $this->addTextFilter(
@@ -51,13 +60,19 @@ trait AddsColumnFilters
                         );
                         break;
                     }
-                case 'select':
+                case self::$FILTER_SELECT:
                     {
                         $filterInstance = $this->addSelectFilter(
                             $filterEnabled, $columnName, $columnData['data'] ?? []
                         );
                         break;
                     }
+                case self::$FILTER_BOOLEAN: {
+                    $filterInstance = $this->addSelectFilter(
+                        $filterEnabled, $columnName, $columnData['data'] ?? collect($this->defaultBooleanData)
+                    );
+                    break;
+                }
                 default:
                     throw new InvalidArgumentException("Unknown filterType type " . $filterType . " for " . $columnName);
             }
