@@ -22,10 +22,11 @@ class ModalRenderer
     /**
      * Render the modal closing section
      *
+     * @param $data
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function end()
+    public function end($data)
     {
-        return view('leantony::modal.modal-partial-end');
+        return view('leantony::modal.modal-partial-end', ['modal' => $data]);
     }
 }

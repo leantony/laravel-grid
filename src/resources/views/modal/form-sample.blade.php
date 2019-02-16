@@ -13,4 +13,4 @@
                name="email" placeholder="Enter email" value="{{ isset($user) ? $user->email : old('email')}}">
     </div>
 </div>
-{!! Modal::end() !!}
+{!! Modal::end($modal) !!}
