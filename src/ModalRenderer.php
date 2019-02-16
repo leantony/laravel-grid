@@ -25,7 +25,7 @@ class ModalRenderer
      * @param $data
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function end($data)
+    public function end($data = [])
     {
         return view('leantony::modal.modal-partial-end', ['modal' => $data]);
     }
