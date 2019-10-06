@@ -281,7 +281,7 @@ class DataExportHandler
     public function tableColumnName(string $columnName, array $columnData)
     {
         if (isset($columnData['table_column_name'])) {
-            $columnName = $columnData['table_column_name'];
+            $columnName = $columnData['table_column_name'] . ' AS ' . $columnName;
         }
         else {
             $columnName;
