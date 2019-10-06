@@ -9,6 +9,7 @@ namespace Leantony\Grid\Events;
 use Illuminate\Http\Request;
 use Leantony\Grid\Grid;
 use Leantony\Grid\GridInterface;
+use Illuminate\Support\Arr;
 
 class UserActionRequested
 {
@@ -51,6 +52,6 @@ class UserActionRequested
         $this->request = $request;
         $this->builder = $builder;
         $this->validTableColumns = $validTableColumns;
-        $this->args = array_collapse($args);
+        $this->args = Arr::collapse($args);
     }
 }

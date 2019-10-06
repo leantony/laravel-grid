@@ -9,6 +9,7 @@ namespace Leantony\Grid\Filters;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use Illuminate\Support\Arr;
 
 class GenericFilter implements Htmlable
 {
@@ -159,11 +160,11 @@ class GenericFilter implements Htmlable
                 // all filters apart from dropdowns are rendered as text elements.
                 // css classes or js libraries can be used to change this
                 return view('leantony::grid.filters.text', $this->compactData(
-                    array_collapse(func_get_args())
+                    Arr::collapse(func_get_args())
                 ))->render();
             case 'select':
                 return view('leantony::grid.filters.dropdown', $this->compactData(
-                    array_collapse(func_get_args())
+                    Arr::collapse(func_get_args())
                 ))->render();
             default:
                 throw new \Exception("Unknown filter type.");

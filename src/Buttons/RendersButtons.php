@@ -7,6 +7,7 @@
 namespace Leantony\Grid\Buttons;
 
 use InvalidArgumentException;
+use Illuminate\Support\Arr;
 
 trait RendersButtons
 {
@@ -251,7 +252,7 @@ trait RendersButtons
             return false;
         }
         // no buttons on section
-        return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
+        return count(Arr::get($this->buttons, $section, [])) === 0 ? false : true;
     }
 
     /**

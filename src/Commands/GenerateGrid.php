@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Leantony\Grid\HasGridConfigurations;
+use Illuminate\Support\Arr;
 
 class GenerateGrid extends Command
 {
@@ -466,7 +467,7 @@ class GenerateGrid extends Command
      */
     protected function replaceOtherContent(array $replacements, &$stub)
     {
-        $replaced = str_replace(array_values(array_except($this->searches, 'rows')), [
+        $replaced = str_replace(array_values(Arr::except($this->searches, 'rows')), [
             $replacements['namespace'],
             $replacements['modelName'],
             $replacements['tableName'],
