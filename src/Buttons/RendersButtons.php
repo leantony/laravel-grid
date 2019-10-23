@@ -8,6 +8,7 @@ namespace Leantony\Grid\Buttons;
 
 use InvalidArgumentException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 trait RendersButtons
 {
@@ -304,7 +305,7 @@ trait RendersButtons
      */
     protected function makeButtonKey(string $name)
     {
-        return str_slug($name);
+        return Str::slug($name);
     }
 
     /**
