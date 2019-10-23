@@ -7,6 +7,8 @@
 namespace Leantony\Grid\Buttons;
 
 use InvalidArgumentException;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 trait RendersButtons
 {
@@ -251,7 +253,7 @@ trait RendersButtons
             return false;
         }
         // no buttons on section
-        return count(array_get($this->buttons, $section, [])) === 0 ? false : true;
+        return count(Arr::get($this->buttons, $section, [])) === 0 ? false : true;
     }
 
     /**
@@ -303,7 +305,7 @@ trait RendersButtons
      */
     protected function makeButtonKey(string $name)
     {
-        return str_slug($name);
+        return Str::slug($name);
     }
 
     /**

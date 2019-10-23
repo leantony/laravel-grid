@@ -212,6 +212,14 @@ class DataExportHandler
 
         $records = [];
 
+        // Update to correct column name if set in settings.
+        $columnsInGrid = $this->getGrid()->getColumns();
+        foreach ($pinch as $key => $columnName) {
+            if (isset($columnsInGrid[$columnName])) {
+                $pinch[$key] = $this->tableColumnName($columnName, $columnsInGrid[$columnName]);
+            }
+        }
+
         $query = $this->getQuery();
         if ($this->getGridStrictExportStatus() === true) {
             $query = $this->getQuery()->select($pinch);
@@ -219,6 +227,7 @@ class DataExportHandler
 
         // we process the query columns in chunks of a configured size
         $query->chunk($this->getGridExportQueryChunkSize(), function ($items) use ($columns, $params, $doNotFormatKeys, &$records) {
+
             // we run a map over each item from the chunk and run a formatter function over it
             // the formatter function takes into account the various user defined customizations for
             // each column entry
@@ -260,5 +269,24 @@ class DataExportHandler
 
         // collapse the data to a 1d array
         return $data->collapse()->toArray();
+    }
+
+    /**
+     * Check if table column name is set.
+     *
+     * @param string $columnName
+     * @param array $columnData
+     * @return string
+     */
+    public function tableColumnName(string $columnName, array $columnData)
+    {
+        if (isset($columnData['table_column_name'])) {
+            $columnName = $columnData['table_column_name'] . ' AS ' . $columnName;
+        }
+        else {
+            $columnName;
+        }
+
+        return $columnName;
     }
 }

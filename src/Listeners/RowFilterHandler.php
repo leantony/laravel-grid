@@ -41,7 +41,6 @@ class RowFilterHandler
         if (!empty($this->request->query())) {
             $columns = $this->getGrid()->getColumns();
             $tableColumns = $this->getValidGridColumns();
-
             foreach ($columns as $columnName => $columnData) {
                 // skip rows that are not to be filtered
                 if (!$this->canFilter($columnName, $columnData)) {
@@ -57,7 +56,7 @@ class RowFilterHandler
                 }
                 $operator = $this->extractFilterOperator($columnName, $columnData)['operator'];
 
-                $this->doFilter($columnName, $columnData, $operator, $this->getRequest()->get($columnName));
+                $this->doFilter($this->tableColumnName($columnName, $columnData), $columnData, $operator, $this->getRequest()->get($columnName));
             }
         }
     }
@@ -112,6 +111,25 @@ class RowFilterHandler
     {
         $operator = $columnData['filter']['operator'] ?? '=';
         return compact('operator');
+    }
+
+    /**
+     * Check if table column name is set.
+     *
+     * @param string $columnName
+     * @param array $columnData
+     * @return string
+     */
+    public function tableColumnName(string $columnName, array $columnData)
+    {
+        if (isset($columnData['table_column_name'])) {
+            $columnName = $columnData['table_column_name'];
+        }
+        else {
+            $columnName;
+        }
+
+        return $columnName;
     }
 
     /**
