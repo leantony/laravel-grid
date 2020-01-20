@@ -4,7 +4,7 @@
  * @author Antony [leantony] Chacha
  */
 
-namespace Leantony\Grid\Buttons;
+namespace Leantony\Grid\Buttons;;
 
 use Leantony\Grid\HasGridConfigurations;
 
