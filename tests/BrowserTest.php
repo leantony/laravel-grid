@@ -24,7 +24,7 @@ class BrowserTest extends TestCase
     {
         $chromeOptions = new ChromeOptions();
         $chromeOptions->setBinary(env('CHROME_BINARY', '/usr/bin/google-chrome'));
-        $chromeOptions->addArguments(['--disable-gpu', '--headless', '--no-sandbox']);
+        $chromeOptions->addArguments(['--disable-gpu', '--headless', '--no-sandbox', '--disable-dev-shm-usage']);
         $capabilities = DesiredCapabilities::chrome();
         $capabilities->setCapability(ChromeOptions::CAPABILITY_W3C, $chromeOptions);
 
