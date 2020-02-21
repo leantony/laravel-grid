@@ -23,7 +23,7 @@ class BrowserTest extends TestCase
     protected function driver(): RemoteWebDriver
     {
         $chromeOptions = new ChromeOptions();
-        $chromeOptions->setBinary('/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe');
+        $chromeOptions->setBinary(env('CHROME_BINARY', '/usr/bin/google-chrome'));
         $chromeOptions->addArguments(['--disable-gpu', '--headless', '--no-sandbox']);
         $capabilities = DesiredCapabilities::chrome();
         $capabilities->setCapability(ChromeOptions::CAPABILITY_W3C, $chromeOptions);
