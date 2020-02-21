@@ -100,45 +100,45 @@ class DataExportHandler
     {
         switch ($type) {
             case 'pdf':
-                {
-                    return (new PdfExport())->export($this->getExportData(), [
-                        'exportableColumns' => $this->getExportableColumns()[1],
-                        'fileName' => $this->getFileNameForExport(),
-                        'exportView' => $this->getGridExportView(),
-                        'title' => $this->getGrid()->getName() . ' PDF report data'
-                    ]);
-                }
+            {
+                return (new PdfExport())->export($this->getExportData(), [
+                    'exportableColumns' => $this->getExportableColumns()[1],
+                    'fileName' => $this->getFileNameForExport(),
+                    'exportView' => $this->getGridExportView(),
+                    'title' => $this->getGrid()->getName() . ' PDF report data'
+                ]);
+            }
             case 'csv':
             case 'xlsx':
-                {
-                    $columns = $this->getExportableColumns()[1];
-                    // headings
-                    $headings = $columns->map(function ($col) {
-                        return $col->name;
-                    })->toArray();
+            {
+                $columns = $this->getExportableColumns()[1];
+                // headings
+                $headings = $columns->map(function ($col) {
+                    return $col->name;
+                })->toArray();
 
-                    return (new ExcelExport([
-                        'title' => $this->getGrid()->getName(),
-                        'columns' => $columns,
-                        'data' => $this->getExportData(),
-                        'headings' => $headings,
-                    ]))->download($this->getFileNameForExport() . '.' . $type);
-                }
+                return (new ExcelExport([
+                    'title' => $this->getGrid()->getName(),
+                    'columns' => $columns,
+                    'data' => $this->getExportData(),
+                    'headings' => $headings,
+                ]))->download($this->getFileNameForExport() . '.' . $type);
+            }
             case 'html':
-                {
-                    return (new HtmlExport())->export($this->getExportData(), [
-                        'exportableColumns' => $this->getExportableColumns()[1],
-                        'fileName' => $this->getFileNameForExport(),
-                        'exportView' => $this->getGridExportView(),
-                        'title' => $this->getGrid()->getName() . ' HTML report data'
-                    ]);
-                }
+            {
+                return (new HtmlExport())->export($this->getExportData(), [
+                    'exportableColumns' => $this->getExportableColumns()[1],
+                    'fileName' => $this->getFileNameForExport(),
+                    'exportView' => $this->getGridExportView(),
+                    'title' => $this->getGrid()->getName() . ' HTML report data'
+                ]);
+            }
             case 'json':
-                {
-                    return (new JsonExport())->export($this->getExportData(['doNotFormatKeys' => true]), [
-                        'fileName' => $this->getFileNameForExport(),
-                    ]);
-                }
+            {
+                return (new JsonExport())->export($this->getExportData(['doNotFormatKeys' => true]), [
+                    'fileName' => $this->getFileNameForExport(),
+                ]);
+            }
             default:
                 throw new \InvalidArgumentException("unknown export type");
         }
@@ -211,6 +211,14 @@ class DataExportHandler
         list($pinch, $columns) = $this->getExportableColumns();
 
         $records = [];
+
+        // Update to correct column name if set in settings.
+        $columnsInGrid = $this->getGrid()->getColumns();
+        foreach ($pinch as $key => $columnName) {
+            if (isset($columnsInGrid[$columnName])) {
+                $pinch[$key] = $this->tableColumnName($columnName, $columnsInGrid[$columnName]);
+            }
+        }
 
         $query = $this->getQuery();
         if ($this->getGridStrictExportStatus() === true) {

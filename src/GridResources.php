@@ -88,4 +88,19 @@ trait GridResources
     {
         return $this->validGridColumns;
     }
+
+    /**
+     * Check if table column name is set.
+     *
+     * @param string $columnName
+     * @param array $columnData
+     * @return string
+     */
+    public function tableColumnName(string $columnName, array $columnData)
+    {
+        if (isset($columnData['table_column_name'])) {
+            $columnName = $columnData['table_column_name'] . ' AS ' . $columnName;
+        }
+        return $columnName;
+    }
 }

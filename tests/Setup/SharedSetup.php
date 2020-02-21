@@ -23,7 +23,7 @@ trait SharedSetup
     /**
      * Setup the test environment.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

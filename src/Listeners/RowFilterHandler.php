@@ -57,7 +57,7 @@ class RowFilterHandler
                 }
                 $operator = $this->extractFilterOperator($columnName, $columnData)['operator'];
 
-                $this->doFilter($columnName, $columnData, $operator, $this->getRequest()->get($columnName));
+                $this->doFilter($this->tableColumnName($columnName, $columnData), $columnData, $operator, $this->getRequest()->get($columnName));
             }
         }
     }
