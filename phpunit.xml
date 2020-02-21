@@ -11,6 +11,7 @@
     <testsuites>
         <testsuite name="Package tests">
             <directory suffix="Test.php">./tests</directory>
+            <exclude>./tests/BrowserTest.php</exclude>
         </testsuite>
     </testsuites>
     <filter>
