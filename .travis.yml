@@ -16,7 +16,7 @@ before_script:
   - set -e
   - cp .env.travis .env
   - travis_retry composer install --no-interaction
-  - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
+  - google-chrome-stable --headless --disable-gpu --disable-dev-shm-usage --no-sandbox --remote-debugging-port=9222 http://localhost &
 
 script:
   - vendor/bin/phpunit --configuration phpunit.xml
