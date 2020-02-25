@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static void start(array $data)
- * @method static void end()
+ * @method static void end(array $data)
  */
 class Modal extends Facade
 {

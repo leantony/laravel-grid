@@ -6,4 +6,4 @@
                placeholder="Enter {{ input }}" value="{{ isset(${{ input }}) ? $data->{{ input }} : old('{{ input }}')}}">
     </div>
 </div>
-{!! Modal::end() !!}
+{!! Modal::end($modal) !!}

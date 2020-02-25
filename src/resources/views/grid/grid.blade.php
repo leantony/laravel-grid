@@ -16,7 +16,9 @@
         @endif
 
     </div>
+    @if($grid->shouldRenderSearchForm())
     <form action="{{ $grid->getSearchUrl() }}" method="GET" id="{{ $grid->getFilterFormId() }}"></form>
+    @endif
     <div class="table-responsive grid-wrapper">
         <table class="{{ $grid->getClass() }}">
             <thead class="{{ $grid->getHeaderClass() }}">
