@@ -23,13 +23,13 @@
     }
   ],
   "require": {
-    "illuminate/view": "^5.5|^6",
-    "illuminate/support": "^5.5|^6",
-    "illuminate/console": "^5.5|^6",
-    "illuminate/contracts": "^5.5|^6",
-    "illuminate/http": "^5.5|^6",
-    "illuminate/database": "^5.5|^6",
-    "illuminate/pagination": "^5.5|^6"
+    "illuminate/view": "^5.5|^6|^8",
+    "illuminate/support": "^5.5|^6|^8",
+    "illuminate/console": "^5.5|^6|^8",
+    "illuminate/contracts": "^5.5|^6|^8",
+    "illuminate/http": "^5.5|^6|^8",
+    "illuminate/database": "^5.5|^6|^8",
+    "illuminate/pagination": "^5.5|^6|^8"
   },
   "suggest": {
     "maatwebsite/excel": "For exporting grid data as excel (~3.0)",
