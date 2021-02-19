@@ -9,6 +9,7 @@ namespace Leantony\Grid\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Leantony\Grid\HasGridConfigurations;
 
@@ -104,10 +105,10 @@ class GenerateGrid extends Command
             die(-1);
         }
 
-        list($model, $rows) = $this->generateRows($suppliedModel);
+        [$model, $rows] = $this->generateRows($suppliedModel);
 
         // binding
-        list($namespace, $replaced, $filename) = $this->dumpBinding($model);
+        [$namespace, $replaced, $filename] = $this->dumpBinding($model);
 
         // class
         $this->dumpClass($model, $rows, $stub);
@@ -263,7 +264,7 @@ class GenerateGrid extends Command
     {
         $stub = __DIR__ . '/../Stubs/GridInterface.txt';
 
-        list($namespace, $interfaceName, $replaced) = $this->makeReplacementsForBinding($model,
+        [$namespace, $interfaceName, $replaced] = $this->makeReplacementsForBinding($model,
             $this->generateDynamicNamespace(), $stub);
 
         $this->binding = $interfaceName;
@@ -396,7 +397,7 @@ class GenerateGrid extends Command
      */
     protected function dumpClass($model, $rows, $stub)
     {
-        list($namespace, $tableName, $replaced) = $this->makeReplacements($model, $rows, $stub);
+        [$namespace, $tableName, $replaced] = $this->makeReplacements($model, $rows, $stub);
 
         $filename = $this->makeFileName($tableName . 'Grid');
 
@@ -466,7 +467,7 @@ class GenerateGrid extends Command
      */
     protected function replaceOtherContent(array $replacements, &$stub)
     {
-        $replaced = str_replace(array_values(array_except($this->searches, 'rows')), [
+        $replaced = str_replace(array_values(Arr::except($this->searches, 'rows')), [
             $replacements['namespace'],
             $replacements['modelName'],
             $replacements['tableName'],
